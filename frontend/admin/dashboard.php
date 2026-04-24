@@ -451,7 +451,7 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
   /* Show mobile block */
   #dash-mobile {
     display: block;
-    padding: 0 0 24px;
+    padding: 0 20px 24px;
   }
 
   /* ── Pending Alert ── */
