@@ -148,7 +148,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="card-lms-title"><i class="fas fa-list-check"></i> Recent Enrollments</div>
           <a href="<?= BASE_URL ?>/frontend/admin/enrollments.php" class="btn-lms btn-outline btn-sm">View All</a>
         </div>
-        <div class="card-lms-body" style="padding:0;">
+        <div class="card-lms-body" style="padding:0;overflow-x:auto;">
           <?php if (empty($recentEnrollments)): ?>
             <div class="empty-state"><i class="fas fa-list-check"></i><p>No enrollments yet.</p></div>
           <?php else: ?>
@@ -157,22 +157,22 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <tr>
                 <th>Student</th>
                 <th>Course</th>
-                <th>Date</th>
-                <th>Status</th>
+                <th class="td-nowrap">Date</th>
+                <th class="td-nowrap">Status</th>
               </tr>
             </thead>
             <tbody>
               <?php foreach ($recentEnrollments as $e): ?>
               <tr>
-                <td>
+                <td style="white-space:nowrap;">
                   <div class="d-flex align-center gap-10">
                     <div class="avatar-initials"><?= strtoupper(substr($e['student'],0,1)) ?></div>
                     <?= htmlspecialchars($e['student']) ?>
                   </div>
                 </td>
                 <td><?= htmlspecialchars($e['course']) ?></td>
-                <td><?= date('M d, Y', strtotime($e['enrolled_at'])) ?></td>
-                <td>
+                <td class="td-nowrap"><?= date('M d, Y', strtotime($e['enrolled_at'])) ?></td>
+                <td class="td-nowrap">
                   <span class="badge-lms <?= $e['status']==='active'?'success':($e['status']==='completed'?'info':'danger') ?>">
                     <?= ucfirst($e['status']) ?>
                   </span>
