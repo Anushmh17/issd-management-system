@@ -476,7 +476,7 @@ img { max-width: 100%; }
   letter-spacing: 0.8px;
   padding: 12px 16px;
   border: none;
-  white-space: nowrap;
+  white-space: nowrap; /* safe globally — headers should never wrap */
 }
 .table-lms thead th:first-child { border-radius: 8px 0 0 8px; }
 .table-lms thead th:last-child  { border-radius: 0 8px 8px 0; }
@@ -492,21 +492,31 @@ img { max-width: 100%; }
   font-size: 13.5px;
   vertical-align: middle;
 }
-/* Prevent Date, Status, Actions columns from wrapping */
-.table-lms tbody td:last-child,
-.table-lms tbody td:nth-last-child(2),
-.table-lms tbody td.td-nowrap,
-.table-lms thead th.td-nowrap {
-  white-space: nowrap;
-}
-/* Action button groups in tables — always stay on one line */
-.table-lms .d-flex {
-  flex-wrap: nowrap;
-}
 /* Table scroll wrapper for narrow containers */
 .table-scroll-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* =====================================================
+   MOBILE-ONLY TABLE FIXES (≤768px)
+   Prevent date/status/badge/action cells from wrapping
+   on small screens — desktop is completely unaffected
+   ===================================================== */
+@media (max-width: 768px) {
+  .table-lms tbody td:last-child,
+  .table-lms tbody td:nth-last-child(2),
+  .table-lms tbody td.td-nowrap {
+    white-space: nowrap;
+  }
+  /* Action button groups — stay inline on mobile */
+  .table-lms .d-flex {
+    flex-wrap: nowrap;
+  }
+  /* Student name + avatar cell — nowrap on mobile */
+  .table-lms td[style*="white-space:nowrap"] {
+    white-space: nowrap;
+  }
 }
 
 /* =====================================================
