@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($act === 'add' || $act === 'edit') {
         $student_id = (int)($_POST['student_id'] ?? 0);
         $course_id = (int)($_POST['course_id'] ?? 0);
-        $lecturer_id = $_POST['lecturer_id'] ? (int)$_POST['lecturer_id'] : null;
+        $lecturer_id = !empty($_POST['lecturer_id']) ? (int)$_POST['lecturer_id'] : null;
         $status = $_POST['status'] ?? 'active';
 
         if (!$student_id || !$course_id) {

@@ -136,7 +136,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <a href="students.php" class="btn-lms btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back</a>
     </div>
     <div class="card-lms-body">
-      <form method="POST" action="students.php">
+      <form method="POST" action="students.php" autocomplete="off">
         <input type="hidden" name="act" value="<?= $action ?>">
         <?php if ($action==='edit'): ?>
           <input type="hidden" name="id" value="<?= $editStudent['id'] ?>">
@@ -168,7 +168,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="col-md-4">
             <div class="form-group-lms">
               <label>Password *</label>
-              <input type="password" name="password" class="form-control-lms" required>
+              <input type="password" name="password" class="form-control-lms" required autocomplete="new-password">
             </div>
           </div>
           <div class="col-md-4">

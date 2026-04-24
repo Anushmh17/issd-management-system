@@ -28,12 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 if ($act === 'add') {
                     $pdo->prepare("INSERT INTO courses (course_name,course_code,description,duration,monthly_fee,status) VALUES (?,?,?,?,?,?)")
-                        ->execute([`$title,`$code,`$desc,`$dur,`$fee,`$status]);
+                        ->execute([$title, $code, $desc, $dur, $fee, $status]);
                     setFlash('success','Course added successfully.');
                 } else {
                     $id = (int)$_POST['id'];
                     $pdo->prepare("UPDATE courses SET course_name=?,course_code=?,description=?,duration=?,monthly_fee=?,status=? WHERE id=?")
-                        ->execute([`$title,`$code,`$desc,`$dur,`$fee,`$status,$id]);
+                        ->execute([$title, $code, $desc, $dur, $fee, $status, $id]);
                     setFlash('success','Course updated.');
                 }
                 header('Location: courses.php'); exit;
@@ -51,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $editCourse = null;
 if ($action === 'edit' && isset($_GET['id'])) {
-    $editCourse = $pdo->prepare("SELECT * FROM courses WHERE id=?")->execute([(int)$_GET['id']]) ? null : null;
     $stmt = $pdo->prepare("SELECT * FROM courses WHERE id=?");
     $stmt->execute([(int)$_GET['id']]);
     $editCourse = $stmt->fetch();
@@ -60,7 +59,7 @@ if ($action === 'edit' && isset($_GET['id'])) {
 $search = trim($_GET['q'] ?? '');
 $sql = "SELECT c.*, (SELECT COUNT(*) FROM enrollments e WHERE e.course_id=c.id) AS enrollment_count FROM courses c WHERE 1";
 $params = [];
-if ($search) { $sql .= " AND (c.course_name LIKE ? OR c.code LIKE ?)"; $params=["%$search%","%$search%"]; }
+if ($search) { $sql .= " AND (c.course_name LIKE ? OR c.course_code LIKE ?)"; $params=["%$search%","%$search%"]; }
 $sql .= " ORDER BY c.created_at DESC";
 $stmt = $pdo->prepare($sql); $stmt->execute($params);
 $courses = $stmt->fetchAll();
@@ -105,7 +104,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </div></div>
           <div class="col-md-3"><div class="form-group-lms">
             <label>Course Code *</label>
-            <input type="text" name="code" class="form-control-lms" value="<?= htmlspecialchars($editCourse['code']??'') ?>" required placeholder="e.g. WD101">
+            <input type="text" name="code" class="form-control-lms" value="<?= htmlspecialchars($editCourse['course_code']??'') ?>" required placeholder="e.g. WD101">
           </div></div>
           <div class="col-md-3"><div class="form-group-lms">
             <label>Duration</label>
@@ -113,7 +112,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </div></div>
           <div class="col-md-3"><div class="form-group-lms">
             <label>Course Fee (Rs.)</label>
-            <input type="number" name="fee" class="form-control-lms" value="<?= $editCourse['fee']??0 ?>" step="0.01" min="0">
+            <input type="number" name="fee" class="form-control-lms" value="<?= $editCourse['monthly_fee']??0 ?>" step="0.01" min="0">
           </div></div>
           <div class="col-md-3"><div class="form-group-lms">
             <label>Status</label>
