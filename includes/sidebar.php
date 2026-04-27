@@ -62,19 +62,21 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
 
   <!-- Brand -->
   <div class="sidebar-brand">
-    <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+    <div class="brand-icon">
+      <i class="fas fa-graduation-cap"></i>
+    </div>
     <div class="brand-text">
-      Learn Management
-      <span>Institute Management System</span>
+      Learn <span>Management</span>
+      <span class="brand-sub">INSTITUTE SYSTEM</span>
     </div>
   </div>
 
   <!-- User Info -->
   <div class="sidebar-user">
     <?php if ($avatar): ?>
-      <img src="<?= htmlspecialchars(BASE_URL.'/assets/uploads/'.$avatar) ?>" class="user-avatar" alt="avatar" style="object-fit:cover;">
+      <img src="<?= htmlspecialchars(BASE_URL.'/assets/uploads/'.$avatar) ?>" class="user-avatar" alt="avatar" style="object-fit:cover; border: 2px solid rgba(255,255,255,0.1);">
     <?php else: ?>
-      <div class="user-avatar"><?= $initial ?></div>
+      <div class="user-avatar" style="background: linear-gradient(135deg, var(--primary), var(--accent));"><?= $initial ?></div>
     <?php endif; ?>
     <div class="user-info">
       <div class="user-name"><?= htmlspecialchars($uname) ?></div>
@@ -130,7 +132,7 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
         <i class="fas fa-bars"></i>
       </button>
       <div class="navbar-title">
-        Learn Management
+        Learn <span>Management</span>
       </div>
     </div>
     <div class="navbar-right">

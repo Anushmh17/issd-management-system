@@ -98,12 +98,12 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
   <?php endif; ?>
 
   <!-- Stats Grid -->
-  <div class="stats-grid premium-stats">
+  <div class="dashboard-stats-grid">
     <div class="stat-card color-indigo">
       <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
       <div class="stat-content">
         <div class="stat-value" data-count="<?= $stats['students'] ?>"><?= $stats['students'] ?></div>
-        <div class="stat-label">Total Students</div>
+        <div class="stat-label">New Students</div>
         <div class="stat-progress">
             <div class="progress-bar" style="width: 75%;"></div>
         </div>
@@ -114,7 +114,7 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
       <div class="stat-icon"><i class="fas fa-chalkboard-user"></i></div>
       <div class="stat-content">
         <div class="stat-value" data-count="<?= $stats['lecturers'] ?>"><?= $stats['lecturers'] ?></div>
-        <div class="stat-label">Total Lecturers</div>
+        <div class="stat-label">Active Lecturers</div>
         <div class="stat-progress">
             <div class="progress-bar" style="width: 60%;"></div>
         </div>
@@ -132,11 +132,11 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
       </div>
       <div class="stat-decoration"></div>
     </div>
-    <div class="stat-card color-sky">
-      <div class="stat-icon"><i class="fas fa-list-check"></i></div>
+    <div class="stat-card color-violet">
+      <div class="stat-icon"><i class="fas fa-phone-volume"></i></div>
       <div class="stat-content">
-        <div class="stat-value" data-count="<?= $stats['enrollments'] ?>"><?= $stats['enrollments'] ?></div>
-        <div class="stat-label">Enrollments</div>
+        <div class="stat-value" data-count="<?= $stats['followups'] ?>"><?= $stats['followups'] ?></div>
+        <div class="stat-label">Pending Calls</div>
         <div class="stat-progress">
             <div class="progress-bar" style="width: 45%;"></div>
         </div>
@@ -154,7 +154,7 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
       </div>
       <div class="stat-decoration"></div>
     </div>
-    <div class="stat-card color-violet">
+    <div class="stat-card color-sky">
       <div class="stat-icon"><i class="fas fa-bell"></i></div>
       <div class="stat-content">
         <div class="stat-value" data-count="<?= $stats['notices'] ?>"><?= $stats['notices'] ?></div>
@@ -171,11 +171,14 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
   <div class="row g-4">
 
     <!-- Recent Enrollments -->
-    <div class="col-lg-7">
+    <!-- Recent Enrollments -->
+    <div class="col-lg-8">
       <div class="card-lms">
         <div class="card-lms-header">
           <div class="card-lms-title"><i class="fas fa-list-check"></i> Recent Enrollments</div>
-          <a href="<?= BASE_URL ?>/frontend/admin/enrollments.php" class="btn-lms btn-outline btn-sm">View All</a>
+          <div class="d-flex gap-10">
+            <a href="<?= BASE_URL ?>/frontend/admin/enrollments.php" class="btn-lms btn-outline btn-sm">View All</a>
+          </div>
         </div>
         <div class="card-lms-body" style="padding:0;overflow-x:auto;">
           <?php if (empty($recentEnrollments)): ?>
@@ -215,10 +218,8 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
       </div>
     </div>
 
-    <!-- Right Column -->
-    <div class="col-lg-5 d-flex flex-column gap-4">
-
-      <!-- Recent Payments -->
+    <!-- Recent Payments -->
+    <div class="col-lg-4">
       <div class="card-lms">
         <div class="card-lms-header">
           <div class="card-lms-title"><i class="fas fa-money-bill-wave"></i> Recent Payments</div>
@@ -234,7 +235,7 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
               <?php foreach ($recentPayments as $p): ?>
               <tr>
                 <td>
-                  <div><?= htmlspecialchars($p['student']) ?></div>
+                  <div class="fw-600" style="font-size:13px;"><?= htmlspecialchars($p['student']) ?></div>
                   <small class="text-muted"><?= date('M d', strtotime($p['paid_date'])) ?></small>
                 </td>
                 <td class="fw-700" style="color:var(--accent)">Rs.<?= number_format($p['amount'],0) ?></td>
@@ -246,9 +247,13 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
           <?php endif; ?>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Follow-up Reminders (Call Alerts) -->
-      <div class="card-lms premium-border-amber">
+  <div class="row g-4 mt-1">
+    <!-- Follow-up Reminders (Call Alerts) -->
+    <div class="col-lg-6">
+      <div class="card-lms premium-border-amber h-100">
         <div class="card-lms-header">
           <div class="card-lms-title" style="color:var(--amber-card);">
             <i class="fas fa-phone-volume"></i> Pending Call Reminders
@@ -266,22 +271,23 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
               <?php foreach ($pendingFollowUps as $f): 
                 $isOverdue = strtotime($f['next_follow_up']) < strtotime('today');
               ?>
-              <div style="padding:12px;background:#fff;border-radius:12px;border:1px solid <?= $isOverdue ? '#fee2e2' : '#f1f5f9' ?>; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-                  <div class="fw-700" style="font-size:14px; color:#1e293b;">
+              <div style="padding:16px;background:var(--bg-page);border-radius:16px;border:1px solid <?= $isOverdue ? 'rgba(255, 107, 107, 0.2)' : 'var(--border-light)' ?>; transition: var(--transition); cursor: pointer;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='<?= $isOverdue ? 'rgba(255, 107, 107, 0.2)' : 'var(--border-light)' ?>'">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                  <div class="fw-700" style="font-size:14px; color:var(--text-main);">
                     <?= htmlspecialchars($f['full_name']) ?>
                   </div>
-                  <span class="badge-lms <?= $isOverdue ? 'danger' : 'warning' ?>" style="font-size:9px;">
-                    <?= $isOverdue ? 'OVERDUE' : 'DUE: '.date('M d', strtotime($f['next_follow_up'])) ?>
+                  <span class="badge-lms <?= $isOverdue ? 'danger' : 'warning' ?>" style="font-size:10px;">
+                    <i class="fas <?= $isOverdue ? 'fa-clock' : 'fa-calendar-day' ?>"></i>
+                    <?= $isOverdue ? 'OVERDUE' : date('M d', strtotime($f['next_follow_up'])) ?>
                   </span>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                  <a href="tel:<?= $f['phone_number'] ?>" class="btn-lms btn-sm" style="background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; padding:4px 10px; font-size:11px;">
-                    <i class="fas fa-phone"></i> <?= htmlspecialchars($f['phone_number']) ?>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                  <a href="tel:<?= $f['phone_number'] ?>" class="btn-lms btn-sm btn-success" style="padding:4px 12px; font-size:11px;">
+                    <i class="fas fa-phone-alt"></i> <?= htmlspecialchars($f['phone_number']) ?>
                   </a>
                 </div>
-                <div style="font-size:11px; color:#64748b; line-height:1.4; background:#f8fafc; padding:8px; border-radius:6px;">
-                  <i class="fas fa-comment-dots" style="margin-right:4px; opacity:0.5;"></i>
+                <div style="font-size:12px; color:var(--text-muted); line-height:1.5; background:#fff; padding:10px; border-radius:10px; border: 1px dashed var(--border-color);">
+                  <i class="fas fa-quote-left" style="margin-right:6px; opacity:0.3;"></i>
                   <?= htmlspecialchars($f['follow_up_note'] ?: 'No note provided') ?>
                 </div>
               </div>
@@ -295,9 +301,11 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
           <?php endif; ?>
         </div>
       </div>
+    </div>
 
-      <!-- Notices -->
-      <div class="card-lms">
+    <!-- Latest Notices -->
+    <div class="col-lg-6">
+      <div class="card-lms h-100">
         <div class="card-lms-header">
           <div class="card-lms-title"><i class="fas fa-bell"></i> Latest Notices</div>
           <a href="<?= BASE_URL ?>/frontend/admin/notices.php" class="btn-lms btn-outline btn-sm">View All</a>
@@ -308,13 +316,13 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
           <?php else: ?>
             <div style="display:flex;flex-direction:column;gap:12px;">
               <?php foreach ($notices as $n): ?>
-              <div style="padding:12px;background:var(--bg-page);border-radius:10px;border:1px solid var(--border-color);">
+              <div style="padding:16px;background:var(--bg-page);border-radius:12px;border:1px solid var(--border-color);">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                  <div class="fw-600" style="font-size:13px;"><?= htmlspecialchars($n['title']) ?></div>
+                  <div class="fw-700" style="font-size:14px;"><?= htmlspecialchars($n['title']) ?></div>
                   <span class="badge-lms <?= $n['target_role']==='all'?'primary':($n['target_role']==='student'?'success':($n['target_role']==='lecturer'?'warning':'info')) ?>"><?= ucfirst($n['target_role']) ?></span>
                 </div>
-                <div class="text-muted" style="font-size:11px;margin-top:4px;">
-                  By <?= htmlspecialchars($n['posted_by']) ?> &bull; <?= date('M d, Y', strtotime($n['created_at'])) ?>
+                <div class="text-muted" style="font-size:12px;margin-top:6px; display:flex; align-items:center; gap:6px;">
+                   <i class="fas fa-user-edit" style="font-size:10px; opacity:0.5;"></i> By <?= htmlspecialchars($n['posted_by']) ?> &bull; <?= date('M d, Y', strtotime($n['created_at'])) ?>
                 </div>
               </div>
               <?php endforeach; ?>
@@ -322,8 +330,8 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
           <?php endif; ?>
         </div>
       </div>
-
     </div>
+
   </div><!-- /row -->
 
 </div><!-- desktop end -->
@@ -542,8 +550,17 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
   --violet-card: #8b5cf6;
 }
 
-.premium-stats {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+@media (max-width: 1200px) {
+  .dashboard-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .dashboard-stats-grid { grid-template-columns: 1fr; }
 }
 
 .stat-card.color-indigo { --card-bg: var(--indigo-card); }
@@ -594,11 +611,11 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
 }
 
 .stat-label {
-  font-size: 11px !important;
-  color: #64748b !important;
-  font-weight: 700 !important;
+  font-size: 12px !important;
+  color: var(--text-muted) !important;
+  font-weight: 600 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
+  letter-spacing: 0.8px !important;
   margin-top: 6px !important;
 }
 
@@ -682,23 +699,7 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
   /* Hide ALL desktop content inside page-content */
   #page-content > .page-header,
   #page-content > .alert-lms,
-  #page-content > .stats-grid,
-  #page-content > .row {
-    display: none !important;
-  }
-  /* Show mobile block */
-  #dash-mobile {
-    display: block;
-    padding: 0 20px 24px;
-  }
-
-
-
-@media (max-width: 768px) {
-  /* Hide ALL desktop content inside page-content */
-  #page-content > .page-header,
-  #page-content > .alert-lms,
-  #page-content > .stats-grid,
+  #page-content > .dashboard-stats-grid,
   #page-content > .row {
     display: none !important;
   }
@@ -1082,7 +1083,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100 + i * 50);
   });
 });
-</script>
 </script>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
