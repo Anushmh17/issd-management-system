@@ -70,6 +70,27 @@ function studentAvatarColor(string $name): string {
     return $colors[ord($name[0]) % count($colors)];
 }
 
+
+$extraCSS = '
+<style>
+.doc-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.doc-badge.completed { background: #dcfce7; color: #10b981; border: 1px solid #b9f6ca; }
+.doc-badge.pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+.doc-badge.missing { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+
+.id-badge-lms { background: #f1f5f9; color: #475569; font-weight: 700; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+.batch-badge-lms { background: #e0f2fe; color: #0369a1; font-weight: 600; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+</style>
+';
+
 require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>

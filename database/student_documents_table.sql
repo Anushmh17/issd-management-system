@@ -78,3 +78,18 @@ CREATE TABLE IF NOT EXISTS `student_documents` (
 
   FOREIGN KEY (`student_id`) REFERENCES `students`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -------------------------------------------------------
+-- Table: student_other_documents
+-- Stores additional supporting documents for each student
+-- -------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `student_other_documents` (
+  `id`             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `student_id`     INT UNSIGNED NOT NULL,
+  `label`          VARCHAR(255) NOT NULL,
+  `file_path`      VARCHAR(255) NOT NULL,
+  `collected_by`   ENUM('W1','W2','H1','H2') DEFAULT NULL,
+  `collected_date` DATE DEFAULT NULL,
+  `created_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`student_id`) REFERENCES `students`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

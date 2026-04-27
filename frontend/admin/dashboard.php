@@ -7,22 +7,27 @@ require_once dirname(__DIR__, 2) . '/backend/config.php';
 require_once dirname(__DIR__, 2) . '/backend/db.php';
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
 require_once dirname(__DIR__, 2) . '/backend/alert_system.php';
+require_once dirname(__DIR__, 2) . '/backend/student_controller.php';
 
 requireRole(ROLE_ADMIN);
 
 // --- Fetch stats ---
 $stats = [];
 $queries = [
-    'students'   => "SELECT COUNT(*) FROM users WHERE role='student' AND status='active'",
-    'lecturers'  => "SELECT COUNT(*) FROM users WHERE role='lecturer' AND status='active'",
-    'courses'    => "SELECT COUNT(*) FROM courses WHERE status='active'",
-    'enrollments'=> "SELECT COUNT(*) FROM enrollments",
-    'revenue'    => "SELECT COALESCE(SUM(amount_paid),0) FROM student_payments",
-    'notices'    => "SELECT COUNT(*) FROM notices",
+    'students'    => "SELECT COUNT(*) FROM students WHERE status='new_joined'",
+    'lecturers'   => "SELECT COUNT(*) FROM users WHERE role='lecturer' AND status='active'",
+    'courses'     => "SELECT COUNT(*) FROM courses WHERE status='active'",
+    'enrollments' => "SELECT COUNT(*) FROM enrollments",
+    'revenue'     => "SELECT COALESCE(SUM(amount_paid),0) FROM student_payments",
+    'notices'     => "SELECT COUNT(*) FROM notices",
+    'followups'   => "SELECT COUNT(*) FROM students WHERE next_follow_up IS NOT NULL AND follow_up_status='pending'",
 ];
 foreach ($queries as $key => $sql) {
     $stats[$key] = $pdo->query($sql)->fetchColumn();
 }
+
+// --- Pending Follow-ups (Call Alerts) ---
+$pendingFollowUps = getPendingFollowUps($pdo, 4);
 
 // --- Recent enrollments ---
 $recentEnrollments = $pdo->query("
@@ -73,7 +78,7 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
       </div>
     </div>
     <div class="d-flex gap-10">
-      <a href="<?= BASE_URL ?>/frontend/admin/students.php?action=add" class="btn-primary-grad">
+      <a href="<?= BASE_URL ?>/admin/students/add.php" class="btn-primary-grad">
         <i class="fas fa-user-plus"></i> Add Student
       </a>
       <a href="<?= BASE_URL ?>/frontend/admin/notices.php?action=add" class="btn-lms btn-outline">
@@ -93,54 +98,72 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
   <?php endif; ?>
 
   <!-- Stats Grid -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon purple"><i class="fas fa-user-graduate"></i></div>
-      <div>
+  <div class="stats-grid premium-stats">
+    <div class="stat-card color-indigo">
+      <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+      <div class="stat-content">
         <div class="stat-value" data-count="<?= $stats['students'] ?>"><?= $stats['students'] ?></div>
         <div class="stat-label">Total Students</div>
-        <div class="stat-change up"><i class="fas fa-arrow-up"></i> Active</div>
+        <div class="stat-progress">
+            <div class="progress-bar" style="width: 75%;"></div>
+        </div>
       </div>
+      <div class="stat-decoration"></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon orange"><i class="fas fa-chalkboard-user"></i></div>
-      <div>
+    <div class="stat-card color-amber">
+      <div class="stat-icon"><i class="fas fa-chalkboard-user"></i></div>
+      <div class="stat-content">
         <div class="stat-value" data-count="<?= $stats['lecturers'] ?>"><?= $stats['lecturers'] ?></div>
         <div class="stat-label">Total Lecturers</div>
-        <div class="stat-change up"><i class="fas fa-arrow-up"></i> Active</div>
+        <div class="stat-progress">
+            <div class="progress-bar" style="width: 60%;"></div>
+        </div>
       </div>
+      <div class="stat-decoration"></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon green"><i class="fas fa-book-open"></i></div>
-      <div>
+    <div class="stat-card color-emerald">
+      <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+      <div class="stat-content">
         <div class="stat-value" data-count="<?= $stats['courses'] ?>"><?= $stats['courses'] ?></div>
         <div class="stat-label">Active Courses</div>
-        <div class="stat-change up"><i class="fas fa-arrow-up"></i> Running</div>
+        <div class="stat-progress">
+            <div class="progress-bar" style="width: 85%;"></div>
+        </div>
       </div>
+      <div class="stat-decoration"></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon blue"><i class="fas fa-list-check"></i></div>
-      <div>
+    <div class="stat-card color-sky">
+      <div class="stat-icon"><i class="fas fa-list-check"></i></div>
+      <div class="stat-content">
         <div class="stat-value" data-count="<?= $stats['enrollments'] ?>"><?= $stats['enrollments'] ?></div>
         <div class="stat-label">Enrollments</div>
-        <div class="stat-change up"><i class="fas fa-arrow-up"></i> Total</div>
+        <div class="stat-progress">
+            <div class="progress-bar" style="width: 45%;"></div>
+        </div>
       </div>
+      <div class="stat-decoration"></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon green"><i class="fas fa-money-bill-wave"></i></div>
-      <div>
-        <div class="stat-value">Rs. <?= number_format($stats['revenue'], 0) ?></div>
+    <div class="stat-card color-rose">
+      <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+      <div class="stat-content">
+        <div class="stat-value">Rs.<?= number_format($stats['revenue']/1000, 1) ?>k</div>
         <div class="stat-label">Total Revenue</div>
-        <div class="stat-change up"><i class="fas fa-arrow-up"></i> Collected</div>
+        <div class="stat-progress">
+            <div class="progress-bar" style="width: 92%;"></div>
+        </div>
       </div>
+      <div class="stat-decoration"></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon red"><i class="fas fa-bell"></i></div>
-      <div>
+    <div class="stat-card color-violet">
+      <div class="stat-icon"><i class="fas fa-bell"></i></div>
+      <div class="stat-content">
         <div class="stat-value" data-count="<?= $stats['notices'] ?>"><?= $stats['notices'] ?></div>
         <div class="stat-label">Notices Posted</div>
-        <div class="stat-change up"><i class="fas fa-arrow-up"></i> Active</div>
+        <div class="stat-progress">
+            <div class="progress-bar" style="width: 30%;"></div>
+        </div>
       </div>
+      <div class="stat-decoration"></div>
     </div>
   </div>
 
@@ -224,6 +247,55 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
         </div>
       </div>
 
+      <!-- Follow-up Reminders (Call Alerts) -->
+      <div class="card-lms premium-border-amber">
+        <div class="card-lms-header">
+          <div class="card-lms-title" style="color:var(--amber-card);">
+            <i class="fas fa-phone-volume"></i> Pending Call Reminders
+          </div>
+          <span class="badge-lms warning-premium" style="font-size:10px;"><?= $stats['followups'] ?> Active</span>
+        </div>
+        <div class="card-lms-body">
+          <?php if (empty($pendingFollowUps)): ?>
+            <div class="empty-state">
+              <i class="fas fa-check-double" style="color:#10b981; opacity:0.3;"></i>
+              <p style="font-size:12px; color:#64748b;">No pending calls. Great job!</p>
+            </div>
+          <?php else: ?>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <?php foreach ($pendingFollowUps as $f): 
+                $isOverdue = strtotime($f['next_follow_up']) < strtotime('today');
+              ?>
+              <div style="padding:12px;background:#fff;border-radius:12px;border:1px solid <?= $isOverdue ? '#fee2e2' : '#f1f5f9' ?>; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                  <div class="fw-700" style="font-size:14px; color:#1e293b;">
+                    <?= htmlspecialchars($f['full_name']) ?>
+                  </div>
+                  <span class="badge-lms <?= $isOverdue ? 'danger' : 'warning' ?>" style="font-size:9px;">
+                    <?= $isOverdue ? 'OVERDUE' : 'DUE: '.date('M d', strtotime($f['next_follow_up'])) ?>
+                  </span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                  <a href="tel:<?= $f['phone_number'] ?>" class="btn-lms btn-sm" style="background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; padding:4px 10px; font-size:11px;">
+                    <i class="fas fa-phone"></i> <?= htmlspecialchars($f['phone_number']) ?>
+                  </a>
+                </div>
+                <div style="font-size:11px; color:#64748b; line-height:1.4; background:#f8fafc; padding:8px; border-radius:6px;">
+                  <i class="fas fa-comment-dots" style="margin-right:4px; opacity:0.5;"></i>
+                  <?= htmlspecialchars($f['follow_up_note'] ?: 'No note provided') ?>
+                </div>
+              </div>
+              <?php endforeach; ?>
+            </div>
+            <div style="margin-top:15px; text-align:center;">
+              <a href="<?= BASE_URL ?>/admin/students/index.php" style="font-size:11px; font-weight:700; color:var(--indigo-card); text-decoration:none;">
+                Manage All Follow-ups <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          <?php endif; ?>
+        </div>
+      </div>
+
       <!-- Notices -->
       <div class="card-lms">
         <div class="card-lms-header">
@@ -291,7 +363,7 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
 
   <!-- Quick Action Buttons -->
   <div class="dm-actions">
-    <a href="<?= BASE_URL ?>/frontend/admin/students.php?action=add" class="dm-action-btn dm-action-primary">
+    <a href="<?= BASE_URL ?>/admin/students/add.php" class="dm-action-btn dm-action-primary">
       <i class="fas fa-user-plus"></i>
       <span>Add Student</span>
     </a>
@@ -304,6 +376,35 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
       <span>Reports</span>
     </a>
   </div>
+
+  <!-- Pending Call Alerts (Mobile) -->
+  <?php if (!empty($pendingFollowUps)): ?>
+  <div class="dm-section">
+    <div class="dm-section-header">
+      <div class="dm-section-title"><i class="fas fa-phone-volume" style="color:#f59e0b;"></i> Call Reminders</div>
+      <span class="badge-lms warning-premium" style="font-size:10px;"><?= $stats['followups'] ?></span>
+    </div>
+    <div class="dm-list">
+      <?php foreach ($pendingFollowUps as $f): 
+        $isOverdue = strtotime($f['next_follow_up']) < strtotime('today');
+      ?>
+      <div class="dm-list-item" style="border-left: 3px solid <?= $isOverdue ? '#ef4444' : '#f59e0b' ?>;">
+        <div class="dm-li-avatar" style="background:#f1f5f9; color:#64748b;"><?= strtoupper(substr($f['full_name'],0,1)) ?></div>
+        <div class="dm-li-body">
+          <div class="dm-li-name"><?= htmlspecialchars($f['full_name']) ?></div>
+          <div class="dm-li-sub"><?= htmlspecialchars($f['follow_up_note']) ?></div>
+        </div>
+        <div class="dm-li-right">
+          <a href="tel:<?= $f['phone_number'] ?>" class="btn-lms btn-sm" style="background:#f0fdf4; color:#16a34a; padding:6px 10px;">
+            <i class="fas fa-phone"></i>
+          </a>
+          <div class="dm-li-date" style="color:<?= $isOverdue ? '#ef4444' : '#64748b' ?>; font-weight:700;"><?= date('d M', strtotime($f['next_follow_up'])) ?></div>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+  <?php endif; ?>
 
   <!-- Stats Grid 2×3 -->
   <div class="dm-stats-grid">
@@ -431,14 +532,167 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
 </div><!-- /#page-content -->
 
 <style>
+/* --- Premium Dashboard Enhancements --- */
+:root {
+  --indigo-card: #6366f1;
+  --amber-card:  #f59e0b;
+  --emerald-card: #10b981;
+  --sky-card:    #0ea5e9;
+  --rose-card:   #f43f5e;
+  --violet-card: #8b5cf6;
+}
+
+.premium-stats {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+}
+
+.stat-card.color-indigo { --card-bg: var(--indigo-card); }
+.stat-card.color-amber { --card-bg: var(--amber-card); }
+.stat-card.color-emerald { --card-bg: var(--emerald-card); }
+.stat-card.color-sky { --card-bg: var(--sky-card); }
+.stat-card.color-rose { --card-bg: var(--rose-card); }
+.stat-card.color-violet { --card-bg: var(--violet-card); }
+
+.stat-card {
+  background: #fff;
+  border: none !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+  padding: 24px !important;
+  border-radius: 20px !important;
+  display: flex;
+  align-items: center;
+  gap: 20px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.stat-icon {
+  width: 60px !important; height: 60px !important;
+  border-radius: 16px !important;
+  background: var(--card-bg) !important;
+  color: #fff !important;
+  font-size: 24px !important;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 16px -4px var(--card-bg);
+  flex-shrink: 0;
+}
+
+.stat-content { flex: 1; }
+
+.stat-value {
+  font-size: 32px !important;
+  font-weight: 800 !important;
+  color: #1e293b !important;
+  line-height: 1 !important;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.stat-label {
+  font-size: 11px !important;
+  color: #64748b !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin-top: 6px !important;
+}
+
+.stat-progress {
+  height: 4px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.stat-progress .progress-bar {
+  height: 100%;
+  background: var(--card-bg);
+  border-radius: 10px;
+  transition: width 1s ease-in-out;
+}
+
+.stat-decoration {
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 100px; height: 100px;
+  background: var(--card-bg);
+  opacity: 0.03;
+  border-radius: 50%;
+  z-index: -1;
+  transition: all 0.3s;
+}
+
+.stat-card:hover .stat-decoration {
+  transform: scale(1.5);
+  opacity: 0.06;
+}
+
+/* --- Card & Table Enhancements --- */
+.card-lms {
+  border-radius: 20px !important;
+  border: none !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-lms-header {
+  padding: 20px 24px !important;
+  background: #fff !important;
+}
+
+.card-lms-title {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+.table-lms thead th {
+  background: #f8fafc !important;
+  color: #64748b !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  padding: 16px 20px !important;
+  font-weight: 800 !important;
+  font-size: 10px !important;
+}
+
+.table-lms tbody td {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid #f8fafc !important;
+}
+
+.avatar-initials {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #3b82f6;
+  font-weight: 700;
+  font-size: 14px;
+}
+
 /* ============================================================
    ADMIN DASHBOARD — MOBILE-ONLY REDESIGN (≤768px)
-   Desktop layout (#page-content > .page-header, .stats-grid,
-   .row) is completely hidden on mobile.
    ============================================================ */
-
-/* Hide mobile block on desktop */
 #dash-mobile { display: none; }
+
+@media (max-width: 768px) {
+  /* Hide ALL desktop content inside page-content */
+  #page-content > .page-header,
+  #page-content > .alert-lms,
+  #page-content > .stats-grid,
+  #page-content > .row {
+    display: none !important;
+  }
+  /* Show mobile block */
+  #dash-mobile {
+    display: block;
+    padding: 0 20px 24px;
+  }
+
+
 
 @media (max-width: 768px) {
   /* Hide ALL desktop content inside page-content */
@@ -790,31 +1044,45 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  if (window.innerWidth > 768) return;
-  // Animate stat values counting up on mobile
-  document.querySelectorAll('.dm-stat-val').forEach(function(el) {
-    var target = parseInt(el.textContent.replace(/[^0-9]/g,''), 10);
+  // Animate stat values counting up
+  document.querySelectorAll('.stat-value, .dm-stat-val').forEach(function(el) {
+    var text = el.textContent.trim();
+    var isCurrency = text.includes('Rs.');
+    var isK = text.includes('k');
+    var target = parseInt(text.replace(/[^0-9]/g,''), 10);
     if (!target || isNaN(target)) return;
-    var start = 0, dur = 700, step = 16;
+    
+    var start = 0, dur = 1200, step = 16;
     var inc = target / (dur / step);
     var timer = setInterval(function() {
       start += inc;
-      if (start >= target) { el.textContent = target; clearInterval(timer); }
-      else { el.textContent = Math.floor(start); }
+      if (start >= target) { 
+        var final = isCurrency ? 'Rs.' + target.toLocaleString() : target.toLocaleString();
+        if (isK) final += 'k';
+        el.textContent = final; 
+        clearInterval(timer); 
+      } else { 
+        var val = Math.floor(start);
+        var current = isCurrency ? 'Rs.' + val.toLocaleString() : val.toLocaleString();
+        if (isK) current += 'k';
+        el.textContent = current; 
+      }
     }, step);
   });
+
   // Animate list items sliding in
-  var items = document.querySelectorAll('.dm-list-item, .dm-notice-item, .dm-stat');
+  var items = document.querySelectorAll('.card-lms, .stat-card, .dm-list-item, .dm-notice-item, .dm-stat');
   items.forEach(function(el, i) {
     el.style.opacity = '0';
-    el.style.transform = 'translateY(14px)';
-    el.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     setTimeout(function() {
       el.style.opacity = '1';
       el.style.transform = 'translateY(0)';
-    }, 80 + i * 40);
+    }, 100 + i * 50);
   });
 });
+</script>
 </script>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

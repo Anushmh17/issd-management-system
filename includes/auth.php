@@ -31,6 +31,10 @@ function currentRole(): ?string {
     return $_SESSION['role'] ?? null;
 }
 
+function hasRole(string $role): bool {
+    return currentRole() === $role;
+}
+
 // -------------------------------------------------------
 // Redirect helpers
 // -------------------------------------------------------

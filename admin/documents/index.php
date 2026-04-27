@@ -268,14 +268,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <h5 class="modal-title fw-700" style="color:var(--primary);"><i class="fas fa-cloud-arrow-up me-2"></i> Quick Document Upload</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="manage.php" method="POST" enctype="multipart/form-data">
+      <form action="manage.php" method="POST" enctype="multipart/form-data" id="quickUploadForm">
         <div class="modal-body p-4">
             <div class="form-group-lms mb-20">
                 <label>Select Student <span class="req">*</span></label>
                 <select name="student_id" class="form-control-lms" required>
                     <option value="">— Select a student —</option>
                     <?php 
-                      // Fetch all active students for the searchable dropdown
                       $allStudents = $pdo->query("SELECT id, full_name, student_id FROM students ORDER BY full_name")->fetchAll();
                       foreach ($allStudents as $as): 
                     ?>
@@ -285,8 +284,26 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </div>
 
             <div class="form-group-lms mb-20">
-                <label>Document Label <span class="req">*</span></label>
-                <input type="text" name="other_label" class="form-control-lms" placeholder="e.g. NIC Front, Birth Certificate..." required>
+                <label>Document Type <span class="req">*</span></label>
+                <select name="doc_key" id="quick_doc_key" class="form-control-lms" required onchange="toggleQuickLabel()">
+                    <option value="">— Select document type —</option>
+                    <optgroup label="Standard Documents">
+                        <?php 
+                          $defs = getDocumentDefinitions();
+                          foreach ($defs as $key => $def): 
+                        ?>
+                            <option value="<?= $key ?>"><?= htmlspecialchars($def['label']) ?></option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                    <optgroup label="Extra">
+                        <option value="other">Other Supporting Document</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group-lms mb-20" id="quick_label_wrap" style="display:none;">
+                <label>Custom Document Label <span class="req">*</span></label>
+                <input type="text" name="other_label" id="quick_other_label" class="form-control-lms" placeholder="e.g. Birth Certificate, Sports Cert...">
             </div>
 
             <div class="row g-3">
@@ -303,17 +320,17 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <div class="col-6">
                     <div class="form-group-lms mb-20">
                         <label>File (PDF/Image) <span class="req">*</span></label>
-                        <input type="file" name="other_file" class="form-control-lms" required>
+                        <input type="file" name="doc_file" class="form-control-lms" required>
                     </div>
                 </div>
             </div>
             
-            <p class="text-muted mt-2" style="font-size:11px; line-height:1.4;">
-                <i class="fas fa-info-circle me-1"></i> This will be added to the student's <strong>Other Supporting Documents</strong> section.
-            </p>
+            <div id="quick-upload-info" class="text-muted mt-2" style="font-size:11px; line-height:1.4;">
+                <i class="fas fa-info-circle me-1"></i> Please select a document type.
+            </div>
         </div>
         <div class="modal-footer border-0 p-4 pt-0">
-          <input type="hidden" name="add_other" value="1">
+          <input type="hidden" name="quick_upload" value="1">
           <button type="button" class="btn-lms btn-outline" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn-primary-grad px-4">Upload Now</button>
         </div>
@@ -321,6 +338,29 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
   </div>
 </div>
+
+<script>
+function toggleQuickLabel() {
+    const keySelect = document.getElementById('quick_doc_key');
+    const labelWrap = document.getElementById('quick_label_wrap');
+    const labelInput = document.getElementById('quick_other_label');
+    const infoText = document.getElementById('quick-upload-info');
+    
+    if (keySelect.value === 'other') {
+        labelWrap.style.display = 'block';
+        labelInput.required = true;
+        infoText.innerHTML = '<i class="fas fa-info-circle me-1"></i> This will be added to <strong>Other Supporting Documents</strong>.';
+    } else {
+        labelWrap.style.display = 'none';
+        labelInput.required = false;
+        if (keySelect.value) {
+            infoText.innerHTML = '<i class="fas fa-info-circle me-1"></i> This will update the <strong>standard checklist</strong> for the student.';
+        } else {
+            infoText.innerHTML = '<i class="fas fa-info-circle me-1"></i> Please select a document type.';
+        }
+    }
+}
+</script>
 
 <?php
 function studentAvatarColor(string $name): string {

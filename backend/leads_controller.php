@@ -43,7 +43,17 @@ function addLead(PDO $pdo, array $d): array {
             !empty($d['next_followup_datetime']) ? $d['next_followup_datetime'] : null,
             trim($d['notes'] ?? ''),
         ]);
-        return ['success' => true, 'id' => $pdo->lastInsertId()];
+        $leadId = $pdo->lastInsertId();
+
+        // --- Notification Sync ---
+        if (!empty($d['next_followup_datetime'])) {
+            require_once __DIR__ . '/notification_controller.php';
+            $notifTitle = "New Lead Follow-up: " . trim($d['name']);
+            $notifMsg = "Scheduled for " . date('M d, Y h:i A', strtotime($d['next_followup_datetime']));
+            addNotification($pdo, null, 'call', $notifTitle, $notifMsg, BASE_URL . "/admin/leads/index.php");
+        }
+
+        return ['success' => true, 'id' => $leadId];
     } catch (PDOException $e) {
         error_log('addLead: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to add lead. Please try again.']];
@@ -64,6 +74,13 @@ function updateLead(PDO $pdo, int $id, array $d): array {
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     try {
+        // Fetch existing lead to check for changes
+        $stmt = $pdo->prepare("SELECT next_followup_datetime FROM leads WHERE id = ?");
+        $stmt->execute([$id]);
+        $oldLead = $stmt->fetch();
+        $oldFollowup = $oldLead['next_followup_datetime'] ?? null;
+        $newFollowup = !empty($d['next_followup_datetime']) ? $d['next_followup_datetime'] : null;
+
         $pdo->prepare("
             UPDATE leads 
             SET name=?, phone=?, source=?, status=?, next_followup_datetime=?, notes=?
@@ -73,10 +90,19 @@ function updateLead(PDO $pdo, int $id, array $d): array {
             trim($d['phone']),
             trim($d['source']),
             trim($d['status']),
-            !empty($d['next_followup_datetime']) ? $d['next_followup_datetime'] : null,
+            $newFollowup,
             trim($d['notes'] ?? ''),
             $id
         ]);
+
+        // --- Notification Sync (Only if date changed) ---
+        if ($newFollowup && $newFollowup !== $oldFollowup) {
+            require_once __DIR__ . '/notification_controller.php';
+            $notifTitle = "Updated Lead Schedule: " . trim($d['name']);
+            $notifMsg = "New time: " . date('M d, Y h:i A', strtotime($newFollowup));
+            addNotification($pdo, null, 'call', $notifTitle, $notifMsg, BASE_URL . "/admin/leads/index.php");
+        }
+
         return ['success' => true];
     } catch (PDOException $e) {
         error_log('updateLead: ' . $e->getMessage());

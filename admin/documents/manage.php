@@ -36,7 +36,67 @@ $messages = [];
 // Handle POST — process one document at a time
 // =====================================================
     // =====================================================
-    // Handle NEW "Other Supporting Doc"
+    // Handle Quick Upload (from index.php)
+    // =====================================================
+    if (isset($_POST['quick_upload'])) {
+        $docKey = $_POST['doc_key'] ?? '';
+        
+        if ($docKey === 'other') {
+            // Handle as "Other Supporting Doc"
+            $label = trim($_POST['other_label'] ?? 'Other Document');
+            if (empty($_FILES['doc_file']['name'])) {
+                $errors[] = 'Please select a file.';
+            } else {
+                $upload = uploadDocumentFile($_FILES['doc_file'], 'other', $studentId);
+                if (!$upload['success']) {
+                    $errors[] = $upload['error'];
+                } else {
+                    saveOtherDoc($pdo, [
+                        'student_id' => $studentId,
+                        'label' => $label,
+                        'file_path' => $upload['path'],
+                        'collected_by' => $_POST['other_collected_by'] ?? null,
+                        'collected_date' => date('Y-m-d')
+                    ]);
+                    setFlash('success', 'Additional document added for ' . htmlspecialchars($student['full_name']));
+                    header('Location: index.php'); exit;
+                }
+            }
+        } else {
+            // Handle as "Standard Checklist Doc"
+            if (!array_key_exists($docKey, $defs)) {
+                $errors[] = 'Invalid document type.';
+            } elseif (empty($_FILES['doc_file']['name'])) {
+                $errors[] = 'Please select a file.';
+            } else {
+                $uploadResult = uploadDocumentFile($_FILES['doc_file'], $docKey, $studentId);
+                if (!$uploadResult['success']) {
+                    $errors[] = $uploadResult['error'];
+                } else {
+                    // Update standard tracking
+                    $trackData = [
+                        'status'       => 1,
+                        'collected_by' => $_POST['other_collected_by'] ?? null,
+                        'date'         => date('Y-m-d'),
+                        'file_path'    => $uploadResult['path']
+                    ];
+                    if (saveDocTracking($pdo, $studentId, $docKey, $trackData)) {
+                        setFlash('success', htmlspecialchars($defs[$docKey]['label']) . ' uploaded for ' . htmlspecialchars($student['full_name']));
+                        header('Location: index.php'); exit;
+                    } else {
+                        $errors[] = 'Failed to save tracking info.';
+                    }
+                }
+            }
+        }
+        if ($errors) {
+            // Stay on page to show errors
+            goto renderPage;
+        }
+    }
+
+    // =====================================================
+    // Handle NEW "Other Supporting Doc" (from manage.php itself)
     // =====================================================
     if (isset($_POST['add_other'])) {
         $label = trim($_POST['other_label'] ?? 'Other Document');
@@ -69,56 +129,61 @@ $messages = [];
         goto renderPage;
     }
 
-    $actDoc = $_POST['doc_key'] ?? '';
+    // =====================================================
+    // Handle Standard Checklist Doc Save (from manage.php)
+    // =====================================================
+    if (isset($_POST['doc_key']) && !isset($_POST['quick_upload'])) {
+        $actDoc = $_POST['doc_key'];
 
-    // Validate doc key against whitelist
-    if (!array_key_exists($actDoc, $defs)) {
-        $errors[] = 'Invalid document key.';
-        goto renderPage;
-    }
-
-    $trackData = [
-        'status'       => isset($_POST['doc_status']) ? 1 : 0,
-        'collected_by' => $_POST['collected_by'] ?? null,
-        'date'         => !empty($_POST['collected_date']) ? $_POST['collected_date'] : null,
-    ];
-
-    $newFilePath = null;
-
-    // ---- Handle file upload ----
-    if (!empty($_FILES['doc_file']['name'])) {
-        $uploadResult = uploadDocumentFile($_FILES['doc_file'], $actDoc, $studentId);
-        if (!$uploadResult['success']) {
-            $errors[] = $uploadResult['error'];
+        // Validate doc key against whitelist
+        if (!array_key_exists($actDoc, $defs)) {
+            $errors[] = 'Invalid document key.';
             goto renderPage;
         }
-        // Delete old file if exists
-        if (!empty($docRow[$actDoc])) {
+
+        $trackData = [
+            'status'       => isset($_POST['doc_status']) ? 1 : 0,
+            'collected_by' => $_POST['collected_by'] ?? null,
+            'date'         => !empty($_POST['collected_date']) ? $_POST['collected_date'] : null,
+        ];
+
+        $newFilePath = null;
+
+        // ---- Handle file upload ----
+        if (!empty($_FILES['doc_file']['name'])) {
+            $uploadResult = uploadDocumentFile($_FILES['doc_file'], $actDoc, $studentId);
+            if (!$uploadResult['success']) {
+                $errors[] = $uploadResult['error'];
+                goto renderPage;
+            }
+            // Delete old file if exists
+            if (!empty($docRow[$actDoc])) {
+                deleteDocFile($docRow[$actDoc]);
+            }
+            $newFilePath = $uploadResult['path'];
+            $trackData['file_path'] = $newFilePath;
+
+            // Auto-check status when file uploaded
+            if (!$trackData['status']) {
+                $trackData['status'] = 1;
+            }
+        }
+
+        // ---- Handle file delete request ----
+        if (isset($_POST['delete_file']) && !empty($docRow[$actDoc])) {
             deleteDocFile($docRow[$actDoc]);
+            $trackData['file_path'] = ''; // Clear path
         }
-        $newFilePath = $uploadResult['path'];
-        $trackData['file_path'] = $newFilePath;
 
-        // Auto-check status when file uploaded
-        if (!$trackData['status']) {
-            $trackData['status'] = 1;
+        if (saveDocTracking($pdo, $studentId, $actDoc, $trackData)) {
+            // Reload doc row
+            $docRow = getOrCreateDocRecord($pdo, $studentId);
+            $messages[] = htmlspecialchars($defs[$actDoc]['label']) . ' updated successfully.';
+        } else {
+            $errors[] = 'Failed to save. Please try again.';
         }
-    }
-
-    // ---- Handle file delete request ----
-    if (isset($_POST['delete_file']) && !empty($docRow[$actDoc])) {
-        deleteDocFile($docRow[$actDoc]);
-        $trackData['file_path'] = ''; // Clear path
-    }
-
-    if (saveDocTracking($pdo, $studentId, $actDoc, $trackData)) {
-        // Reload doc row
-        $docRow = getOrCreateDocRecord($pdo, $studentId);
-        $messages[] = htmlspecialchars($defs[$actDoc]['label']) . ' updated successfully.';
-    } else {
-        $errors[] = 'Failed to save. Please try again.';
-    }
 }
+
 
 renderPage:
 

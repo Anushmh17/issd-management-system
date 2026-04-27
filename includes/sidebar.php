@@ -10,8 +10,8 @@ $initial = strtoupper(substr($uname, 0, 1));
 
 // Notifications Initialization
 require_once dirname(__DIR__) . '/backend/notification_controller.php';
-$notifications = getRecentNotifications($pdo, (int)$user['id'], $role);
-$unreadNotifs = array_filter($notifications, function($n) { return !($n['is_read'] ?? false); });
+$recentNotifs = getRecentNotifications($pdo, (int)$user['id'], $role);
+$unreadNotifs = array_filter($recentNotifs, function($n) { return !($n['is_read'] ?? false); });
 $notifCount    = count($unreadNotifs);
 
 
@@ -136,55 +136,41 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
     <div class="navbar-right">
       <!-- Notifications -->
       <div class="dropdown">
-        <button class="navbar-icon-btn position-relative" id="notifDropdown" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" title="Notifications">
+        <button class="navbar-icon-btn" id="notifDropdown" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" title="Notifications">
           <i class="fas fa-bell"></i>
-          <?php if ($notifCount > 0): ?>
-            <span class="badge rounded-pill bg-danger position-absolute" style="font-size:8px;top:5px;right:5px;padding:2px 4px;"><?= $notifCount ?></span>
-          <?php endif; ?>
+          <span class="badge rounded-pill bg-danger position-absolute" id="notif-badge" style="font-size:8px;top:5px;right:5px;padding:2px 4px; display:none;">0</span>
         </button>
-        <div class="dropdown-menu dropdown-menu-end shadow-lg" aria-labelledby="notifDropdown" style="width:320px; max-width:calc(100vw - 24px); border:none; border-radius:12px; overflow:hidden; padding:0;">
-          <div class="bg-primary text-white p-3 d-flex justify-between align-center">
-            <span class="fw-700" style="font-size:14px;">Notifications</span>
-            <span class="badge bg-white text-primary" style="font-size:10px;"><?= $notifCount ?> New</span>
+        <div class="dropdown-menu dropdown-menu-end notif-dropdown shadow-lg" aria-labelledby="notifDropdown">
+          <div class="notif-header d-flex justify-content-between align-items-center">
+            <span class="fw-700">Notifications</span>
+            <span class="badge bg-white text-primary" id="notif-count-text" style="font-size:10px;">0 New</span>
           </div>
-          <div style="max-height:350px;overflow-y:auto;">
-            <?php if (empty($notifications)): ?>
-              <div class="p-4 text-center text-muted">
-                <i class="fas fa-bell-slash mb-2 d-block" style="font-size:24px;opacity:0.3;"></i>
-                <div style="font-size:12px;">No new notifications</div>
-              </div>
-            <?php else: ?>
-              <?php foreach ($notifications as $n): ?>
-                <a href="<?= $n['link'] ?>" class="dropdown-item p-3 border-bottom d-flex gap-12 notice-card-clickable" 
-                   style="white-space: normal;"
-                   data-real-id="<?= $n['real_id'] ?? '' ?>"
-                   data-title="<?= htmlspecialchars($n['title']) ?>"
-                   data-content="<?= htmlspecialchars($n['body']) ?>"
-                   data-author="System"
-                   data-date="<?= date('M d, Y', strtotime($n['time'])) ?>">
-                  <div class="btn-lms btn-sm p-0 d-flex align-center justify-center flex-shrink-0" 
-                       style="width:35px;height:35px;border-radius:10px;background:<?= ($n['is_read'] ?? false) ? '#f1f5f9' : 'var(--primary-light)' ?>;color:<?= ($n['is_read'] ?? false) ? '#94a3b8' : 'var(--primary)' ?>;">
-                    <i class="fas <?= $n['icon'] ?>"></i>
-                  </div>
-                  <div style="opacity: <?= ($n['is_read'] ?? false) ? '0.6' : '1' ?>;">
-                    <div class="fw-700 text-main d-flex align-items-center" style="font-size:12.5px;line-height:1.2;margin-bottom:3px;">
-                        <?= htmlspecialchars($n['title']) ?>
-                        <?php if ($n['is_read'] ?? false): ?>
-                            <span class="ms-2 badge bg-light text-muted border" style="font-size:9px; font-weight:400;">Read</span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="text-muted" style="font-size:11.5px;line-height:1.4;"><?= htmlspecialchars($n['body']) ?></div>
-                    <div style="font-size:10px;color:#aaa;margin-top:6px;"><i class="fas fa-clock me-1"></i><?= timeAgo($n['time']) ?></div>
-                  </div>
-                </a>
-              <?php endforeach; ?>
-            <?php endif; ?>
+          
+          <!-- Categorization Tabs -->
+          <div class="notif-tabs">
+            <div class="notif-tab active" data-category="all">All</div>
+            <div class="notif-tab" data-category="call">Calls</div>
+            <div class="notif-tab" data-category="payment">Payments</div>
+            <div class="notif-tab" data-category="system">System</div>
           </div>
-          <?php if ($role === 'admin'): ?>
-            <a href="<?= BASE_URL ?>/frontend/admin/notices.php" class="dropdown-item text-center p-2 fw-600 text-primary" style="font-size:12px;background:#f8f9fa;">View All Announcements</a>
-          <?php endif; ?>
+
+          <!-- Notification List -->
+          <div class="notif-list" id="notif-items-list">
+            <div class="p-4 text-center text-muted">
+                <div class="spinner-border spinner-border-sm text-primary mb-2"></div>
+                <div style="font-size:11px;">Loading notifications...</div>
+            </div>
+          </div>
+
+          <div class="p-2 text-center" style="background:#f8fafc; border-top:1px solid #e2e8f0;">
+            <a href="<?= BASE_URL ?>/frontend/<?= $role ?>/notifications.php" class="fw-700 text-primary" style="font-size:11px;">View Full History</a>
+          </div>
         </div>
       </div>
+
+      <!-- Real-time Notifications Script -->
+      <script>const BASE_URL = '<?= BASE_URL ?>';</script>
+      <script src="<?= BASE_URL ?>/assets/js/notifications.js"></script>
       <!-- Help -->
       <button class="navbar-icon-btn" title="Help" data-bs-toggle="modal" data-bs-target="#helpGuideModal">
         <i class="fas fa-circle-question"></i>
@@ -218,7 +204,7 @@ if ($flash): ?>
 <div id="page-content" style="padding-bottom:0;">
   <div class="alert-lms <?= htmlspecialchars($flash['type']) ?> auto-dismiss">
     <i class="fas <?= $flash['type']==='success'?'fa-check-circle':($flash['type']==='danger'?'fa-times-circle':'fa-info-circle') ?>"></i>
-    <?= htmlspecialchars($flash['message']) ?>
+    <?= $flash['message'] ?>
   </div>
 </div>
 <?php endif; ?>
