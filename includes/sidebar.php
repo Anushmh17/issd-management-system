@@ -69,6 +69,9 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
       Learn <span>Management</span>
       <span class="brand-sub">INSTITUTE SYSTEM</span>
     </div>
+    <button id="sidebarClose" class="d-md-none sidebar-close-btn" title="Close Sidebar">
+      <i class="fas fa-arrow-left"></i>
+    </button>
   </div>
 
   <!-- User Info -->

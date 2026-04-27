@@ -15,6 +15,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (overlay) overlay.classList.toggle('active');
     });
   }
+  const sidebarClose = document.getElementById('sidebarClose');
+  if (sidebarClose && sidebar) {
+    sidebarClose.addEventListener('click', function () {
+      sidebar.classList.remove('sidebar-open');
+      if (overlay) overlay.classList.remove('active');
+    });
+  }
   if (overlay) {
     overlay.addEventListener('click', function () {
       sidebar.classList.remove('sidebar-open');

@@ -416,7 +416,7 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
 
   <!-- Stats Grid 2×3 -->
   <div class="dm-stats-grid">
-    <div class="dm-stat" style="--sc:#5B4EFA;--sl:#ede9ff;">
+    <div class="dm-stat" style="--sc:#7c3aed;--sl:#ede9ff;">
       <div class="dm-stat-icon"><i class="fas fa-user-graduate"></i></div>
       <div class="dm-stat-val"><?= $stats['students'] ?></div>
       <div class="dm-stat-lbl">Students</div>
@@ -837,9 +837,9 @@ $adminName = explode(' ', $user['name'] ?? 'Admin')[0];
   .dm-action-btn:active { transform: scale(0.94); }
   .dm-action-btn i { font-size: 18px; }
   .dm-action-primary {
-    background: linear-gradient(135deg,#5B4EFA,#4338e0);
+    background: linear-gradient(135deg, #7c3aed, #5B4EFA);
     color: #fff;
-    box-shadow: 0 6px 18px rgba(91,78,250,0.35);
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
   }
   .dm-action-outline {
     background: #fff;
