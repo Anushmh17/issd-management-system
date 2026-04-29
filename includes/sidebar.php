@@ -195,10 +195,9 @@ $sidebarFooterLogout = 'javascript:void(0)" data-bs-toggle="modal" data-bs-targe
 // Flash message display
 $flash = getFlash();
 if ($flash): ?>
-<div id="page-content" style="padding-bottom:0;">
-  <div class="alert-lms <?= htmlspecialchars($flash['type']) ?> auto-dismiss">
-    <i class="fas <?= $flash['type']==='success'?'fa-check-circle':($flash['type']==='danger'?'fa-times-circle':'fa-info-circle') ?>"></i>
-    <?= $flash['message'] ?>
-  </div>
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  showToast('<?= $flash['type'] ?>', '<?= addslashes($flash['message']) ?>');
+});
+</script>
 <?php endif; ?>

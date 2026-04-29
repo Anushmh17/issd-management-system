@@ -50,25 +50,47 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </div>
 
   <div class="card-lms">
-    <div class="card-lms-header students-filter-bar">
-      <div class="card-lms-title">
-        <i class="fas fa-award" style="color:#f59e0b;"></i> Completed Students
-        <span class="badge-lms info" style="margin-left:6px;"><?= $total ?></span>
-      </div>
-      <form method="GET" class="students-filters">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" name="search" placeholder="Search ID or Cert #" value="<?= htmlspecialchars($search) ?>">
+    <div class="card-lms-header" style="display: flex; flex-direction: column; padding: 25px 30px; gap: 20px;">
+      <!-- Title Row -->
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="list-legend" style="align-items: flex-start; text-align: left;">
+          <div class="list-legend-label">Certification Management</div>
+          <div class="list-legend-title" style="font-size: 24px;">
+            <span>Completed Students</span>
+            <span class="count-badge" style="background: var(--primary-light); color: var(--primary); padding: 4px 14px; border-radius: 30px; font-size: 14px;"><?= $total ?></span>
+          </div>
         </div>
-        <select name="is_provided" class="form-control-lms filter-select" onchange="this.form.submit()">
-          <option value="">Provided: All</option>
-          <option value="yes" <?= $provided==='yes'?'selected':'' ?>>Yes (Delivered)</option>
-          <option value="no"  <?= $provided==='no'?'selected':'' ?>>No (Pending)</option>
-        </select>
-        <button type="submit" style="display:none;"></button>
-        <?php if ($search || $provided): ?>
-          <a href="index.php" class="btn-lms btn-outline btn-sm">Clear</a>
-        <?php endif; ?>
+      </div>
+
+      <!-- Filters Row -->
+      <form method="GET" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
+        <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+          <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
+          <input type="text" name="search" placeholder="Search by ID or Cert #…"
+                 style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
+                 value="<?= htmlspecialchars($search) ?>">
+        </div>
+
+        <div class="d-flex gap-2">
+          <select name="is_provided" class="form-control-lms filter-select"
+                  style="min-width: 180px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="this.form.submit()">
+            <option value="">Status: All</option>
+            <option value="yes" <?= $provided==='yes'?'selected':'' ?>>Yes (Delivered)</option>
+            <option value="no"  <?= $provided==='no'?'selected':'' ?>>No (Pending)</option>
+          </select>
+        </div>
+
+        <div class="filter-actions d-flex gap-2">
+          <button type="submit" class="btn-lms btn-primary px-4 rounded-3 shadow-sm" style="height: 46px; padding: 0 25px;">
+            <i class="fas fa-filter me-1"></i> Filter
+          </button>
+          <?php if ($search || $provided): ?>
+            <a href="index.php" class="btn-lms btn-outline px-3 rounded-3 d-flex align-items-center justify-content-center" style="height: 46px; width: 46px;" title="Clear Filters">
+              <i class="fas fa-xmark"></i>
+            </a>
+          <?php endif; ?>
+        </div>
       </form>
     </div>
 

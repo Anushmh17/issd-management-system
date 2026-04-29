@@ -35,6 +35,8 @@ $messages = [];
 // =====================================================
 // Handle POST — process one document at a time
 // =====================================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     // =====================================================
     // Handle Quick Upload (from index.php)
     // =====================================================
@@ -89,10 +91,6 @@ $messages = [];
                 }
             }
         }
-        if ($errors) {
-            // Stay on page to show errors
-            goto renderPage;
-        }
     }
 
     // =====================================================
@@ -117,7 +115,6 @@ $messages = [];
                 $messages[] = 'Additional document added.';
             }
         }
-        goto renderPage;
     }
 
     // =====================================================
@@ -126,7 +123,6 @@ $messages = [];
     if (isset($_POST['del_other_id'])) {
         deleteOtherDoc($pdo, (int)$_POST['del_other_id']);
         $messages[] = 'Document removed.';
-        goto renderPage;
     }
 
     // =====================================================
@@ -138,50 +134,52 @@ $messages = [];
         // Validate doc key against whitelist
         if (!array_key_exists($actDoc, $defs)) {
             $errors[] = 'Invalid document key.';
-            goto renderPage;
-        }
-
-        $trackData = [
-            'status'       => isset($_POST['doc_status']) ? 1 : 0,
-            'collected_by' => $_POST['collected_by'] ?? null,
-            'date'         => !empty($_POST['collected_date']) ? $_POST['collected_date'] : null,
-        ];
-
-        $newFilePath = null;
-
-        // ---- Handle file upload ----
-        if (!empty($_FILES['doc_file']['name'])) {
-            $uploadResult = uploadDocumentFile($_FILES['doc_file'], $actDoc, $studentId);
-            if (!$uploadResult['success']) {
-                $errors[] = $uploadResult['error'];
-                goto renderPage;
-            }
-            // Delete old file if exists
-            if (!empty($docRow[$actDoc])) {
-                deleteDocFile($docRow[$actDoc]);
-            }
-            $newFilePath = $uploadResult['path'];
-            $trackData['file_path'] = $newFilePath;
-
-            // Auto-check status when file uploaded
-            if (!$trackData['status']) {
-                $trackData['status'] = 1;
-            }
-        }
-
-        // ---- Handle file delete request ----
-        if (isset($_POST['delete_file']) && !empty($docRow[$actDoc])) {
-            deleteDocFile($docRow[$actDoc]);
-            $trackData['file_path'] = ''; // Clear path
-        }
-
-        if (saveDocTracking($pdo, $studentId, $actDoc, $trackData)) {
-            // Reload doc row
-            $docRow = getOrCreateDocRecord($pdo, $studentId);
-            $messages[] = htmlspecialchars($defs[$actDoc]['label']) . ' updated successfully.';
         } else {
-            $errors[] = 'Failed to save. Please try again.';
+            $trackData = [
+                'status'       => ($_POST['doc_status'] ?? '0') === '1' ? 1 : 0,
+                'collected_by' => $_POST['collected_by'] ?? null,
+                'date'         => !empty($_POST['collected_date']) ? $_POST['collected_date'] : null,
+            ];
+
+            $newFilePath = null;
+
+            // ---- Handle file upload ----
+            if (!empty($_FILES['doc_file']['name'])) {
+                $uploadResult = uploadDocumentFile($_FILES['doc_file'], $actDoc, $studentId);
+                if (!$uploadResult['success']) {
+                    $errors[] = $uploadResult['error'];
+                } else {
+                    // Delete old file if exists
+                    if (!empty($docRow[$actDoc])) {
+                        deleteDocFile($docRow[$actDoc]);
+                    }
+                    $newFilePath = $uploadResult['path'];
+                    $trackData['file_path'] = $newFilePath;
+
+                    // Auto-check status when file uploaded
+                    if (!$trackData['status']) {
+                        $trackData['status'] = 1;
+                    }
+                }
+            }
+
+            // ---- Handle file delete request ----
+            if (isset($_POST['delete_file']) && !empty($docRow[$actDoc])) {
+                deleteDocFile($docRow[$actDoc]);
+                $trackData['file_path'] = ''; // Clear path
+            }
+
+            if (empty($errors)) {
+                if (saveDocTracking($pdo, $studentId, $actDoc, $trackData)) {
+                    // Reload doc row
+                    $docRow = getOrCreateDocRecord($pdo, $studentId);
+                    $messages[] = htmlspecialchars($defs[$actDoc]['label']) . ' updated successfully.';
+                } else {
+                    $errors[] = 'Failed to save. Please try again.';
+                }
+            }
         }
+    }
 }
 
 
@@ -438,6 +436,17 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </tr>
         </thead>
         <tbody>
+          <!-- We place forms here to be part of the DOM but hidden, to avoid invalid HTML nesting -->
+          <div style="display:none;">
+            <?php foreach ($groupDocs as $docKey => $def): ?>
+              <?php $formId = "form-" . $docKey; ?>
+              <form id="<?= $formId ?>" method="POST" action="manage.php?student_id=<?= $studentId ?>" enctype="multipart/form-data">
+                  <input type="hidden" name="doc_key" value="<?= $docKey ?>">
+                  <input type="hidden" name="doc_status" value="<?= !empty($docRow[$docKey . '_status'])?1:0 ?>" id="hidden-status-<?= $docKey ?>">
+              </form>
+            <?php endforeach; ?>
+          </div>
+
           <?php foreach ($groupDocs as $docKey => $def): ?>
           <?php
             $isCollected = !empty($docRow[$docKey . '_status']);
@@ -468,12 +477,6 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <span class="opt-badge">Optional</span>
               <?php endif; ?>
             </td>
-
-            <!-- Mini Form Start (using form attribute for validity) -->
-            <form id="<?= $formId ?>" method="POST" action="manage.php?student_id=<?= $studentId ?>" enctype="multipart/form-data">
-                <input type="hidden" name="doc_key" value="<?= $docKey ?>">
-                <input type="hidden" name="doc_status" value="<?= $isCollected?1:0 ?>" id="hidden-status-<?= $docKey ?>">
-            </form>
 
             <!-- Office -->
             <td>

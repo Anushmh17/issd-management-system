@@ -65,86 +65,99 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <!-- Stats Row -->
   <div class="row g-3 mb-20">
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#5b4efa;">
-        <div class="stat-icon"><i class="fas fa-users"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $result['total'] ?></div>
-          <div class="stat-label">Total Students</div>
+      <a href="index.php" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#5b4efa;">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $result['total'] ?></div>
+            <div class="stat-label">Total Students</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#10b981;">
-        <div class="stat-icon"><i class="fas fa-folder-check"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $cCompleted ?></div>
-          <div class="stat-label">Docs Complete</div>
+      <a href="index.php?doc_status=completed" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#10b981;">
+          <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $cCompleted ?></div>
+            <div class="stat-label">Docs Complete</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#f59e0b;">
-        <div class="stat-icon"><i class="fas fa-folder-open"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $cPending ?></div>
-          <div class="stat-label">Docs Pending</div>
+      <a href="index.php?doc_status=pending" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#f59e0b;">
+          <div class="stat-icon"><i class="fas fa-clock"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $cPending ?></div>
+            <div class="stat-label">Docs Pending</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#ef4444;">
-        <div class="stat-icon"><i class="fas fa-folder-xmark"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $cMissing ?></div>
-          <div class="stat-label">Docs Missing</div>
+      <a href="index.php?doc_status=missing" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#ef4444;">
+          <div class="stat-icon"><i class="fas fa-circle-xmark"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $cMissing ?></div>
+            <div class="stat-label">Docs Missing</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
   </div>
 
   <!-- Students Card -->
   <div class="card-lms">
-    <div class="card-lms-header students-filter-bar">
-      <div class="card-lms-title">
-        <i class="fas fa-folder-tree"></i> Select a Student
-        <span class="badge-lms info" style="margin-left:6px;font-size:12px;"><?= count($students) ?></span>
+    <div class="card-lms-header" style="display: flex; flex-direction: column; padding: 25px 30px; gap: 20px;">
+      <!-- Title Row -->
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="list-legend">
+          <div class="list-legend-label" style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); font-weight: 700; margin-bottom: 2px;">Document Tracking</div>
+          <div class="list-legend-title" style="font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 24px; display: flex; align-items: center; gap: 12px;">
+            <span>Select Student</span>
+            <span class="count-badge" style="background: var(--primary-light); color: var(--primary); padding: 4px 14px; border-radius: 30px; font-size: 14px;"><?= count($students) ?></span>
+          </div>
+        </div>
       </div>
 
-      <form method="GET" id="filterForm" class="students-filters">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" name="search" placeholder="Name, ID or NIC…"
+      <!-- Filters Row -->
+      <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap;">
+        <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+          <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
+          <input type="text" name="search" placeholder="Search by Name, ID or NIC…"
+                 style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
 
-        <select name="batch" class="form-control-lms filter-select"
-                onchange="document.getElementById('filterForm').submit()">
-          <option value="">All Batches</option>
-          <?php foreach ($batches as $b): ?>
-            <option value="<?= htmlspecialchars($b) ?>" <?= $batch === $b ? 'selected' : '' ?>>
-              Batch <?= htmlspecialchars($b) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
+        <div class="d-flex gap-2">
+          <select name="batch" class="form-control-lms filter-select"
+                  style="min-width: 140px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="document.getElementById('filterForm').submit()">
+            <option value="">All Batches</option>
+            <?php foreach ($batches as $b): ?>
+              <option value="<?= htmlspecialchars($b) ?>" <?= $batch === $b ? 'selected' : '' ?>>
+                Batch <?= htmlspecialchars($b) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
 
-        <select name="doc_status" class="form-control-lms filter-select"
-                onchange="document.getElementById('filterForm').submit()">
-          <option value="">All Doc Status</option>
-          <option value="completed" <?= $docStatus === 'completed' ? 'selected' : '' ?>>Completed</option>
-          <option value="pending"   <?= $docStatus === 'pending'   ? 'selected' : '' ?>>Pending</option>
-          <option value="missing"   <?= $docStatus === 'missing'   ? 'selected' : '' ?>>Missing</option>
-        </select>
-
-        <div class="filter-actions">
-          <button type="submit" class="btn-lms btn-primary btn-sm">
-            <i class="fas fa-filter"></i> Filter
-          </button>
-          <?php if ($search || $batch || $docStatus): ?>
-            <a href="index.php" class="btn-lms btn-outline btn-sm">
-              <i class="fas fa-xmark"></i> Clear
-            </a>
-          <?php endif; ?>
+          <select name="doc_status" class="form-control-lms filter-select"
+                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="document.getElementById('filterForm').submit()">
+            <option value="">All Status</option>
+            <option value="completed" <?= $docStatus === 'completed' ? 'selected' : '' ?>>Completed</option>
+            <option value="pending"   <?= $docStatus === 'pending'   ? 'selected' : '' ?>>Pending</option>
+            <option value="missing"   <?= $docStatus === 'missing'   ? 'selected' : '' ?>>Missing</option>
+          </select>
         </div>
+
+        <button type="submit" class="btn-lms btn-primary px-4 rounded-3 shadow-sm" style="padding: 12px 25px; height: 46px;">
+          <i class="fas fa-filter me-1"></i> Filter
+        </button>
       </form>
     </div>
 

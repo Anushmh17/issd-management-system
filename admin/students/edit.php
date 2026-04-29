@@ -192,7 +192,44 @@ $extraCSS = <<<'CSS'
 @media (max-width: 991px) {
     .form-actions-sticky.is-sticky { left: 20px; right: 20px; }
 }
+/* Cropping Modal */
+.crop-modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+}
+.crop-modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+.crop-container {
+  width: 100%;
+  height: 400px;
+  background: #f1f5f9;
+  margin: 15px 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.crop-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
 </style>
+
+<!-- Cropper.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 CSS;
 
 require_once dirname(__DIR__, 2) . '/includes/header.php';
@@ -504,25 +541,88 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </form>
 </div>
 
+<!-- Cropping Modal -->
+<div class="crop-modal" id="cropModal">
+  <div class="crop-modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h3 style="margin:0; font-size:18px; font-weight:700;">Crop Profile Picture</h3>
+      <button type="button" onclick="closeCropModal()" style="border:none; background:none; font-size:20px; cursor:pointer; color:#94a3b8;"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="crop-container">
+      <img id="cropImage" src="" style="max-width: 100%;">
+    </div>
+    <div class="crop-actions">
+      <button type="button" class="btn-lms btn-outline" onclick="closeCropModal()">Cancel</button>
+      <button type="button" class="btn-lms btn-primary" onclick="applyCrop()">Apply Crop</button>
+    </div>
+  </div>
+</div>
+
 <?php
 $extraJS = <<<JS
 <script>
+let cropper = null;
+let originalFileName = "";
+
 function previewProfileImage(input) {
     if (input.files && input.files[0]) {
+        originalFileName = input.files[0].name;
         const reader = new FileReader();
         reader.onload = function(e) {
-            let preview = document.getElementById('img-preview');
-            if (!preview) {
-                const zone = document.querySelector('.profile-upload-zone');
-                zone.innerHTML = '<img src="' + e.target.result + '" class="profile-preview-img" id="img-preview">' + zone.innerHTML;
-                const avatar = zone.querySelector('.esb-avatar');
-                if (avatar) avatar.remove();
-            } else {
-                preview.src = e.target.result;
-            }
+            const modal = document.getElementById('cropModal');
+            const cropImg = document.getElementById('cropImage');
+            cropImg.src = e.target.result;
+            modal.style.display = 'flex';
+            
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(cropImg, {
+                aspectRatio: 1,
+                viewMode: 2,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+            });
         }
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+function closeCropModal() {
+    document.getElementById('cropModal').style.display = 'none';
+    document.getElementById('profile_picture').value = ''; // Reset input
+    if (cropper) cropper.destroy();
+}
+
+function applyCrop() {
+    if (!cropper) return;
+    
+    const canvas = cropper.getCroppedCanvas({
+        width: 400,
+        height: 400
+    });
+    
+    canvas.toBlob(blob => {
+        const file = new File([blob], originalFileName, { type: 'image/jpeg' });
+        const container = new DataTransfer();
+        container.items.add(file);
+        document.getElementById('profile_picture').files = container.files;
+        
+        let preview = document.getElementById('img-preview');
+        if (!preview) {
+            const zone = document.querySelector('.profile-upload-zone');
+            zone.innerHTML = '<img src="' + canvas.toDataURL('image/jpeg') + '" class="profile-preview-img" id="img-preview">' + zone.innerHTML;
+            const avatar = zone.querySelector('.esb-avatar');
+            if (avatar) avatar.remove();
+        } else {
+            preview.src = canvas.toDataURL('image/jpeg');
+        }
+        
+        document.getElementById('cropModal').style.display = 'none';
+        if (cropper) cropper.destroy();
+    }, 'image/jpeg');
 }
 
 function restrictNumbers(e) {

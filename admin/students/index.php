@@ -122,91 +122,102 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <!-- Stats Row -->
   <div class="row g-3 mb-20">
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#5b4efa;">
-        <div class="stat-icon"><i class="fas fa-users"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $totalAll ?></div>
-          <div class="stat-label">Total Students</div>
+      <a href="index.php" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#5b4efa;">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $totalAll ?></div>
+            <div class="stat-label">Total Students</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#3b82f6;">
-        <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $totalNew ?></div>
-          <div class="stat-label">New Joined</div>
+      <a href="index.php?status=new_joined" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#3b82f6;">
+          <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $totalNew ?></div>
+            <div class="stat-label">New Joined</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#ef4444;">
-        <div class="stat-icon"><i class="fas fa-user-minus"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $totalDrop ?></div>
-          <div class="stat-label">Dropout</div>
+      <a href="index.php?status=dropout" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#ef4444;">
+          <div class="stat-icon"><i class="fas fa-user-minus"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $totalDrop ?></div>
+            <div class="stat-label">Dropout</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#10b981;">
-        <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $totalDone ?></div>
-          <div class="stat-label">Completed</div>
+      <a href="index.php?status=completed" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#10b981;">
+          <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $totalDone ?></div>
+            <div class="stat-label">Completed</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
   </div>
 
   <!-- Students Table Card -->
   <div class="card-lms">
-    <div class="card-lms-header" style="flex-direction: row-reverse;">
-      <!-- Title on Right (Legend Style) -->
-      <div class="list-legend">
-        <div class="list-legend-label">Student Management</div>
-        <div class="list-legend-title">
-          <span>All Students</span>
-          <span class="count-badge"><?= $total ?></span>
+    <div class="card-lms-header" style="display: flex; flex-direction: column; padding: 25px 30px; gap: 20px;">
+      <!-- Title Row -->
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="list-legend" style="align-items: flex-start; text-align: left;">
+          <div class="list-legend-label">Student Management</div>
+          <div class="list-legend-title" style="font-size: 24px;">
+            <span>All Students</span>
+            <span class="count-badge"><?= $total ?></span>
+          </div>
         </div>
       </div>
 
-      <!-- Filters on Left -->
-      <form method="GET" id="filterForm" class="students-filters" style="flex-grow:1; justify-content: flex-start;">
-        <div class="search-bar" style="min-width:240px; background: #fff; border-color: #e2e8f0;">
-          <i class="fas fa-search"></i>
-          <input type="text" name="search" id="searchInput"
-                 placeholder="Search Name, ID or NIC…"
+      <!-- Filters Row -->
+      <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
+        <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+          <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
+          <input type="text" name="search" id="searchInput" placeholder="Search Name, ID or NIC…"
+                 style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
 
-        <select name="batch" class="form-control-lms filter-select" id="batchFilter"
-                style="max-width:140px;"
-                onchange="document.getElementById('filterForm').submit()">
-          <option value="">All Batches</option>
-          <?php foreach ($batches as $b): ?>
-            <option value="<?= htmlspecialchars($b) ?>"
-              <?= $batch === $b ? 'selected' : '' ?>>
-              Batch <?= htmlspecialchars($b) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
+        <div class="d-flex gap-2">
+          <select name="batch" class="form-control-lms filter-select" id="batchFilter"
+                  style="min-width: 140px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="document.getElementById('filterForm').submit()">
+            <option value="">All Batches</option>
+            <?php foreach ($batches as $b): ?>
+              <option value="<?= htmlspecialchars($b) ?>" <?= $batch === $b ? 'selected' : '' ?>>
+                Batch <?= htmlspecialchars($b) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
 
-        <select name="status" class="form-control-lms filter-select" id="statusFilter"
-                style="max-width:140px;"
-                onchange="document.getElementById('filterForm').submit()">
-          <option value="">All Status</option>
-          <option value="new_joined"  <?= $status === 'new_joined'  ? 'selected' : '' ?>>New Joined</option>
-          <option value="dropout"     <?= $status === 'dropout'     ? 'selected' : '' ?>>Dropout</option>
-          <option value="completed"   <?= $status === 'completed'   ? 'selected' : '' ?>>Completed</option>
-        </select>
+          <select name="status" class="form-control-lms filter-select" id="statusFilter"
+                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="document.getElementById('filterForm').submit()">
+            <option value="">All Status</option>
+            <option value="new_joined"  <?= $status === 'new_joined'  ? 'selected' : '' ?>>New Joined</option>
+            <option value="dropout"     <?= $status === 'dropout'     ? 'selected' : '' ?>>Dropout</option>
+            <option value="completed"   <?= $status === 'completed'   ? 'selected' : '' ?>>Completed</option>
+          </select>
+        </div>
 
-        <div class="filter-actions">
-          <button type="submit" class="btn-lms btn-primary btn-sm">
-            <i class="fas fa-filter"></i>
+        <div class="filter-actions d-flex gap-2">
+          <button type="submit" class="btn-lms btn-primary px-4 rounded-3 shadow-sm" style="height: 46px; padding: 0 25px;">
+            <i class="fas fa-filter me-1"></i> Filter
           </button>
           <?php if ($search || $batch || $status): ?>
-            <a href="index.php" class="btn-lms btn-outline btn-sm" title="Clear Filters">
+            <a href="index.php" class="btn-lms btn-outline px-3 rounded-3 d-flex align-items-center justify-content-center" style="height: 46px; width: 46px;" title="Clear Filters">
               <i class="fas fa-xmark"></i>
             </a>
           <?php endif; ?>
@@ -241,8 +252,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($students as $i => $s): ?>
-          <tr>
+          <?php foreach ($students as $i => $s): 
+              $isHighlighted = (isset($_GET['highlight_id']) && (int)$_GET['highlight_id'] === (int)$s['id']);
+          ?>
+          <tr class="<?= $isHighlighted ? 'row-highlight' : '' ?>">
             <td style="color:#94a3b8;font-size:13px;"><?= (($page - 1) * 15) + $i + 1 ?></td>
             <td>
               <span class="id-badge-lms">

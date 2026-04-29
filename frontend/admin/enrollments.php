@@ -162,14 +162,29 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <?php endif; ?>
 
   <div class="card-lms">
-    <div class="card-lms-header">
-      <div class="card-lms-title"><i class="fas fa-list-check"></i> All Enrollments (<?= count($enrollments) ?>)</div>
-      <form method="GET" style="display:flex;gap:8px;align-items:center;">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" name="q" placeholder="Search..." value="<?= htmlspecialchars($search) ?>">
+    <div class="card-lms-header" style="display: flex; flex-direction: column; padding: 25px 30px; gap: 20px;">
+      <!-- Title Row -->
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="list-legend" style="align-items: flex-start; text-align: left;">
+          <div class="list-legend-label">Enrollment Management</div>
+          <div class="list-legend-title" style="font-size: 24px;">
+            <span>All Enrollments</span>
+            <span class="count-badge" style="background: var(--primary-light); color: var(--primary); padding: 4px 14px; border-radius: 30px; font-size: 14px;"><?= count($enrollments) ?></span>
+          </div>
         </div>
-        <button type="submit" class="btn-lms btn-primary btn-sm">Search</button>
+      </div>
+
+      <!-- Search Row -->
+      <form method="GET" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
+        <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+          <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
+          <input type="text" name="q" placeholder="Search Student name, Course or Code…"
+                 style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
+                 value="<?= htmlspecialchars($search) ?>">
+        </div>
+        <button type="submit" class="btn-lms btn-primary px-4 rounded-3 shadow-sm" style="height: 46px; padding: 0 25px;">
+          Search
+        </button>
       </form>
     </div>
     <div class="card-lms-body" style="padding:0;overflow-x:auto;">

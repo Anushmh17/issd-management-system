@@ -39,27 +39,48 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </div>
 
   <div class="card-lms">
-    <div class="card-lms-header students-filter-bar">
-      <div class="card-lms-title">
-        <i class="fas fa-money-bill-wave" style="color:#059669;"></i> All Payments
-        <span class="badge-lms info" style="margin-left:6px;"><?= $total ?></span>
+    <div class="card-lms-header" style="display: flex; flex-direction: column; padding: 25px 30px; gap: 20px;">
+      <!-- Title Row -->
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="list-legend" style="align-items: flex-start; text-align: left;">
+          <div class="list-legend-label">Finance Management</div>
+          <div class="list-legend-title" style="font-size: 24px;">
+            <span>All Payments</span>
+            <span class="count-badge" style="background: var(--primary-light); color: var(--primary); padding: 4px 14px; border-radius: 30px; font-size: 14px;"><?= $total ?></span>
+          </div>
+        </div>
       </div>
-      <form method="GET" class="students-filters">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" name="search" placeholder="Student name or course..."
+
+      <!-- Filters Row -->
+      <form method="GET" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
+        <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+          <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
+          <input type="text" name="search" placeholder="Search Student name or course..."
+                 style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
-        <select name="status" class="form-control-lms filter-select" onchange="this.form.submit()">
-          <option value="">Status: All</option>
-          <option value="paid"    <?= $status==='paid'?'selected':'' ?>>Paid</option>
-          <option value="partial" <?= $status==='partial'?'selected':'' ?>>Partial</option>
-          <option value="overdue" <?= $status==='overdue'?'selected':'' ?>>Overdue</option>
-        </select>
-        <button type="submit" style="display:none;"></button>
-        <?php if ($search || $status): ?>
-          <a href="index.php" class="btn-lms btn-outline btn-sm">Clear</a>
-        <?php endif; ?>
+
+        <div class="d-flex gap-2">
+          <select name="status" class="form-control-lms filter-select"
+                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="this.form.submit()">
+            <option value="">Status: All</option>
+            <option value="paid"    <?= $status==='paid'?'selected':'' ?>>Paid</option>
+            <option value="partial" <?= $status==='partial'?'selected':'' ?>>Partial</option>
+            <option value="overdue" <?= $status==='overdue'?'selected':'' ?>>Overdue</option>
+          </select>
+        </div>
+
+        <div class="filter-actions d-flex gap-2">
+          <button type="submit" class="btn-lms btn-primary px-4 rounded-3 shadow-sm" style="height: 46px; padding: 0 25px;">
+            <i class="fas fa-filter me-1"></i> Filter
+          </button>
+          <?php if ($search || $status): ?>
+            <a href="index.php" class="btn-lms btn-outline px-3 rounded-3 d-flex align-items-center justify-content-center" style="height: 46px; width: 46px;" title="Clear Filters">
+              <i class="fas fa-xmark"></i>
+            </a>
+          <?php endif; ?>
+        </div>
       </form>
     </div>
 
@@ -83,8 +104,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </tr>
           </thead>
           <tbody>
-            <?php foreach ($payments as $p): ?>
-            <tr>
+            <?php foreach ($payments as $p): 
+                $isHighlighted = (isset($_GET['highlight_id']) && (int)$_GET['highlight_id'] === (int)$p['id']);
+            ?>
+            <tr class="<?= $isHighlighted ? 'row-highlight' : '' ?>">
               <td style="font-family:monospace;font-size:12px;color:#64748b;">
                 RCPT-<?= str_pad($p['id'], 5, '0', STR_PAD_LEFT) ?>
               </td>

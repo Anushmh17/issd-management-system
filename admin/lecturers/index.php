@@ -43,6 +43,103 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
+<style>
+/* Lecturer Table Specific Refinements */
+.lect-avatar-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lect-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lect-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  font-size: 16px;
+}
+
+.table-lms td {
+  vertical-align: middle;
+}
+
+tr:hover .lect-avatar-wrap {
+  transform: scale(1.05);
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(91, 78, 250, 0.15);
+}
+
+/* Photo Preview Modal */
+.photo-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.photo-modal.active {
+  display: flex;
+  opacity: 1;
+}
+.photo-modal-content {
+  max-width: 90%;
+  max-height: 90%;
+  background: #fff;
+  border-radius: 24px;
+  padding: 12px;
+  position: relative;
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+.photo-modal.active .photo-modal-content {
+  transform: scale(1);
+}
+.photo-modal-img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 16px;
+  display: block;
+}
+.photo-modal-close {
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 40px; height: 40px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: 4px solid #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: 0.2s;
+}
+.photo-modal-close:hover { transform: scale(1.1); background: #dc2626; }
+</style>
+
 <div id="page-content">
 
   <div class="page-header">
@@ -60,31 +157,37 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <!-- Stats -->
   <div class="row g-3 mb-20">
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#5b4efa;">
-        <div class="stat-icon"><i class="fas fa-chalkboard-user"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $totalL ?></div>
-          <div class="stat-label">Total Lecturers</div>
+      <a href="index.php" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#5b4efa;">
+          <div class="stat-icon"><i class="fas fa-chalkboard-user"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $totalL ?></div>
+            <div class="stat-label">Total Lecturers</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#10b981;">
-        <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $activeL ?></div>
-          <div class="stat-label">Active</div>
+      <a href="index.php?status=active" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#10b981;">
+          <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $activeL ?></div>
+            <div class="stat-label">Active</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="col-6 col-md-3">
-      <div class="stat-card" style="--sc-color:#94a3b8;">
-        <div class="stat-icon"><i class="fas fa-circle-pause"></i></div>
-        <div class="stat-body">
-          <div class="stat-value"><?= $inactiveL ?></div>
-          <div class="stat-label">Inactive</div>
+      <a href="index.php?status=inactive" class="text-decoration-none">
+        <div class="stat-card" style="--sc-color:#94a3b8;">
+          <div class="stat-icon"><i class="fas fa-circle-pause"></i></div>
+          <div class="stat-body">
+            <div class="stat-value"><?= $inactiveL ?></div>
+            <div class="stat-label">Inactive</div>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="col-6 col-md-3">
       <div class="stat-card" style="--sc-color:#3b82f6;">
@@ -99,31 +202,47 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <!-- Table Card -->
   <div class="card-lms">
-    <div class="card-lms-header students-filter-bar">
-      <div class="card-lms-title">
-        <i class="fas fa-table-list"></i> All Lecturers
-        <span class="badge-lms info" style="margin-left:6px;font-size:12px;"><?= $total ?></span>
+    <div class="card-lms-header" style="display: flex; flex-direction: column; padding: 25px 30px; gap: 20px;">
+      <!-- Title Row -->
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="list-legend" style="align-items: flex-start; text-align: left;">
+          <div class="list-legend-label">Lecturer Management</div>
+          <div class="list-legend-title" style="font-size: 24px;">
+            <span>All Lecturers</span>
+            <span class="count-badge" style="background: var(--primary-light); color: var(--primary); padding: 4px 14px; border-radius: 30px; font-size: 14px;"><?= $total ?></span>
+          </div>
+        </div>
       </div>
-      <form method="GET" id="filterForm" class="students-filters">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" name="search" placeholder="Name, email, username…"
+
+      <!-- Filters Row -->
+      <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
+        <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+          <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
+          <input type="text" name="search" placeholder="Search Name, Email, Username…"
+                 style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
-        <select name="status" class="form-control-lms filter-select"
-                onchange="document.getElementById('filterForm').submit()">
-          <option value="">All Status</option>
-          <option value="active"   <?= $status==='active'   ? 'selected' : '' ?>>Active</option>
-          <option value="inactive" <?= $status==='inactive' ? 'selected' : '' ?>>Inactive</option>
-        </select>
-        <button type="submit" class="btn-lms btn-primary btn-sm">
-          <i class="fas fa-filter"></i> Filter
-        </button>
-        <?php if ($search || $status): ?>
-          <a href="index.php" class="btn-lms btn-outline btn-sm">
-            <i class="fas fa-xmark"></i> Clear
-          </a>
-        <?php endif; ?>
+
+        <div class="d-flex gap-2">
+          <select name="status" class="form-control-lms filter-select"
+                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="document.getElementById('filterForm').submit()">
+            <option value="">All Status</option>
+            <option value="active"   <?= $status==='active'   ? 'selected' : '' ?>>Active</option>
+            <option value="inactive" <?= $status==='inactive' ? 'selected' : '' ?>>Inactive</option>
+          </select>
+        </div>
+
+        <div class="filter-actions d-flex gap-2">
+          <button type="submit" class="btn-lms btn-primary px-4 rounded-3 shadow-sm" style="height: 46px; padding: 0 25px;">
+            <i class="fas fa-filter me-1"></i> Filter
+          </button>
+          <?php if ($search || $status): ?>
+            <a href="index.php" class="btn-lms btn-outline px-3 rounded-3 d-flex align-items-center justify-content-center" style="height: 46px; width: 46px;" title="Clear Filters">
+              <i class="fas fa-xmark"></i>
+            </a>
+          <?php endif; ?>
+        </div>
       </form>
     </div>
 
@@ -154,13 +273,18 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($lecturers as $i => $l): ?>
-          <tr class="<?= $l['status']==='inactive' ? 'course-inactive-row' : '' ?>">
+          <?php foreach ($lecturers as $i => $l): 
+              $isHighlighted = (isset($_GET['highlight_id']) && (int)$_GET['highlight_id'] === (int)$l['id']);
+              $rowClasses = [];
+              if ($l['status']==='inactive') $rowClasses[] = 'course-inactive-row';
+              if ($isHighlighted) $rowClasses[] = 'row-highlight';
+          ?>
+          <tr class="<?= implode(' ', $rowClasses) ?>">
             <td style="color:#94a3b8;font-size:13px;"><?= (($page-1)*15)+$i+1 ?></td>
             <td>
               <div class="d-flex align-center gap-10">
                 <?php $photoUrl = lecturerPhotoUrl($l['photo']); ?>
-                <div class="lect-avatar-wrap">
+                <div class="lect-avatar-wrap" style="cursor:pointer;" onclick="openPhotoModal('<?= htmlspecialchars($photoUrl) ?>')">
                   <img src="<?= htmlspecialchars($photoUrl) ?>"
                        alt="<?= htmlspecialchars($l['name']) ?>"
                        class="lect-avatar"
@@ -252,11 +376,42 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
 </div>
 
+<!-- Photo Preview Modal -->
+<div class="photo-modal" id="photoModal" onclick="closePhotoModal(event)">
+  <div class="photo-modal-content">
+    <div class="photo-modal-close" onclick="closePhotoModal(event, true)"><i class="fas fa-times"></i></div>
+    <img src="" alt="Lecturer Photo" class="photo-modal-img" id="modalImg">
+  </div>
+</div>
 <?php
 function lecturerAvatarColor(string $name): string {
     $colors = ['#5b4efa','#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4'];
     return $colors[ord($name[0]) % count($colors)];
 }
+
+$extraJS = <<<'JS'
+<script>
+function openPhotoModal(src) {
+  const modal = document.getElementById('photoModal');
+  const img = document.getElementById('modalImg');
+  if (modal && img) {
+    img.src = src;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closePhotoModal(e, force = false) {
+  const modal = document.getElementById('photoModal');
+  if (force || e.target.id === 'photoModal' || e.target.closest('.photo-modal-close')) {
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+}
+</script>
+JS;
 
 require_once dirname(__DIR__, 2) . '/includes/footer.php';
 ?>

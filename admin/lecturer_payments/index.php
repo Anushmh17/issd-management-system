@@ -56,27 +56,49 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </div>
 
   <div class="card-lms">
-    <div class="card-lms-header students-filter-bar">
-      <div class="card-lms-title">
-        <i class="fas fa-hand-holding-dollar" style="color:#059669;"></i> Payouts
-        <span class="badge-lms info" style="margin-left:6px;"><?= $total ?></span>
+    <div class="card-lms-header" style="display: flex; flex-direction: column; padding: 25px 30px; gap: 20px;">
+      <!-- Title Row -->
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="list-legend" style="align-items: flex-start; text-align: left;">
+          <div class="list-legend-label">Payroll Management</div>
+          <div class="list-legend-title" style="font-size: 24px;">
+            <span>Lecturer Payouts</span>
+            <span class="count-badge" style="background: var(--primary-light); color: var(--primary); padding: 4px 14px; border-radius: 30px; font-size: 14px;"><?= $total ?></span>
+          </div>
+        </div>
       </div>
-      <form method="GET" class="students-filters">
-        <select name="month" class="form-control-lms filter-select" onchange="this.form.submit()">
-          <option value="">Month: All</option>
-          <?php foreach ($months as $val => $label): ?>
-            <option value="<?= $val ?>" <?= $month===$val?'selected':'' ?>><?= $label ?></option>
-          <?php endforeach; ?>
-        </select>
-        <select name="status" class="form-control-lms filter-select" onchange="this.form.submit()">
-          <option value="">Status: All</option>
-          <option value="paid"    <?= $status==='paid'?'selected':'' ?>>Paid</option>
-          <option value="pending" <?= $status==='pending'?'selected':'' ?>>Pending</option>
-        </select>
-        <button type="submit" style="display:none;"></button>
-        <?php if ($status || $month): ?>
-          <a href="index.php" class="btn-lms btn-outline btn-sm">Clear</a>
-        <?php endif; ?>
+
+      <!-- Filters Row -->
+      <form method="GET" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
+        <div class="d-flex gap-2" style="flex: 1;">
+          <select name="month" class="form-control-lms filter-select"
+                  style="min-width: 180px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="this.form.submit()">
+            <option value="">Month: All</option>
+            <?php foreach ($months as $val => $label): ?>
+              <option value="<?= $val ?>" <?= $month===$val?'selected':'' ?>><?= $label ?></option>
+            <?php endforeach; ?>
+          </select>
+
+          <select name="status" class="form-control-lms filter-select"
+                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="this.form.submit()">
+            <option value="">Status: All</option>
+            <option value="paid"    <?= $status==='paid'?'selected':'' ?>>Paid</option>
+            <option value="pending" <?= $status==='pending'?'selected':'' ?>>Pending</option>
+          </select>
+        </div>
+
+        <div class="filter-actions d-flex gap-2">
+          <button type="submit" class="btn-lms btn-primary px-4 rounded-3 shadow-sm" style="height: 46px; padding: 0 25px;">
+            <i class="fas fa-filter me-1"></i> Filter
+          </button>
+          <?php if ($status || $month): ?>
+            <a href="index.php" class="btn-lms btn-outline px-3 rounded-3 d-flex align-items-center justify-content-center" style="height: 46px; width: 46px;" title="Clear Filters">
+              <i class="fas fa-xmark"></i>
+            </a>
+          <?php endif; ?>
+        </div>
       </form>
     </div>
 

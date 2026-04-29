@@ -54,39 +54,59 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <!-- Table Card -->
   <div class="card-lms">
-    <div class="card-lms-header students-filter-bar">
-      <div class="card-lms-title">
-        <i class="fas fa-bullseye" style="color:#ef4444;"></i> All Leads
-        <span class="badge-lms info" style="margin-left:6px;font-size:12px;"><?= $total ?></span>
+    <div class="card-lms-header" style="display: flex; flex-direction: column; padding: 25px 30px; gap: 20px;">
+      <!-- Title Row -->
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="list-legend" style="align-items: flex-start; text-align: left;">
+          <div class="list-legend-label">Lead Generation</div>
+          <div class="list-legend-title" style="font-size: 24px;">
+            <span>All Leads</span>
+            <span class="count-badge" style="background: var(--primary-light); color: var(--primary); padding: 4px 14px; border-radius: 30px; font-size: 14px;"><?= $total ?></span>
+          </div>
+        </div>
       </div>
-      <form method="GET" id="filterForm" class="students-filters">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" name="search" placeholder="Name or phone..."
+
+      <!-- Filters Row -->
+      <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
+        <div class="search-bar" style="flex: 1; min-width: 280px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+          <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
+          <input type="text" name="search" placeholder="Search Name or Phone…"
+                 style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
-        <select name="status" class="form-control-lms filter-select"
-                onchange="this.form.submit()">
-          <option value="">Status: All (Hidden Converted)</option>
-          <option value="new" <?= $status==='new' ? 'selected' : '' ?>>New</option>
-          <option value="talking" <?= $status==='talking' ? 'selected' : '' ?>>Talking</option>
-          <option value="converted" <?= $status==='converted' ? 'selected' : '' ?>>Converted</option>
-          <option value="not_interested" <?= $status==='not_interested' ? 'selected' : '' ?>>Not Interested</option>
-        </select>
-        <select name="source" class="form-control-lms filter-select"
-                onchange="this.form.submit()">
-          <option value="">Source: All</option>
-          <option value="Facebook" <?= $source==='Facebook' ? 'selected' : '' ?>>Facebook</option>
-          <option value="WhatsApp" <?= $source==='WhatsApp' ? 'selected' : '' ?>>WhatsApp</option>
-          <option value="Walk-in" <?= $source==='Walk-in' ? 'selected' : '' ?>>Walk-in</option>
-          <option value="Other" <?= $source==='Other' ? 'selected' : '' ?>>Other</option>
-        </select>
-        <button type="submit" class="btn-lms btn-primary btn-sm" style="display:none;">Filter</button>
-        <?php if ($search || $status || $source): ?>
-          <a href="index.php" class="btn-lms btn-outline btn-sm">
-            <i class="fas fa-xmark"></i> Clear
-          </a>
-        <?php endif; ?>
+
+        <div class="d-flex gap-2">
+          <select name="status" class="form-control-lms filter-select"
+                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="this.form.submit()">
+            <option value="">Status: All</option>
+            <option value="new" <?= $status==='new' ? 'selected' : '' ?>>New</option>
+            <option value="talking" <?= $status==='talking' ? 'selected' : '' ?>>Talking</option>
+            <option value="converted" <?= $status==='converted' ? 'selected' : '' ?>>Converted</option>
+            <option value="not_interested" <?= $status==='not_interested' ? 'selected' : '' ?>>Not Interested</option>
+          </select>
+
+          <select name="source" class="form-control-lms filter-select"
+                  style="min-width: 140px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  onchange="this.form.submit()">
+            <option value="">Source: All</option>
+            <option value="Facebook" <?= $source==='Facebook' ? 'selected' : '' ?>>Facebook</option>
+            <option value="WhatsApp" <?= $source==='WhatsApp' ? 'selected' : '' ?>>WhatsApp</option>
+            <option value="Walk-in" <?= $source==='Walk-in' ? 'selected' : '' ?>>Walk-in</option>
+            <option value="Other" <?= $source==='Other' ? 'selected' : '' ?>>Other</option>
+          </select>
+        </div>
+
+        <div class="filter-actions d-flex gap-2">
+          <button type="submit" class="btn-lms btn-primary px-4 rounded-3 shadow-sm" style="height: 46px; padding: 0 25px;">
+            <i class="fas fa-filter me-1"></i> Filter
+          </button>
+          <?php if ($search || $status || $source): ?>
+            <a href="index.php" class="btn-lms btn-outline px-3 rounded-3 d-flex align-items-center justify-content-center" style="height: 46px; width: 46px;" title="Clear Filters">
+              <i class="fas fa-xmark"></i>
+            </a>
+          <?php endif; ?>
+        </div>
       </form>
     </div>
 
@@ -116,11 +136,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </thead>
         <tbody>
           <?php foreach ($leads as $i => $l): 
+              $isHighlighted = (isset($_GET['highlight_id']) && (int)$_GET['highlight_id'] === (int)$l['id']);
               $now = time();
               $followupTime = $l['next_followup_datetime'] ? strtotime($l['next_followup_datetime']) : null;
               $isOverdue = ($followupTime !== null && $followupTime < $now && in_array($l['status'], ['new','talking']));
           ?>
-          <tr>
+          <tr class="<?= $isHighlighted ? 'row-highlight' : '' ?>">
             <td style="color:#94a3b8;font-size:13px;"><?= (($page-1)*15)+$i+1 ?></td>
             <td>
               <div class="fw-600" style="font-size:14px;"><?= htmlspecialchars($l['name']) ?></div>
