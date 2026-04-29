@@ -104,7 +104,8 @@ function addStudent(PDO $pdo, array $data): array {
             require_once __DIR__ . '/notification_controller.php';
             $notifTitle = "Call Reminder: " . trim($data['full_name']);
             $notifMsg = "Scheduled for " . date('M d, Y', strtotime($data['next_follow_up'])) . ". Note: " . ($data['follow_up_note'] ?? 'No instructions');
-            addNotification($pdo, null, 'call', $notifTitle, $notifMsg, BASE_URL . "/admin/students/index.php");
+            $hLink = BASE_URL . "/admin/students/index.php?highlight_id=" . $studentDbId;
+            addNotification($pdo, null, 'call', $notifTitle, $notifMsg, $hLink);
         }
 
         return ['success' => true, 'id' => $studentDbId, 'student_id' => $studentId];
@@ -235,6 +236,11 @@ function getStudentsList(PDO $pdo, array $filters = [], int $page = 1, int $perP
     if ($status !== '') {
         $where[] = "status = ?";
         $params[] = $status;
+    }
+
+    $followup = trim($filters['followup'] ?? '');
+    if ($followup === 'today') {
+        $where[] = "DATE(next_follow_up) = CURRENT_DATE";
     }
 
     $whereSQL = $where ? 'WHERE ' . implode(' AND ', $where) : '';

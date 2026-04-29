@@ -9,9 +9,12 @@ class NotificationManager {
         this.notifList = document.querySelector('#notif-items-list');
         this.notifBadge = document.querySelector('#notif-badge');
         this.notifCountText = document.querySelector('#notif-count-text');
+        this.toastContainer = null;
+        this.ensureContainer();
         
         // Initialize from storage to persist across page reloads
         this.lastNotifId = localStorage.getItem('lms_last_notif_id');
+        this.dismissedAlerts = JSON.parse(sessionStorage.getItem('lms_dismissed_alerts') || '[]');
         this.init();
     }
 
@@ -27,6 +30,15 @@ class NotificationManager {
                 this.fetchNotifications(tab.dataset.category);
             });
         });
+    }
+    
+    ensureContainer() {
+        this.toastContainer = document.getElementById('notif-toast-container');
+        if (!this.toastContainer) {
+            this.toastContainer = document.createElement('div');
+            this.toastContainer.id = 'notif-toast-container';
+            document.body.appendChild(this.toastContainer);
+        }
     }
 
     async fetchNotifications(category = 'all') {
@@ -66,12 +78,7 @@ class NotificationManager {
     showNewNotificationToast(notif) {
         const toast = document.createElement('div');
         toast.className = 'premium-toast new-notif animate__animated animate__fadeInUp';
-        toast.style.cssText = `
-            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-            background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            padding: 16px; width: 320px; border-left: 5px solid var(--primary);
-            display: flex; gap: 15px; align-items: center; cursor: pointer;
-        `;
+        // Removed inline styles as they are now in CSS
         
         const colors = {
             'call': '#e11d48',
@@ -96,7 +103,7 @@ class NotificationManager {
             window.location.href = notif.link;
         };
 
-        document.body.appendChild(toast);
+        this.toastContainer.appendChild(toast);
         
         // Play subtle sound if browser allows
         try {
@@ -166,39 +173,59 @@ class NotificationManager {
         }
     }
 
-    showUrgentAlerts(calls) {
-        calls.forEach(call => {
-            const alertId = `call-alert-${call.id}`;
+    showUrgentAlerts(alerts) {
+        alerts.forEach(alert => {
+            const alertKey = `${alert.type}-${alert.id}`;
+            const alertId = `call-alert-${alertKey}`;
+            
+            // Don't show if already dismissed in this session or already visible
+            if (this.dismissedAlerts.includes(alertKey)) return;
             if (document.getElementById(alertId)) return;
 
             const toast = document.createElement('div');
             toast.id = alertId;
             toast.className = 'premium-toast call-alert animate__animated animate__slideInRight';
+            
+            const isLead = alert.type === 'lead';
+            const icon = isLead ? 'fa-phone-volume' : 'fa-headset';
+            const targetPage = isLead ? 'leads/index.php' : 'students/index.php';
+            const label = isLead ? 'Lead Call' : 'Student Call';
+
             toast.innerHTML = `
-                <div class="toast-header">
-                    <i class="fas fa-phone-volume me-2"></i>
-                    <strong class="me-auto">Urgent Call Reminder</strong>
-                    <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
+                <div class="toast-header" style="background:${isLead ? '#fff1f2' : '#eef2ff'}; color:${isLead ? '#e11d48' : '#4338ca'}; padding: 10px 15px;">
+                    <i class="fas ${icon} me-2" style="font-size:12px;"></i>
+                    <strong class="me-auto" style="font-size:11px;">${label}</strong>
+                    <button type="button" class="btn-close" style="font-size:8px;" onclick="notificationManager.dismiss('${alertKey}')"></button>
                 </div>
-                <div class="toast-body">
-                    <div class="fw-700">${call.full_name}</div>
-                    <div class="text-muted mb-2">${call.follow_up_note || 'Scheduled call today'}</div>
+                <div class="toast-body" style="padding: 12px 15px;">
+                    <div class="fw-700" style="font-size:13px; margin-bottom:2px;">${alert.name}</div>
+                    <div class="text-muted mb-2" style="font-size:11px; line-height:1.2;">${alert.note || 'Scheduled for today'}</div>
                     <div class="d-flex gap-2">
-                        <a href="tel:${call.phone_number}" class="btn btn-success btn-sm w-100">
-                            <i class="fas fa-phone me-1"></i> Call Now
+                        <a href="tel:${alert.phone}" class="btn btn-success btn-sm" style="flex:1; font-size:11px; padding: 4px 8px;">
+                            <i class="fas fa-phone me-1"></i> Call
                         </a>
-                        <button class="btn btn-outline-secondary btn-sm" onclick="notificationManager.snooze(${call.id})">Snooze</button>
+                        <a href="${this.baseUrl}/admin/${targetPage}?highlight_id=${alert.id}" class="btn btn-primary btn-sm" style="flex:1; font-size:11px; padding: 4px 8px;">
+                            <i class="fas fa-eye me-1"></i> View
+                        </a>
                     </div>
                 </div>
             `;
-            document.body.appendChild(toast);
-            
-            // Auto hide after 15 seconds if not interacted
-            setTimeout(() => {
-                if (toast) toast.classList.add('animate__fadeOutRight');
-                setTimeout(() => toast?.remove(), 1000);
-            }, 15000);
+            this.toastContainer.appendChild(toast);
         });
+    }
+
+    dismiss(key) {
+        const alertId = `call-alert-${key}`;
+        const toast = document.getElementById(alertId);
+        if (toast) {
+            toast.classList.add('animate__fadeOutRight');
+            setTimeout(() => toast.remove(), 1000);
+        }
+        
+        if (!this.dismissedAlerts.includes(key)) {
+            this.dismissedAlerts.push(key);
+            sessionStorage.setItem('lms_dismissed_alerts', JSON.stringify(this.dismissedAlerts));
+        }
     }
 
     async markRead(id) {

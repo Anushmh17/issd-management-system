@@ -50,7 +50,8 @@ function addLead(PDO $pdo, array $d): array {
             require_once __DIR__ . '/notification_controller.php';
             $notifTitle = "New Lead Follow-up: " . trim($d['name']);
             $notifMsg = "Scheduled for " . date('M d, Y h:i A', strtotime($d['next_followup_datetime']));
-            addNotification($pdo, null, 'call', $notifTitle, $notifMsg, BASE_URL . "/admin/leads/index.php");
+            $hLink = BASE_URL . "/admin/leads/index.php?highlight_id=" . $leadId;
+            addNotification($pdo, null, 'call', $notifTitle, $notifMsg, $hLink);
         }
 
         return ['success' => true, 'id' => $leadId];
@@ -100,7 +101,8 @@ function updateLead(PDO $pdo, int $id, array $d): array {
             require_once __DIR__ . '/notification_controller.php';
             $notifTitle = "Updated Lead Schedule: " . trim($d['name']);
             $notifMsg = "New time: " . date('M d, Y h:i A', strtotime($newFollowup));
-            addNotification($pdo, null, 'call', $notifTitle, $notifMsg, BASE_URL . "/admin/leads/index.php");
+            $hLink = BASE_URL . "/admin/leads/index.php?highlight_id=" . $id;
+            addNotification($pdo, null, 'call', $notifTitle, $notifMsg, $hLink);
         }
 
         return ['success' => true];
@@ -165,6 +167,11 @@ function getLeadsList(PDO $pdo, array $filters = [], int $page = 1, int $perPage
     if ($source !== '') {
         $where[]  = "source = ?";
         $params[] = $source;
+    }
+
+    $date = trim($filters['date'] ?? '');
+    if ($date === 'today') {
+        $where[] = "DATE(next_followup_datetime) = CURRENT_DATE";
     }
 
     $whereSQL = $where ? 'WHERE ' . implode(' AND ', $where) : '';

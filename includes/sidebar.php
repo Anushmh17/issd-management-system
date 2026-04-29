@@ -62,12 +62,9 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
 
   <!-- Brand -->
   <div class="sidebar-brand">
-    <div class="brand-icon">
-      <i class="fas fa-graduation-cap"></i>
-    </div>
-    <div class="brand-text">
-      Learn <span>Management</span>
-      <span class="brand-sub">INSTITUTE SYSTEM</span>
+    <div class="brand-text" style="display: block;">
+      <div style="font-family: 'Times New Roman', serif; font-size: 28px; font-weight: 800; letter-spacing: 1px; color: var(--primary); line-height: 1;">ISSD</div>
+      <div style="font-size: 9px; font-weight: 700; color: var(--primary); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px;">Institute of Software Skills Development</div>
     </div>
     <button id="sidebarClose" class="d-md-none sidebar-close-btn" title="Close Sidebar">
       <i class="fas fa-arrow-left"></i>
@@ -124,7 +121,7 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
         <i class="fas fa-bars"></i>
       </button>
       <div class="navbar-title">
-        Learn <span>Management</span>
+        ISSD <span>Management System</span>
       </div>
     </div>
     <div class="navbar-right">

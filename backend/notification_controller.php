@@ -80,13 +80,33 @@ function syncDynamicAlerts(PDO $pdo) {
  */
 function getUrgentAlerts(PDO $pdo) {
     $today = date('Y-m-d');
-    $stmt = $pdo->prepare("
-        SELECT id, full_name, phone_number, follow_up_note, next_follow_up
+    $alerts = [];
+
+    // 1. Student Reminders
+    $stmt1 = $pdo->prepare("
+        SELECT id, full_name as name, phone_number as phone, follow_up_note as note, next_follow_up as time, 'student' as type
         FROM students
-        WHERE next_follow_up <= ? AND follow_up_status = 'pending'
+        WHERE next_follow_up <= ? AND status != 'dropout'
         ORDER BY next_follow_up ASC
     ");
-    $stmt->execute([$today]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt1->execute([$today]);
+    while($row = $stmt1->fetch(PDO::FETCH_ASSOC)) {
+        $alerts[] = $row;
+    }
+
+    // 2. Lead Reminders
+    $stmt2 = $pdo->prepare("
+        SELECT id, name, phone, notes as note, next_followup_datetime as time, 'lead' as type
+        FROM leads
+        WHERE next_followup_datetime <= ? AND status NOT IN ('converted', 'not_interested')
+        ORDER BY next_followup_datetime ASC
+    ");
+    // Append today's end time to catch all for today
+    $stmt2->execute([$today . ' 23:59:59']);
+    while($row = $stmt2->fetch(PDO::FETCH_ASSOC)) {
+        $alerts[] = $row;
+    }
+
+    return $alerts;
 }
 ?>

@@ -3,16 +3,16 @@
 // LEARN Management - Application Configuration
 // =====================================================
 
-define('APP_NAME', 'LEARN Management');
+define('APP_NAME', 'ISSD Management');
 define('APP_VERSION', '1.0.0');
-define('APP_URL', 'http://localhost/Webbuilders%20Projects/LEARN%20Management');
+define('APP_URL', 'http://localhost/Webbuilders%20Projects/ISSD%20Management');
 define('BASE_PATH', dirname(__DIR__));
-define('BASE_URL', '/Webbuilders%20Projects/LEARN%20Management');
+define('BASE_URL', '/Webbuilders%20Projects/ISSD%20Management');
 
 // Database Configuration
 define('DB_HOST', '127.0.0.1');
 define('DB_PORT', '3307');
-define('DB_NAME', 'learn_management');
+define('DB_NAME', 'issd_management');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');

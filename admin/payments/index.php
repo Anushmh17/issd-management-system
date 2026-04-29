@@ -107,7 +107,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <?php foreach ($payments as $p): 
                 $isHighlighted = (isset($_GET['highlight_id']) && (int)$_GET['highlight_id'] === (int)$p['id']);
             ?>
-            <tr class="<?= $isHighlighted ? 'row-highlight' : '' ?>">
+            <tr id="row-<?= $p['id'] ?>" class="<?= $isHighlighted ? 'row-highlight' : '' ?>">
               <td style="font-family:monospace;font-size:12px;color:#64748b;">
                 RCPT-<?= str_pad($p['id'], 5, '0', STR_PAD_LEFT) ?>
               </td>
@@ -170,4 +170,20 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const highlightId = urlParams.get('highlight_id');
+  if (highlightId) {
+    const targetRow = document.getElementById('row-' + highlightId);
+    if (targetRow) {
+      setTimeout(() => {
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetRow.classList.add('highlight-row');
+        setTimeout(() => targetRow.classList.remove('highlight-row'), 4500);
+      }, 500);
+    }
+  }
+});
+</script>
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

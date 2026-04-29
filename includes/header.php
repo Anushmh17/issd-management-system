@@ -1,18 +1,18 @@
 <?php
 // =====================================================
-// LEARN Management - Shared Header
+// ISSD Management - Shared Header
 // =====================================================
-if (!defined('PAGE_TITLE')) define('PAGE_TITLE', 'LEARN Management');
-if (!defined('BASE_URL'))   define('BASE_URL', '/Webbuilders%20Projects/LEARN%20Management');
+if (!defined('PAGE_TITLE')) define('PAGE_TITLE', 'ISSD Management');
+if (!defined('BASE_URL'))   define('BASE_URL', '/Webbuilders%20Projects/ISSD%20Management');
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="LEARN Management - Institute Management System">
+  <meta name="description" content="ISSD Management - Institute of Software Skills Development">
   <meta name="robots" content="noindex, nofollow">
-  <title><?= htmlspecialchars(PAGE_TITLE) ?> | LEARN Management</title>
+  <title><?= htmlspecialchars(PAGE_TITLE) ?> | ISSD Management</title>
 
   <!-- Bootstrap 5 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">

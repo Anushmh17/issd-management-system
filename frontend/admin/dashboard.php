@@ -49,12 +49,80 @@ $global_activities = $stmtActivity->fetchAll();
 // Take first 3 for the main bento card
 $recent_activities = array_slice($global_activities, 0, 3);
 
-// 7. Upcoming Schedule (Today's classes - fallback mock)
-$upcoming_schedule = [
-    ['time' => '09:00 AM', 'title' => 'Web Development 101', 'lecturer' => 'Dr. Smith', 'room' => 'Lab 1'],
-    ['time' => '11:30 AM', 'title' => 'Data Science Seminar', 'lecturer' => 'Prof. Xavier', 'room' => 'Hall A'],
-    ['time' => '02:00 PM', 'title' => 'UX Design Workshop', 'lecturer' => 'Jane Doe', 'room' => 'Online'],
-];
+// 7. Dynamic Today's Agenda (Payments + Follow-ups)
+$today = date('Y-m-d');
+
+$agenda = [];
+
+// 7a. Lead Follow-ups
+$stmtLeads = $pdo->prepare("SELECT id, name, phone, next_followup_datetime as time, notes FROM leads WHERE DATE(next_followup_datetime) = ? AND status != 'converted' LIMIT 3");
+$stmtLeads->execute([$today]);
+while($row = $stmtLeads->fetch()) {
+    $agenda[] = [
+        'type' => 'Lead Call',
+        'icon' => 'fa-phone-volume',
+        'color' => '#f43f5e',
+        'time' => date('h:i A', strtotime($row['time'])),
+        'title' => "Call " . $row['name'],
+        'desc' => $row['phone'] . ($row['notes'] ? " • " . $row['notes'] : ""),
+        'link' => BASE_URL . "/admin/leads/index.php?highlight_id=" . $row['id']
+    ];
+}
+
+// 7b. Student Follow-ups
+$stmtStudents = $pdo->prepare("SELECT id, full_name, phone_number, next_follow_up as time, follow_up_note FROM students WHERE DATE(next_follow_up) = ? LIMIT 3");
+$stmtStudents->execute([$today]);
+while($row = $stmtStudents->fetch()) {
+    $agenda[] = [
+        'type' => 'Student Follow-up',
+        'icon' => 'fa-headset',
+        'color' => '#6366f1',
+        'time' => 'Today',
+        'title' => "Follow up: " . $row['full_name'],
+        'desc' => $row['phone_number'] . ($row['follow_up_note'] ? " • " . $row['follow_up_note'] : ""),
+        'link' => BASE_URL . "/admin/students/index.php?highlight_id=" . $row['id']
+    ];
+}
+
+// 7c. Pending/Overdue Payments
+$stmtPayments = $pdo->prepare("
+    SELECT sp.id, s.full_name, sp.total_due, sp.next_due_date, c.course_name 
+    FROM student_payments sp 
+    JOIN students s ON sp.student_id = s.id 
+    JOIN courses c ON sp.course_id = c.id
+    WHERE sp.status = 'overdue' OR DATE(sp.next_due_date) = ? 
+    LIMIT 3
+");
+$stmtPayments->execute([$today]);
+while($row = $stmtPayments->fetch()) {
+    $agenda[] = [
+        'type' => 'Payment Due',
+        'icon' => 'fa-hand-holding-dollar',
+        'color' => '#10b981',
+        'time' => 'URGENT',
+        'title' => "Collection: " . $row['full_name'],
+        'desc' => $row['course_name'] . " • Rs. " . number_format($row['total_due'], 0),
+        'link' => BASE_URL . "/admin/payments/index.php?highlight_id=" . $row['id']
+    ];
+}
+
+// Sort by time (Lead calls first by time, others after)
+usort($agenda, function($a, $b) {
+    return strcmp($a['time'], $b['time']);
+});
+
+// Fallback if empty
+if (empty($agenda)) {
+    $agenda[] = [
+        'type' => 'Notice',
+        'icon' => 'fa-calendar-check',
+        'color' => '#64748b',
+        'time' => '--:--',
+        'title' => 'No Urgent Tasks',
+        'desc' => 'Enjoy your day! All calls and payments are up to date.',
+        'link' => '#'
+    ];
+}
 
 require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
@@ -204,14 +272,41 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </div>
 
   <!-- QUICK ACTIONS -->
-  <div class="bento-card span-4">
+  <div class="bento-card span-4" style="overflow: visible; z-index: 100;">
     <div class="action-grid">
       <a href="<?= BASE_URL ?>/admin/students/add.php" class="action-btn">
         <i class="fas fa-user-plus text-primary"></i> Add Student
       </a>
-      <a href="<?= BASE_URL ?>/admin/payments/add.php" class="action-btn">
-        <i class="fas fa-receipt text-success"></i> Payment
-      </a>
+      <div class="dropdown" style="height:100%;">
+        <button class="action-btn w-100 h-100 dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background:#fff; border-radius:18px;">
+            <i class="fas fa-receipt text-success"></i> Payment
+        </button>
+        <ul class="dropdown-menu p-2 animate__animated animate__fadeIn" style="border-radius:18px; width:240px; z-index: 9999; transform:translateY(10px) !important; box-shadow: 0 30px 90px -15px rgba(15, 23, 42, 0.45) !important; border: 1px solid var(--accent-rose) !important;">
+            <li>
+                <a class="dropdown-item p-3 rounded-4 d-flex align-items-center gap-3" href="<?= BASE_URL ?>/admin/payments/add.php">
+                    <div class="stat-icon" style="width:32px; height:32px; background:#e0e7ff; color:var(--accent-indigo); font-size:12px;">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <div class="fw-800" style="font-size:13px;">Student Payment</div>
+                        <div class="text-muted" style="font-size:10px;">Receive collections</div>
+                    </div>
+                </a>
+            </li>
+            <li><hr class="dropdown-divider opacity-50"></li>
+            <li>
+                <a class="dropdown-item p-3 rounded-4 d-flex align-items-center gap-3" href="<?= BASE_URL ?>/admin/lecturer_payments/index.php">
+                    <div class="stat-icon" style="width:32px; height:32px; background:#dcfce7; color:var(--accent-emerald); font-size:12px;">
+                        <i class="fas fa-chalkboard-user"></i>
+                    </div>
+                    <div>
+                        <div class="fw-800" style="font-size:13px;">Lecturer Pay</div>
+                        <div class="text-muted" style="font-size:10px;">Process payouts</div>
+                    </div>
+                </a>
+            </li>
+        </ul>
+      </div>
       <a href="<?= BASE_URL ?>/admin/courses/add.php" class="action-btn">
         <i class="fas fa-book text-warning"></i> New Course
       </a>
@@ -405,23 +500,48 @@ foreach ($checkStudents as $cs) {
        <?php endif; ?>
     </div>
   </div>
-  <!-- TODAY'S SCHEDULE -->
+  <!-- TODAY'S AGENDA -->
   <div class="bento-card span-4">
     <div class="card-header-bento">
-      <h3><i class="fas fa-calendar-day text-success"></i> Today's Schedule</h3>
+      <h3><i class="fas fa-list-check text-success"></i> Today's Agenda</h3>
+      <div class="badge bg-success-subtle text-success border-0 rounded-pill px-3" style="font-size:11px;">
+        <?= count($agenda) ?> Tasks
+      </div>
     </div>
     <div class="bento-schedule">
-      <?php foreach($upcoming_schedule as $item): ?>
-      <div class="schedule-row">
-        <div class="s-time"><?= $item['time'] ?></div>
-        <div class="s-info">
-          <h4><?= $item['title'] ?></h4>
-          <p><i class="fas fa-user-tie"></i> <?= $item['lecturer'] ?> | <?= $item['room'] ?></p>
+      <?php foreach($agenda as $item): ?>
+      <a href="<?= $item['link'] ?>" class="schedule-row text-decoration-none d-block">
+        <div class="d-flex gap-16">
+            <div class="s-time d-flex flex-column align-items-center">
+                <div style="font-size:11px;"><?= $item['time'] ?></div>
+                <div class="stat-icon mt-2" style="width:32px; height:32px; font-size:14px; background: <?= $item['color'] ?>15; color: <?= $item['color'] ?>;">
+                    <i class="fas <?= $item['icon'] ?>"></i>
+                </div>
+            </div>
+            <div class="s-info flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start">
+                    <span class="text-uppercase fw-800" style="font-size:9px; color: <?= $item['color'] ?>; letter-spacing:0.5px;"><?= $item['type'] ?></span>
+                    <i class="fas fa-chevron-right text-muted" style="font-size:10px;"></i>
+                </div>
+                <h4 class="mt-1"><?= htmlspecialchars($item['title']) ?></h4>
+                <p><?= htmlspecialchars($item['desc']) ?></p>
+                
+                <div class="d-flex gap-2 mt-2">
+                    <?php if(strpos($item['type'], 'Call') !== false): ?>
+                        <span class="badge bg-primary rounded-pill" style="font-size:9px;"><i class="fas fa-phone"></i> Call Now</span>
+                    <?php elseif(strpos($item['type'], 'Payment') !== false): ?>
+                        <span class="badge bg-success rounded-pill" style="font-size:9px;"><i class="fas fa-receipt"></i> Process</span>
+                    <?php endif; ?>
+                    <span class="badge bg-light text-dark rounded-pill" style="font-size:9px;"><i class="fas fa-clock"></i> Snooze</span>
+                </div>
+            </div>
         </div>
-      </div>
+      </a>
       <?php endforeach; ?>
     </div>
-    <button class="btn btn-primary w-100 mt-4 rounded-pill fw-800 py-2 shadow-sm">Calendar View</button>
+    <a href="<?= BASE_URL ?>/admin/calendar.php" class="btn btn-primary w-100 mt-4 rounded-pill fw-800 py-2 shadow-sm">
+        <i class="fas fa-calendar-alt me-2"></i> Open Full Calendar
+    </a>
   </div>
 
 </div>

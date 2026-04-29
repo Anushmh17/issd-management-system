@@ -38,9 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $search = trim($_GET['search'] ?? '');
 $batch  = trim($_GET['batch']  ?? '');
 $status = trim($_GET['status'] ?? '');
+$followup = trim($_GET['followup'] ?? '');
 $page   = max(1, (int)($_GET['page'] ?? 1));
 
-$filters = compact('search', 'batch', 'status');
+$filters = compact('search', 'batch', 'status', 'followup');
 $result  = getStudentsList($pdo, $filters, $page, 15);
 
 $students = $result['students'];
@@ -255,7 +256,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <?php foreach ($students as $i => $s): 
               $isHighlighted = (isset($_GET['highlight_id']) && (int)$_GET['highlight_id'] === (int)$s['id']);
           ?>
-          <tr class="<?= $isHighlighted ? 'row-highlight' : '' ?>">
+          <tr id="row-<?= $s['id'] ?>" class="<?= $isHighlighted ? 'row-highlight' : '' ?>">
             <td style="color:#94a3b8;font-size:13px;"><?= (($page - 1) * 15) + $i + 1 ?></td>
             <td>
               <span class="id-badge-lms">
@@ -376,4 +377,20 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const highlightId = urlParams.get('highlight_id');
+  if (highlightId) {
+    const targetRow = document.getElementById('row-' + highlightId);
+    if (targetRow) {
+      setTimeout(() => {
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetRow.classList.add('highlight-row');
+        setTimeout(() => targetRow.classList.remove('highlight-row'), 4500);
+      }, 500);
+    }
+  }
+});
+</script>
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

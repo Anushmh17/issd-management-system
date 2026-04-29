@@ -26,9 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'delete')
 $search = trim($_GET['search'] ?? '');
 $status = trim($_GET['status'] ?? '');
 $source = trim($_GET['source'] ?? '');
+$date   = trim($_GET['date'] ?? '');
 $page   = max(1, (int)($_GET['page'] ?? 1));
 
-$filters = compact('search', 'status', 'source');
+$filters = compact('search', 'status', 'source', 'date');
 $result  = getLeadsList($pdo, $filters, $page, 15);
 $leads = $result['leads'];
 $total = $result['total'];
@@ -137,11 +138,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <tbody>
           <?php foreach ($leads as $i => $l): 
               $isHighlighted = (isset($_GET['highlight_id']) && (int)$_GET['highlight_id'] === (int)$l['id']);
-              $now = time();
               $followupTime = $l['next_followup_datetime'] ? strtotime($l['next_followup_datetime']) : null;
-              $isOverdue = ($followupTime !== null && $followupTime < $now && in_array($l['status'], ['new','talking']));
+              $isOverdue = ($followupTime && $followupTime < time() && $l['status'] !== 'converted');
           ?>
-          <tr class="<?= $isHighlighted ? 'row-highlight' : '' ?>">
+          <tr id="row-<?= $l['id'] ?>" class="<?= $isHighlighted ? 'row-highlight' : '' ?>">
             <td style="color:#94a3b8;font-size:13px;"><?= (($page-1)*15)+$i+1 ?></td>
             <td>
               <div class="fw-600" style="font-size:14px;"><?= htmlspecialchars($l['name']) ?></div>
@@ -227,4 +227,20 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const highlightId = urlParams.get('highlight_id');
+  if (highlightId) {
+    const targetRow = document.getElementById('row-' + highlightId);
+    if (targetRow) {
+      setTimeout(() => {
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetRow.classList.add('highlight-row');
+        setTimeout(() => targetRow.classList.remove('highlight-row'), 4500);
+      }, 500);
+    }
+  }
+});
+</script>
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

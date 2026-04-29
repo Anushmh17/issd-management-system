@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Entry Point (redirect)
+// ISSD Management - Entry Point (redirect)
 // =====================================================
 require_once __DIR__ . '/backend/config.php';
 require_once __DIR__ . '/includes/auth.php';
