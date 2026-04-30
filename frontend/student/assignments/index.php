@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Student: Assignments List
+// ISSD Management - Student: Assignments List
 // frontend/student/assignments/index.php
 // =====================================================
 define('PAGE_TITLE', 'My Assignments');
@@ -97,7 +97,7 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
                 <?php if ($a['marks'] !== null): ?>
                   <div class="fw-700" style="color:#059669;font-size:14px;"><?= rtrim(rtrim(number_format($a['marks'],2), '0'), '.') ?></div>
                 <?php else: ?>
-                  <span style="font-size:12px;color:#94a3b8;">—</span>
+                  <span style="font-size:12px;color:#94a3b8;">""</span>
                 <?php endif; ?>
               </td>
               <td style="text-align:center;">
@@ -115,3 +115,4 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 3) . '/includes/footer.php'; ?>
+

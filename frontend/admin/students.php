@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Students Management
+// ISSD Management - Admin: Students Management
 // =====================================================
 define('PAGE_TITLE', 'Students');
 require_once dirname(__DIR__, 2) . '/backend/config.php';
@@ -274,10 +274,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </div>
               </div>
             </td>
-            <td><?= htmlspecialchars($s['s_id'] ?? '—') ?></td>
-            <td><?= htmlspecialchars($s['phone'] ?? '—') ?></td>
+            <td><?= htmlspecialchars($s['s_id'] ?? '""') ?></td>
+            <td><?= htmlspecialchars($s['phone'] ?? '""') ?></td>
             <td><span class="badge-lms info"><?= $s['course_count'] ?></span></td>
-            <td><?= $s['enrolled_date'] ? date('M d, Y',strtotime($s['enrolled_date'])) : '—' ?></td>
+            <td><?= $s['enrolled_date'] ? date('M d, Y',strtotime($s['enrolled_date'])) : '""' ?></td>
             <td>
               <span class="badge-lms <?= $s['status']==='active'?'success':'danger' ?>">
                 <?= ucfirst($s['status']) ?>
@@ -309,3 +309,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

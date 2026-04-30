@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Add Lead
+// ISSD Management - Admin: Add Lead
 // admin/leads/add.php
 // =====================================================
 define('PAGE_TITLE', 'Add Lead');
@@ -150,3 +150,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

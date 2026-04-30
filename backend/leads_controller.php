@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Leads Controller
+// ISSD Management - Leads Controller
 // backend/leads_controller.php
 // =====================================================
 
@@ -197,3 +197,4 @@ function getLeadsList(PDO $pdo, array $filters = [], int $page = 1, int $perPage
 
     return compact('leads','total','pages','page');
 }
+

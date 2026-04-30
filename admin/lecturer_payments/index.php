@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Lecturer Payments List
+// ISSD Management - Admin: Lecturer Payments List
 // admin/lecturer_payments/index.php
 // =====================================================
 define('PAGE_TITLE', 'Lecturer Payments');
@@ -170,7 +170,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <?php if ($pages > 1): ?>
         <div class="pagination-lms">
           <div class="pagination-info">
-            Showing <?= (($page-1)*15)+1 ?>–<?= min($page*15,$total) ?> of <?= $total ?> records
+            Showing <?= (($page-1)*15)+1 ?>""<?= min($page*15,$total) ?> of <?= $total ?> records
           </div>
           <div class="pagination-controls">
             <?php if ($page>1): ?>
@@ -191,3 +191,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

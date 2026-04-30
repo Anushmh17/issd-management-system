@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Lecturer Dashboard
+// ISSD Management - Lecturer Dashboard
 // =====================================================
 define('PAGE_TITLE', 'Lecturer Dashboard');
 require_once dirname(__DIR__, 2) . '/backend/config.php';
@@ -168,7 +168,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <div class="fw-600"><?= htmlspecialchars($a['title']) ?></div>
                   <small class="text-muted"><?= htmlspecialchars($a['course']) ?></small>
                 </td>
-                <td><?= $a['due_date'] ? date('M d',strtotime($a['due_date'])) : '—' ?></td>
+                <td><?= $a['due_date'] ? date('M d',strtotime($a['due_date'])) : '""' ?></td>
                 <td><span class="badge-lms info"><?= $a['submissions'] ?></span></td>
               </tr>
               <?php endforeach; ?>
@@ -208,3 +208,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

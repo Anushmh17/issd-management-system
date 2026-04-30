@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Lecturer: View Submissions
+// ISSD Management - Lecturer: View Submissions
 // frontend/lecturer/assignments/view_submissions.php
 // =====================================================
 define('PAGE_TITLE', 'Submissions');
@@ -118,3 +118,4 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 3) . '/includes/footer.php'; ?>
+

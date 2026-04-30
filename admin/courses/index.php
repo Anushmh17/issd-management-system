@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Courses List
+// ISSD Management - Admin: Courses List
 // admin/courses/index.php
 // =====================================================
 define('PAGE_TITLE', 'Courses');
@@ -157,7 +157,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
         <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
-          <input type="text" name="search" placeholder="Search Course Name or Code…"
+          <input type="text" name="search" placeholder="Search Course Name or Code..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
@@ -222,7 +222,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </div>
                 <div>
                   <div class="fw-600" style="font-size:14px;"><?= htmlspecialchars($c['course_name']) ?></div>
-                  <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars(substr($c['description'] ?? '', 0, 50)) ?>…</div>
+                  <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars(substr($c['description'] ?? '', 0, 50)) ?>...</div>
                 </div>
               </div>
             </td>
@@ -231,7 +231,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </td>
             <td style="font-size:13px;">
               <i class="fas fa-clock" style="color:#94a3b8;margin-right:4px;"></i>
-              <?= htmlspecialchars($c['duration'] ?: '—') ?>
+              <?= htmlspecialchars($c['duration'] ?: '""') ?>
             </td>
             <td>
               <span class="course-fee-badge">Rs. <?= number_format((float)$c['monthly_fee'], 0) ?>/mo</span>
@@ -300,7 +300,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <?php if ($pages > 1): ?>
       <div class="pagination-lms">
         <div class="pagination-info">
-          Showing <?= (($page-1)*15)+1 ?>–<?= min($page*15,$total) ?> of <?= $total ?> courses
+          Showing <?= (($page-1)*15)+1 ?>""<?= min($page*15,$total) ?> of <?= $total ?> courses
         </div>
         <div class="pagination-controls">
           <?php if ($page>1): ?>
@@ -325,3 +325,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

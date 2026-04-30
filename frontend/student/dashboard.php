@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Student Dashboard
+// ISSD Management - Student Dashboard
 // =====================================================
 define('PAGE_TITLE', 'Student Dashboard');
 require_once dirname(__DIR__, 2) . '/backend/config.php';
@@ -104,7 +104,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <div style="background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:var(--radius-lg);padding:28px 32px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
     <div>
       <div style="font-size:20px;font-weight:700;color:#fff;font-family:'Poppins',sans-serif;">
-        Welcome back, <?= htmlspecialchars(currentUser()['name'] ?? 'Student') ?>! 👋
+        Welcome back, <?= htmlspecialchars(currentUser()['name'] ?? 'Student') ?>! ðŸ‘‹
       </div>
       <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:6px;">
         You are enrolled in <strong><?= $myCourses ?></strong> course<?= $myCourses!=1?'s':'' ?>. Keep learning!
@@ -193,7 +193,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <span class="badge-lms secondary" style="margin-top:3px;"><?= htmlspecialchars($c['code']) ?></span>
                 </td>
                 <td><?= htmlspecialchars($c['lecturer'] ?? 'TBA') ?></td>
-                <td><?= htmlspecialchars($c['duration'] ?? '—') ?></td>
+                <td><?= htmlspecialchars($c['duration'] ?? '""') ?></td>
                 <td><span class="badge-lms <?= $c['status']==='active'?'success':($c['status']==='completed'?'info':'danger') ?>"><?= ucfirst($c['status']) ?></span></td>
               </tr>
               <?php endforeach; ?>
@@ -226,7 +226,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <div class="fw-600" style="font-size:12.5px;"><?= htmlspecialchars($a['title']) ?></div>
                   <small class="text-muted"><?= htmlspecialchars($a['course']) ?></small>
                 </td>
-                <td><?= $a['due_date'] ? date('M d',strtotime($a['due_date'])) : '—' ?></td>
+                <td><?= $a['due_date'] ? date('M d',strtotime($a['due_date'])) : '""' ?></td>
                 <td>
                   <?php if ($a['is_submitted']): ?>
                     <span class="badge-lms success">Submitted</span>
@@ -280,3 +280,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

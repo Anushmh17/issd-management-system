@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Lecturer: Assignments List
+// ISSD Management - Lecturer: Assignments List
 // frontend/lecturer/assignments/index.php
 // =====================================================
 define('PAGE_TITLE', 'Assignments');
@@ -104,3 +104,4 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 3) . '/includes/footer.php'; ?>
+

@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Courses Management
+// ISSD Management - Admin: Courses Management
 // =====================================================
 define('PAGE_TITLE', 'Courses');
 require_once dirname(__DIR__, 2) . '/backend/config.php';
@@ -179,7 +179,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <div style="font-size:10px;color:var(--text-muted);">Fee</div>
               </div>
               <div style="text-align:center;">
-                <div class="fw-700" style="color:var(--primary);font-size:16px;"><?= $c['duration'] ?? '—' ?></div>
+                <div class="fw-700" style="color:var(--primary);font-size:16px;"><?= $c['duration'] ?? '""' ?></div>
                 <div style="font-size:10px;color:var(--text-muted);">Duration</div>
               </div>
               <div style="text-align:center;">
@@ -212,3 +212,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

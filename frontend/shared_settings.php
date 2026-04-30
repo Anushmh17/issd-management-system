@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Shared Settings Page
+// ISSD Management - Shared Settings Page
 // =====================================================
 define('PAGE_TITLE', 'Settings');
 require_once dirname(__DIR__, 1) . '/backend/config.php';
@@ -119,3 +119,4 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 1) . '/includes/footer.php'; ?>
+

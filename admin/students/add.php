@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Add Student (Unified Form)
+// ISSD Management - Admin: Add Student (Unified Form)
 // admin/students/add.php
 // =====================================================
 define('PAGE_TITLE', 'Add Student');
@@ -9,12 +9,14 @@ require_once dirname(__DIR__, 2) . '/backend/db.php';
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
 require_once dirname(__DIR__, 2) . '/backend/student_controller.php';
 require_once dirname(__DIR__, 2) . '/backend/document_controller.php';
+require_once dirname(__DIR__, 2) . '/backend/course_controller.php';
 
 requireRole(ROLE_ADMIN);
 
 $errors  = [];
 $success = false;
 $newId   = '';
+$courses = getActiveCourses($pdo);
 
 // Pre-fill form on validation failure or from Lead conversion
 $form = [
@@ -22,6 +24,7 @@ $form = [
     'nic_number'            => '',
     'batch_number'          => '',
     'join_date'             => date('Y-m-d'),
+    'course_id'             => '',
     'office_email'          => '',
     'office_email_password' => '',
     'personal_email'        => '',
@@ -45,6 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $form[$key] = $_POST[$key] ?? '';
     }
 
+    // --- Validate Emails ---
+    if (!empty($form['personal_email']) && $form['personal_email'] === $form['office_email']) {
+        $errors[] = "Personal email and Office email cannot be the same.";
+    }
+
     // --- Handle Profile Picture Upload ---
     if (!empty($_FILES['profile_picture']['name'])) {
         $upload = uploadDocumentFile($_FILES['profile_picture'], 'profile', 0); // Using 0 as student ID temporarily
@@ -62,6 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result['success']) {
             $studentInternalId = $result['id'];
             $newId = $result['student_id'];
+            
+            // Assign course if selected
+            $courseId = (int)($_POST['course_id'] ?? 0);
+            if ($courseId > 0) {
+                assignStudentToCourse($pdo, $studentInternalId, $courseId);
+            }
             
             // Rename profile picture file if uploaded (since we now have the real internal ID)
             if (!empty($form['profile_picture'])) {
@@ -159,23 +173,31 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 .crop-modal-content {
   background: #fff;
   width: 90%;
-  max-width: 500px;
+  max-width: 550px;
   border-radius: 20px;
   padding: 24px;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
 }
 .crop-container {
   width: 100%;
-  height: 400px;
-  background: #f1f5f9;
+  height: 450px;
+  background: #0f172a;
   margin: 15px 0;
   border-radius: 12px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.crop-container img {
+  display: block;
+  max-width: 100%;
 }
 .crop-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+  margin-top: 20px;
 }
 </style>
 
@@ -232,7 +254,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms mb-20">
           <div class="card-lms-header">
             <div class="card-lms-title">
-              <i class="fas fa-user-tag" style="color:#5b4efa;"></i> Section 1 — Basic Information
+              <i class="fas fa-user-tag" style="color:#5b4efa;"></i> Section 1 "" Basic Information
             </div>
             <span class="section-badge">Required *</span>
           </div>
@@ -280,6 +302,19 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               </div>
               <div class="col-md-3">
                 <div class="form-group-lms">
+                  <label for="course_id">Course <span class="req">*</span></label>
+                  <select id="course_id" name="course_id" class="form-control-lms" required>
+                    <option value="">-- Select Course --</option>
+                    <?php foreach ($courses as $c): ?>
+                      <option value="<?= $c['id'] ?>" <?= $form['course_id'] == $c['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($c['course_name']) ?> (<?= htmlspecialchars($c['course_code']) ?>)
+                      </option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group-lms">
                   <label for="profile_picture">Profile Picture (JPG/PNG)</label>
                   <input type="file" id="profile_picture" name="profile_picture" class="form-control-lms" accept="image/*" onchange="handleProfileSelect(this)">
                 </div>
@@ -292,7 +327,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms mb-20">
           <div class="card-lms-header">
             <div class="card-lms-title">
-              <i class="fas fa-building-columns" style="color:#ef4444;"></i> Section 2 — Institute Details
+              <i class="fas fa-building-columns" style="color:#ef4444;"></i> Section 2 "" Institute Details
             </div>
           </div>
           <div class="card-lms-body">
@@ -324,7 +359,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms mb-20">
           <div class="card-lms-header">
             <div class="card-lms-title">
-              <i class="fas fa-address-book" style="color:#3b82f6;"></i> Section 3 — Contact Information
+              <i class="fas fa-address-book" style="color:#3b82f6;"></i> Section 3 "" Contact Information
             </div>
           </div>
           <div class="card-lms-body">
@@ -361,7 +396,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms mb-20">
           <div class="card-lms-header">
             <div class="card-lms-title">
-              <i class="fas fa-users-viewfinder" style="color:#f59e0b;"></i> Section 4 — Guardian Details
+              <i class="fas fa-users-viewfinder" style="color:#f59e0b;"></i> Section 4 "" Guardian Details
             </div>
           </div>
           <div class="card-lms-body">
@@ -397,7 +432,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms mb-20">
           <div class="card-lms-header">
             <div class="card-lms-title">
-              <i class="fas fa-map-location-dot" style="color:#10b981;"></i> Section 5 — Address Details
+              <i class="fas fa-map-location-dot" style="color:#10b981;"></i> Section 5 "" Address Details
             </div>
           </div>
           <div class="card-lms-body">
@@ -422,7 +457,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms mb-20 premium-border">
           <div class="card-lms-header">
             <div class="card-lms-title">
-              <i class="fas fa-calendar-check" style="color:#a855f7;"></i> Section 6 — Follow-up & Alerts
+              <i class="fas fa-calendar-check" style="color:#a855f7;"></i> Section 6 "" Follow-up & Alerts
             </div>
             <span class="badge-lms info-premium">New</span>
           </div>
@@ -458,7 +493,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms mb-30 document-checklist-card">
           <div class="card-lms-header d-flex justify-content-between align-items-center">
             <div class="card-lms-title">
-              <i class="fas fa-file-shield" style="color:#6366f1;"></i> Section 7 — Document Checklist
+              <i class="fas fa-file-shield" style="color:#6366f1;"></i> Section 7 "" Document Checklist
             </div>
             <div class="header-badges">
               <span class="badge-lms info-premium" id="doc-count-badge">0 / 0 Collected</span>
@@ -516,7 +551,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                     </td>
                     <td>
                       <select name="doc_office_<?= $docKey ?>" class="form-control-lms form-control-sm doc-office-select" disabled>
-                        <option value="">—</option>
+                        <option value="">""</option>
                         <option value="H1">H1</option>
                         <option value="H2">H2</option>
                         <option value="W1">W1</option>
@@ -660,20 +695,32 @@ function handleProfileSelect(input) {
         reader.onload = function(e) {
             const modal = document.getElementById('cropModal');
             const cropImg = document.getElementById('cropImage');
+            
+            // Destroy existing cropper
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+
             cropImg.src = e.target.result;
             modal.style.display = 'flex';
             
-            if (cropper) cropper.destroy();
-            cropper = new Cropper(cropImg, {
-                aspectRatio: 1,
-                viewMode: 2,
-                guides: true,
-                center: true,
-                highlight: false,
-                cropBoxMovable: true,
-                cropBoxResizable: true,
-                toggleDragModeOnDblclick: false,
-            });
+            // Wait for image to be fully loaded in DOM before initializing Cropper
+            cropImg.onload = function() {
+                cropper = new Cropper(cropImg, {
+                    aspectRatio: 1,
+                    viewMode: 1, // Restrict the crop box not to exceed the size of the canvas
+                    dragMode: 'move',
+                    autoCropArea: 0.8,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            };
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -750,6 +797,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Email uniqueness validation
+    const addStudentForm = document.getElementById('addStudentForm');
+    if (addStudentForm) {
+        addStudentForm.addEventListener('submit', function(e) {
+            const officeEmail = document.getElementById('office_email').value.trim();
+            const personalEmail = document.getElementById('personal_email').value.trim();
+            
+            if (personalEmail !== '' && officeEmail === personalEmail) {
+                e.preventDefault();
+                alert('Validation Error: Personal email and Office email cannot be the same.');
+                document.getElementById('personal_email').focus();
+            }
+        });
+    }
 });
 
 function toggleDocFields(key) {
@@ -850,3 +912,4 @@ JS;
 
 require_once dirname(__DIR__, 2) . '/includes/footer.php';
 ?>
+

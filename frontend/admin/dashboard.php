@@ -1,6 +1,6 @@
 <?php
 /**
- * LEARN Management - Admin Dashboard
+ * ISSD Management - Admin Dashboard
  * High-Density Bento Box Redesign
  */
 define('PAGE_TITLE', 'Dashboard');
@@ -64,7 +64,7 @@ while($row = $stmtLeads->fetch()) {
         'color' => '#f43f5e',
         'time' => date('h:i A', strtotime($row['time'])),
         'title' => "Call " . $row['name'],
-        'desc' => $row['phone'] . ($row['notes'] ? " • " . $row['notes'] : ""),
+        'desc' => $row['phone'] . ($row['notes'] ? " &bull; " . $row['notes'] : ""),
         'link' => BASE_URL . "/admin/leads/index.php?highlight_id=" . $row['id']
     ];
 }
@@ -79,7 +79,7 @@ while($row = $stmtStudents->fetch()) {
         'color' => '#6366f1',
         'time' => 'Today',
         'title' => "Follow up: " . $row['full_name'],
-        'desc' => $row['phone_number'] . ($row['follow_up_note'] ? " • " . $row['follow_up_note'] : ""),
+        'desc' => $row['phone_number'] . ($row['follow_up_note'] ? " &bull; " . $row['follow_up_note'] : ""),
         'link' => BASE_URL . "/admin/students/index.php?highlight_id=" . $row['id']
     ];
 }
@@ -101,7 +101,7 @@ while($row = $stmtPayments->fetch()) {
         'color' => '#10b981',
         'time' => 'URGENT',
         'title' => "Collection: " . $row['full_name'],
-        'desc' => $row['course_name'] . " • Rs. " . number_format($row['total_due'], 0),
+        'desc' => $row['course_name'] . " &bull; Rs. " . number_format($row['total_due'], 0),
         'link' => BASE_URL . "/admin/payments/index.php?highlight_id=" . $row['id']
     ];
 }
@@ -146,7 +146,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     grid-template-columns: repeat(12, 1fr);
     grid-auto-rows: minmax(100px, auto);
     gap: 24px;
-    padding: 32px;
+    padding: 10px 32px 32px 32px;
   }
 
   /* --- Bento Base Card --- */
@@ -258,6 +258,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .card-header-bento h3 { font-size: 18px; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 10px; }
 </style>
 
+
+<div id="page-content">
 <div class="dashboard-grid">
 
   <div class="bento-card hero-card">
@@ -544,6 +546,7 @@ foreach ($checkStudents as $cs) {
     </a>
   </div>
 
+</div>
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

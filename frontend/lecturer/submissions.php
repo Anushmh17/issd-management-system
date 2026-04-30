@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Lecturer: View Submissions
+// ISSD Management - Lecturer: View Submissions
 // =====================================================
 define('PAGE_TITLE', 'Submissions');
 require_once dirname(__DIR__, 2) . '/backend/config.php';
@@ -142,7 +142,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                         <div style="font-size:12px;background:var(--bg-page);padding:6px;border-radius:4px;border:1px solid var(--border-color);max-height:80px;overflow-y:auto;"><?= nl2br(htmlspecialchars($s['remarks'])) ?></div>
                     <?php endif; ?>
                 <?php else: ?>
-                    <span class="text-muted">—</span>
+                    <span class="text-muted">""</span>
                 <?php endif; ?>
             </td>
             <td>
@@ -151,7 +151,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <?php elseif($hasSubmitted): ?>
                     <span class="badge-lms warning">Needs Grading</span>
                 <?php else: ?>
-                    <span class="text-muted">—</span>
+                    <span class="text-muted">""</span>
                 <?php endif; ?>
             </td>
             <td>
@@ -169,7 +169,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                         </form>
                     </div>
                 <?php else: ?>
-                    <span class="text-muted">—</span>
+                    <span class="text-muted">""</span>
                 <?php endif; ?>
             </td>
           </tr>
@@ -181,3 +181,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

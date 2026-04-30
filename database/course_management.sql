@@ -1,8 +1,8 @@
--- =====================================================
--- LEARN Management - Course Management Migration
+﻿-- =====================================================
+-- ISSD Management - Course Management Migration
 -- =====================================================
 
-USE `learn_management`;
+USE `issd_management`;
 
 -- -------------------------------------------------------
 -- 1. Rename columns in existing courses table
@@ -41,3 +41,4 @@ CREATE TABLE IF NOT EXISTS `student_courses` (
   FOREIGN KEY (`student_id`) REFERENCES `students`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`course_id`)  REFERENCES `courses`(`id`)  ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Assign Student to Course
+// ISSD Management - Admin: Assign Student to Course
 // admin/courses/assign_student.php
 // =====================================================
 define('PAGE_TITLE', 'Enroll Student');
@@ -106,11 +106,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <?php else: ?>
               <select id="student_id" name="student_id" class="form-control-lms" required
                       onchange="updateFeePreview()">
-                <option value="">— Choose a student —</option>
+                <option value="">-- Choose a student --</option>
                 <?php foreach ($students as $st): ?>
                   <option value="<?= $st['id'] ?>"
                     <?= (int)$st['id'] === $preselectedStudentId ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($st['student_id']) ?> — <?= htmlspecialchars($st['full_name']) ?>
+                    <?= htmlspecialchars($st['student_id']) ?> "" <?= htmlspecialchars($st['full_name']) ?>
                     (<?= htmlspecialchars($st['batch_number']) ?>)
                   </option>
                 <?php endforeach; ?>
@@ -128,12 +128,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <?php else: ?>
               <select id="course_id" name="course_id" class="form-control-lms" required
                       onchange="updateFeePreview()">
-                <option value="">— Choose a course —</option>
+                <option value="">"" Choose a course ""</option>
                 <?php foreach ($courses as $c): ?>
                   <option value="<?= $c['id'] ?>"
                           data-fee="<?= $c['monthly_fee'] ?>"
                     <?= (int)$c['id'] === $preselectedCourseId ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($c['course_code']) ?> — <?= htmlspecialchars($c['course_name']) ?>
+                    <?= htmlspecialchars($c['course_code']) ?> "" <?= htmlspecialchars($c['course_name']) ?>
                   </option>
                 <?php endforeach; ?>
               </select>
@@ -147,7 +147,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 Monthly Fee
               </div>
               <div id="feeAmount" style="font-size:22px;font-weight:800;color:#059669;"></div>
-              <div style="font-size:11px;color:#6b7280;">per month — used for payment tracking</div>
+              <div style="font-size:11px;color:#6b7280;">per month "" used for payment tracking</div>
             </div>
 
             <div class="row g-3">
@@ -216,7 +216,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <div style="font-size:10px;color:#94a3b8;">Rs. <?= number_format((float)$e['monthly_fee'],0) ?>/mo</div>
                 </td>
                 <td style="font-size:12px;color:#64748b;">
-                  <?= $e['start_date'] ? date('d M Y', strtotime($e['start_date'])) : '—' ?>
+                  <?= $e['start_date'] ? date('d M Y', strtotime($e['start_date'])) : '""' ?>
                 </td>
                 <td>
                   <?php
@@ -317,3 +317,4 @@ JS;
 
 require_once dirname(__DIR__, 2) . '/includes/footer.php';
 ?>
+

@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Database Connection (PDO)
+// ISSD Management - Database Connection (PDO)
 // =====================================================
 
 require_once __DIR__ . '/config.php';
@@ -35,3 +35,4 @@ function getDBConnection() {
 
 // Shorthand
 $pdo = getDBConnection();
+

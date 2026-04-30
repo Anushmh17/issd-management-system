@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Payments List
+// ISSD Management - Admin: Payments List
 // admin/payments/index.php
 // =====================================================
 define('PAGE_TITLE', 'Payment History');
@@ -150,7 +150,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <?php if ($pages > 1): ?>
         <div class="pagination-lms">
           <div class="pagination-info">
-            Showing <?= (($page-1)*15)+1 ?>–<?= min($page*15,$total) ?> of <?= $total ?> payments
+            Showing <?= (($page-1)*15)+1 ?>""<?= min($page*15,$total) ?> of <?= $total ?> payments
           </div>
           <div class="pagination-controls">
             <?php if ($page>1): ?>
@@ -187,3 +187,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

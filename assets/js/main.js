@@ -1,5 +1,5 @@
 // =====================================================
-// LEARN Management - Main JavaScript
+// ISSD Management - Main JavaScript
 // =====================================================
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // 1. Perspective: Only reduce count IF it's not already read
             // (We check if it has a 'Read' badge or opacity, but easier to just check realId)
             if (noticeId) {
-                fetch(window.location.origin + '/Webbuilders Projects/LEARN Management/backend/notice_read.php', {
+                fetch(window.location.origin + '/Webbuilders Projects/issd_management/backend/notice_read.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ notice_id: noticeId })
@@ -325,3 +325,4 @@ function submitForm(formId, successCb) {
       });
   });
 }
+

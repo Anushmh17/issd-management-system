@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Lecturer Controller
+// ISSD Management - Lecturer Controller
 // backend/lecturer_controller.php
 // =====================================================
 
@@ -159,7 +159,7 @@ function updateLecturer(PDO $pdo, int $id, array $d, ?array $photoFile = null): 
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     try {
-        // Build SET clause — password only if provided
+        // Build SET clause "" password only if provided
         $sets   = ['name=?','email=?','phone=?','qualifications=?',
                    'username=?','department=?','employee_id=?','joined_date=?','status=?'];
         $params = [
@@ -209,7 +209,7 @@ function updateLecturer(PDO $pdo, int $id, array $d, ?array $photoFile = null): 
 }
 
 // -------------------------------------------------------
-// Delete Lecturer (hard delete — photo cleaned up)
+// Delete Lecturer (hard delete "" photo cleaned up)
 // -------------------------------------------------------
 function deleteLecturer(PDO $pdo, int $id): bool {
     try {
@@ -337,3 +337,4 @@ function lecturerPhotoUrl(?string $photo): string {
     }
     return BASE_URL . '/assets/images/avatar-default.png';
 }
+

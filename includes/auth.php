@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Auth Helper
+// ISSD Management - Auth Helper
 // =====================================================
 
 require_once dirname(__DIR__) . '/backend/config.php';
@@ -72,13 +72,13 @@ function requireRole(string ...$roles): void {
 }
 
 // -------------------------------------------------------
-// Login logic — checks users table (admin) AND lecturers table
+// Login logic "" checks users table (admin) AND lecturers table
 // -------------------------------------------------------
 function loginUser(string $identifier, string $password): array {
     require_once dirname(__DIR__) . '/backend/db.php';
     $pdo = getDBConnection();
 
-    // ── 1. Try admin/student from users table (by email only) ──
+    // â"€â"€ 1. Try admin/student from users table (by email only) â"€â"€
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? AND status = 'active' LIMIT 1");
     $stmt->execute([$identifier]);
     $user = $stmt->fetch();
@@ -102,7 +102,7 @@ function loginUser(string $identifier, string $password): array {
         }
     }
 
-    // ── 2. Try lecturer table (email OR username) ──
+    // â"€â"€ 2. Try lecturer table (email OR username) â"€â"€
     $stmt2 = $pdo->prepare("
         SELECT * FROM lecturers
         WHERE (email = ? OR username = ?) AND status = 'active'
@@ -194,3 +194,4 @@ function getFlash(): ?array {
     unset($_SESSION['flash']);
     return $flash;
 }
+

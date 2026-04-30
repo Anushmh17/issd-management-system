@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Edit Lecturer
+// ISSD Management - Admin: Edit Lecturer
 // admin/lecturers/edit.php
 // =====================================================
 define('PAGE_TITLE', 'Edit Lecturer');
@@ -149,7 +149,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <input type="file" id="photoInput" name="photo" accept="image/*"
                    class="d-none" onchange="previewPhoto(this)">
             <p class="text-muted" style="font-size:11px;margin-top:8px;">
-              JPG, PNG, WebP · Max 5 MB
+              JPG, PNG, WebP Â· Max 5 MB
             </p>
           </div>
         </div>
@@ -185,9 +185,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <span class="course-code-badge" style="font-size:9px;"><?= htmlspecialchars($c['course_code']) ?></span>
                 </div>
                 <?php if ($c['status'] === 'active'): ?>
-                  <span style="font-size:9px;font-weight:700;color:#059669;">●</span>
+                  <span style="font-size:9px;font-weight:700;color:#059669;">â--</span>
                 <?php else: ?>
-                  <span style="font-size:9px;font-weight:700;color:#94a3b8;">●</span>
+                  <span style="font-size:9px;font-weight:700;color:#94a3b8;">â--</span>
                 <?php endif; ?>
               </div>
               <?php endforeach; ?>
@@ -440,3 +440,4 @@ function togglePwd(fieldId, icon) {
 </script>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

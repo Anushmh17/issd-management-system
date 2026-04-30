@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Lecturer: My Courses
+// ISSD Management - Lecturer: My Courses
 // =====================================================
 define('PAGE_TITLE', 'My Courses');
 require_once dirname(__DIR__, 2) . '/backend/config.php';
@@ -65,3 +65,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

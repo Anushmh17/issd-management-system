@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Shared Sidebar
+// ISSD Management - Shared Sidebar
 // =====================================================
 if (!isset($user)) $user = currentUser();
 $role   = $user['role']   ?? 'student';
@@ -62,10 +62,9 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
 
   <!-- Brand -->
   <div class="sidebar-brand">
-    <div class="brand-text" style="display: block;">
-      <div style="font-family: 'Times New Roman', serif; font-size: 28px; font-weight: 800; letter-spacing: 1px; color: var(--primary); line-height: 1;">ISSD</div>
-      <div style="font-size: 9px; font-weight: 700; color: var(--primary); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px;">Institute of Software Skills Development</div>
-    </div>
+    <a href="<?= BASE_URL ?>/index.php" class="brand-logo-link">
+      <img src="<?= BASE_URL ?>/assets/images/logo.png" alt="ISSD Logo" class="brand-logo-img">
+    </a>
     <button id="sidebarClose" class="d-md-none sidebar-close-btn" title="Close Sidebar">
       <i class="fas fa-arrow-left"></i>
     </button>
@@ -198,3 +197,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
+

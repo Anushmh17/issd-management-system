@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Student: Payments History
+// ISSD Management - Student: Payments History
 // frontend/student/payments.php
 // =====================================================
 define('PAGE_TITLE', 'Payment History');
@@ -98,3 +98,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

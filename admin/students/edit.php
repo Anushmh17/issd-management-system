@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Edit Student
+// ISSD Management - Admin: Edit Student
 // admin/students/edit.php
 // =====================================================
 define('PAGE_TITLE', 'Edit Student');
@@ -671,3 +671,4 @@ JS;
 
 require_once dirname(__DIR__, 2) . '/includes/footer.php';
 ?>
+

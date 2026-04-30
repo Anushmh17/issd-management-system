@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Students List
+// ISSD Management - Admin: Students List
 // admin/students/index.php
 // =====================================================
 define('PAGE_TITLE', 'Students');
@@ -186,7 +186,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
         <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
-          <input type="text" name="search" id="searchInput" placeholder="Search Name, ID or NIC…"
+          <input type="text" name="search" id="searchInput" placeholder="Search Name, ID or NIC..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
@@ -292,7 +292,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <td><?= renderStatusBadge($s['status']) ?></td>
             <td><?= renderDocStatusBadge($docStatuses[(int)$s['id']] ?? 'missing') ?></td>
             <td style="font-size:13px;color:#64748b;">
-              <?= $s['join_date'] ? date('d M Y', strtotime($s['join_date'])) : '—' ?>
+              <?= $s['join_date'] ? date('d M Y', strtotime($s['join_date'])) : '""' ?>
             </td>
             <td>
               <div class="d-flex gap-6" style="justify-content:center;">
@@ -341,7 +341,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <?php if ($pages > 1): ?>
       <div class="pagination-lms">
         <div class="pagination-info">
-          Showing <?= (($page - 1) * 15) + 1 ?>–<?= min($page * 15, $total) ?> of <?= $total ?> students
+          Showing <?= (($page - 1) * 15) + 1 ?>""<?= min($page * 15, $total) ?> of <?= $total ?> students
         </div>
         <div class="pagination-controls">
           <?php if ($page > 1): ?>
@@ -394,3 +394,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

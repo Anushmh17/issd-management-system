@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Enrollments Management
+// ISSD Management - Admin: Enrollments Management
 // =====================================================
 define('PAGE_TITLE', 'Enrollments');
 require_once dirname(__DIR__, 2) . '/backend/config.php';
@@ -178,7 +178,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <form method="GET" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
         <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
-          <input type="text" name="q" placeholder="Search Student name, Course or Code…"
+          <input type="text" name="q" placeholder="Search Student name, Course or Code..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
@@ -204,7 +204,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <tbody>
           <?php foreach ($enrollments as $e): ?>
           <tr>
-            <td><?= $e['start_date'] ? date('M d, Y', strtotime($e['start_date'])) : '—' ?></td>
+            <td><?= $e['start_date'] ? date('M d, Y', strtotime($e['start_date'])) : '""' ?></td>
             <td class="fw-600">
               <a href="<?= BASE_URL ?>/admin/payments/add.php?student_id=<?= $e['student_id'] ?>&course_id=<?= $e['course_id'] ?>" 
                  style="color:inherit;text-decoration:none;" title="Click to pay">
@@ -244,3 +244,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

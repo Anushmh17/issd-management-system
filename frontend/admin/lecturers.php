@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Lecturers Management
+// ISSD Management - Admin: Lecturers Management
 // =====================================================
 define('PAGE_TITLE', 'Lecturers');
 require_once dirname(__DIR__, 2) . '/backend/config.php';
@@ -215,8 +215,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </div>
               </div>
             </td>
-            <td><?= htmlspecialchars($l['employee_id']??'—') ?></td>
-            <td><?= htmlspecialchars($l['department']??'—') ?></td>
+            <td><?= htmlspecialchars($l['employee_id']??'""') ?></td>
+            <td><?= htmlspecialchars($l['department']??'""') ?></td>
             <td><span class="badge-lms info"><?= $l['courses_count'] ?></span></td>
             <td><span class="badge-lms <?= $l['status']==='active'?'success':'danger' ?>"><?= ucfirst($l['status']) ?></span></td>
             <td>
@@ -240,3 +240,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

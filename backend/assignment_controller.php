@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Assignment Controller
+// ISSD Management - Assignment Controller
 // backend/assignment_controller.php
 // =====================================================
 
@@ -186,3 +186,4 @@ function submitAssignment(PDO $pdo, int $studentId, int $assignmentId, array $fi
         return ['success' => false, 'errors' => ['Failed to submit assignment.']];
     }
 }
+

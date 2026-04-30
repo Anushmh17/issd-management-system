@@ -1,12 +1,12 @@
--- =====================================================
--- LEARN Management - Database Schema
+﻿-- =====================================================
+-- ISSD Management - Database Schema
 -- =====================================================
 
-CREATE DATABASE IF NOT EXISTS `learn_management`
+CREATE DATABASE IF NOT EXISTS `issd_management`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE `learn_management`;
+USE `issd_management`;
 
 -- -------------------------------------------------------
 -- Table: users (shared login table for all roles)
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- Default admin account  (password: Admin@1234)
 INSERT IGNORE INTO `users` (`name`, `email`, `password`, `role`, `status`) VALUES
-('Super Admin', 'admin@learn.com', '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active');
+('Super Admin', 'admin@issd.com', '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active');
 
 -- -------------------------------------------------------
 -- Table: courses
@@ -187,3 +187,5 @@ INSERT IGNORE INTO `courses` (`title`, `code`, `description`, `duration`, `fee`)
 ('PHP & MySQL Mastery', 'PHP201', 'Server-side programming with PHP and MySQL', '4 Months', 20000.00),
 ('UI/UX Design Principles', 'UX101', 'Design thinking and user experience', '2 Months', 12000.00),
 ('Python for Beginners', 'PY101', 'Introduction to Python programming', '3 Months', 18000.00);
+
+

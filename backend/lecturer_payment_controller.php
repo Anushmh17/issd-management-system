@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Lecturer Payment Controller
+// ISSD Management - Lecturer Payment Controller
 // backend/lecturer_payment_controller.php
 // =====================================================
 
@@ -108,3 +108,4 @@ function getPendingLecturerPaymentsSummary(PDO $pdo): array {
     ");
     return $stmt->fetch();
 }
+

@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Add Payment
+// ISSD Management - Admin: Add Payment
 // admin/payments/add.php
 // =====================================================
 define('PAGE_TITLE', 'Add Payment');
@@ -95,7 +95,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms">
               <label>Select Student <span class="req">*</span></label>
               <select name="student_id" id="student_id" class="form-control-lms" required onchange="updateCourseList()">
-                <option value="">— Choose a Student —</option>
+                <option value="">-- Choose a Student --</option>
                 <?php foreach ($grouped as $sId => $sData): ?>
                   <option value="<?= $sId ?>"><?= htmlspecialchars($sData['reg'] . ' - ' . $sData['name']) ?></option>
                 <?php endforeach; ?>
@@ -107,7 +107,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms">
               <label>Select Course <span class="req">*</span></label>
               <select name="course_id" id="course_id" class="form-control-lms" required onchange="fetchPaymentInfo()">
-                <option value="">— Choose a Course —</option>
+                <option value="">-- Choose a Course --</option>
               </select>
             </div>
           </div>
@@ -201,7 +201,7 @@ let currentTotalDue = 0;
 function updateCourseList() {
     const sId = document.getElementById('student_id').value;
     const cSel = document.getElementById('course_id');
-    cSel.innerHTML = '<option value="">— Choose a Course —</option>';
+    cSel.innerHTML = '<option value="">-- Choose a Course --</option>';
     
     if (sId && studentData[sId]) {
         studentData[sId].courses.forEach(c => {
@@ -284,3 +284,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

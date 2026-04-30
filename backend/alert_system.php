@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Alert & Reminder System
+// ISSD Management - Alert & Reminder System
 // backend/alert_system.php
 // =====================================================
 
@@ -118,7 +118,7 @@ function runDailyCron(PDO $pdo) {
 
         if ($subject && $p['email']) {
             // Mocking mail() function call here:
-            // mail($p['email'], $subject, $body, "From: noreply@learn.management");
+            // mail($p['email'], $subject, $body, "From: noreply@issd.com");
             error_log("CRON EMail -> To: {$p['email']} | Subject: {$subject}");
             $emailsSent++;
         }
@@ -130,9 +130,11 @@ function runDailyCron(PDO $pdo) {
         $subject = "ADMIN ALERT: Pending Lecturer Payments";
         $body = "There are {$adminAlerts['count']} pending lecturer payments totaling Rs. " . number_format($adminAlerts['total'], 2) . ". Please review.";
         // Mocking email to admin
-        error_log("CRON EMail -> To: admin@learn.management | Subject: {$subject}");
+        error_log("CRON EMail -> To: admin@issd.com | Subject: {$subject}");
         $emailsSent++;
     }
 
     echo "CRON Job Complete! Simulated {$emailsSent} emails sent.\n";
 }
+
+

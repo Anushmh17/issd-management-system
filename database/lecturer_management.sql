@@ -1,8 +1,8 @@
--- =====================================================
--- LEARN Management - Lecturer Management Migration
+﻿-- =====================================================
+-- ISSD Management - Lecturer Management Migration
 -- =====================================================
 
-USE `learn_management`;
+USE `issd_management`;
 
 -- -------------------------------------------------------
 -- 1. Standalone lecturers table
@@ -26,14 +26,14 @@ CREATE TABLE IF NOT EXISTS `lecturers` (
 
 -- -------------------------------------------------------
 -- 2. Migrate course_assignments.lecturer_id FK
---    from users(id) → lecturers(id)
+--    from users(id) â†' lecturers(id)
 -- -------------------------------------------------------
 
 -- Drop old FK & index
 ALTER TABLE `course_assignments`
   DROP FOREIGN KEY `course_assignments_ibfk_2`;
 
--- Flush data that references old users (safe — no assignments exist yet)
+-- Flush data that references old users (safe "" no assignments exist yet)
 DELETE FROM `course_assignments` WHERE 1;
 
 -- Reset lecturer_id column to match lecturers PK type
@@ -48,3 +48,4 @@ ALTER TABLE `course_assignments`
 -- -------------------------------------------------------
 -- 3. Ensure upload directory marker (handled in PHP)
 -- -------------------------------------------------------
+

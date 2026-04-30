@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Mark Notice as Read
+// ISSD Management - Mark Notice as Read
 // backend/notice_read.php
 // =====================================================
 require_once __DIR__ . '/config.php';
@@ -29,3 +29,4 @@ if ($noticeId > 0 && $userId > 0) {
 } else {
     echo json_encode(['success' => false, 'error' => 'Invalid parameters']);
 }
+

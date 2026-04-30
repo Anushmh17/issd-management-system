@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Document Manager (per student)
+// ISSD Management - Admin: Document Manager (per student)
 // admin/documents/manage.php
 // =====================================================
 define('PAGE_TITLE', 'Manage Documents');
@@ -33,7 +33,7 @@ $errors   = [];
 $messages = [];
 
 // =====================================================
-// Handle POST — process one document at a time
+// Handle POST "" process one document at a time
 // =====================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -481,7 +481,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <!-- Office -->
             <td>
               <select name="collected_by" form="<?= $formId ?>" class="form-control-lms doc-select">
-                <option value="">— Select —</option>
+                <option value="">-- Select --</option>
                 <?php foreach (['W1','W2','H1','H2'] as $office): ?>
                   <option value="<?= $office ?>" <?= $collectedBy === $office ? 'selected' : '' ?>><?= $office ?></option>
                 <?php endforeach; ?>
@@ -626,3 +626,4 @@ JS;
 
 require_once dirname(__DIR__, 2) . '/includes/footer.php';
 ?>
+

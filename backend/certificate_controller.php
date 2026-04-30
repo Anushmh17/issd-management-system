@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Certificate Controller
+// ISSD Management - Certificate Controller
 // backend/certificate_controller.php
 // =====================================================
 
@@ -157,3 +157,4 @@ function toggleCertificateProvided(PDO $pdo, int $id): bool {
         return false;
     }
 }
+

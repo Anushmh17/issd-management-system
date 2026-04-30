@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Assign Lecturer to Course
+// ISSD Management - Admin: Assign Lecturer to Course
 // admin/courses/assign_lecturer.php
 // =====================================================
 define('PAGE_TITLE', 'Assign Lecturer');
@@ -100,11 +100,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms">
               <label for="course_id">Select Course <span class="req">*</span></label>
               <select id="course_id" name="course_id" class="form-control-lms" required>
-                <option value="">— Choose a course —</option>
+                <option value="">"" Choose a course ""</option>
                 <?php foreach ($courses as $c): ?>
                   <option value="<?= $c['id'] ?>"
                     <?= (int)$c['id'] === $preselectedCourseId ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($c['course_code']) ?> — <?= htmlspecialchars($c['course_name']) ?>
+                    <?= htmlspecialchars($c['course_code']) ?> "" <?= htmlspecialchars($c['course_name']) ?>
                   </option>
                 <?php endforeach; ?>
               </select>
@@ -119,7 +119,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </div>
               <?php else: ?>
               <select id="lecturer_id" name="lecturer_id" class="form-control-lms" required>
-                <option value="">— Choose a lecturer —</option>
+                <option value="">"" Choose a lecturer ""</option>
                 <?php foreach ($lecturers as $l): ?>
                   <option value="<?= $l['id'] ?>">
                     <?= htmlspecialchars($l['name']) ?>
@@ -194,7 +194,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   </div>
                 </td>
                 <td style="font-size:13px;color:#64748b;">
-                  <?= $a['assigned_date'] ? date('d M Y', strtotime($a['assigned_date'])) : '—' ?>
+                  <?= $a['assigned_date'] ? date('d M Y', strtotime($a['assigned_date'])) : '""' ?>
                 </td>
                 <td style="text-align:center;">
                   <form method="POST" action="assign_lecturer.php" style="display:inline;">
@@ -221,3 +221,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

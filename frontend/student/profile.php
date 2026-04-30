@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Student Profile
+// ISSD Management - Student Profile
 // frontend/student/profile.php
 // =====================================================
 define('PAGE_TITLE', 'My Profile');
@@ -127,7 +127,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <div class="col-md-4">
                 <label style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:6px;display:block;">Document Type</label>
                 <select name="type" class="form-control-lms" required>
-                  <option value="">— Select —</option>
+                  <option value="">-- Select --</option>
                   <option value="OL">O/L Certificate</option>
                   <option value="AL">A/L Certificate</option>
                   <option value="NVQ">NVQ Level</option>
@@ -185,3 +185,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

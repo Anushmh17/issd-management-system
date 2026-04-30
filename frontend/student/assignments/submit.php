@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Student: Submit Assignment
+// ISSD Management - Student: Submit Assignment
 // frontend/student/assignments/submit.php
 // =====================================================
 define('PAGE_TITLE', 'Submit Assignment');
@@ -182,3 +182,4 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 3) . '/includes/footer.php'; ?>
+

@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Document Controller
+// ISSD Management - Document Controller
 // backend/document_controller.php
 // =====================================================
 
@@ -8,7 +8,7 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 
 // -------------------------------------------------------
-// Document definitions — single source of truth
+// Document definitions "" single source of truth
 // -------------------------------------------------------
 function getDocumentDefinitions(): array {
     return [
@@ -146,7 +146,7 @@ function uploadDocumentFile(array $file, string $docKey, int $studentId): array 
         return ['success' => false, 'path' => null, 'error' => 'Invalid MIME type detected.'];
     }
 
-    // Build a unique filename — no overwrite
+    // Build a unique filename "" no overwrite
     $safeName  = 'STU' . $studentId . '_' . $docKey . '_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
     $destPath  = DOC_UPLOAD_DIR . $safeName;
 
@@ -304,3 +304,4 @@ function deleteOtherDoc(PDO $pdo, int $docId): bool {
     }
     return $pdo->prepare("DELETE FROM student_other_documents WHERE id = ?")->execute([$docId]);
 }
+

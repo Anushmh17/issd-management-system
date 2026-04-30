@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Process Completion
+// ISSD Management - Admin: Process Completion
 // admin/certificates/add.php
 // =====================================================
 define('PAGE_TITLE', 'Process Completion');
@@ -81,7 +81,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms">
               <label>Select Student <span class="req">*</span></label>
               <select name="student_id" class="form-control-lms" required>
-                <option value="">— Choose an Eligible Student —</option>
+                <option value="">"" Choose an Eligible Student ""</option>
                 <?php foreach ($students as $s): ?>
                   <option value="<?= $s['id'] ?>" <?= $form['student_id']==$s['id']?'selected':'' ?>>
                     <?= htmlspecialchars($s['student_reg'] . ' - ' . $s['full_name']) ?>
@@ -140,3 +140,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Lecturers List
+// ISSD Management - Admin: Lecturers List
 // admin/lecturers/index.php
 // =====================================================
 define('PAGE_TITLE', 'Lecturers');
@@ -218,7 +218,7 @@ tr:hover .lect-avatar-wrap {
       <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
         <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
-          <input type="text" name="search" placeholder="Search Name, Email, Username…"
+          <input type="text" name="search" placeholder="Search Name, Email, Username..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
@@ -305,8 +305,8 @@ tr:hover .lect-avatar-wrap {
                 @<?= htmlspecialchars($l['username']) ?>
               </span>
             </td>
-            <td style="font-size:13px;"><?= htmlspecialchars($l['phone'] ?: '—') ?></td>
-            <td style="font-size:13px;"><?= htmlspecialchars($l['department'] ?: '—') ?></td>
+            <td style="font-size:13px;"><?= htmlspecialchars($l['phone'] ?: '""') ?></td>
+            <td style="font-size:13px;"><?= htmlspecialchars($l['department'] ?: '""') ?></td>
             <td>
               <span class="badge-lms info"><?= $l['course_count'] ?> course<?= $l['course_count']!=1?'s':'' ?></span>
             </td>
@@ -322,7 +322,7 @@ tr:hover .lect-avatar-wrap {
               <?php endif; ?>
             </td>
             <td style="font-size:13px;color:#64748b;">
-              <?= $l['joined_date'] ? date('d M Y', strtotime($l['joined_date'])) : '—' ?>
+              <?= $l['joined_date'] ? date('d M Y', strtotime($l['joined_date'])) : '""' ?>
             </td>
             <td>
               <div class="d-flex gap-6" style="justify-content:center;">
@@ -352,7 +352,7 @@ tr:hover .lect-avatar-wrap {
       <?php if ($pages > 1): ?>
       <div class="pagination-lms">
         <div class="pagination-info">
-          Showing <?= (($page-1)*15)+1 ?>–<?= min($page*15,$total) ?> of <?= $total ?> lecturers
+          Showing <?= (($page-1)*15)+1 ?>""<?= min($page*15,$total) ?> of <?= $total ?> lecturers
         </div>
         <div class="pagination-controls">
           <?php if ($page>1): ?>
@@ -415,3 +415,4 @@ JS;
 
 require_once dirname(__DIR__, 2) . '/includes/footer.php';
 ?>
+

@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Shared Profile Page Template
+// ISSD Management - Shared Profile Page Template
 // =====================================================
 define('PAGE_TITLE', 'My Profile');
 require_once dirname(__DIR__, 1) . '/backend/config.php';
@@ -114,3 +114,4 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 1) . '/includes/footer.php'; ?>
+

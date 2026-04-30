@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Student Controller
+// ISSD Management - Student Controller
 // =====================================================
 
 require_once __DIR__ . '/config.php';
@@ -299,7 +299,7 @@ function sendAdminFollowUpEmail(array $student, string $note, ?string $date): bo
 
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= "From: Learn Management <no-reply@institute.com>" . "\r\n";
+    $headers .= "From: ISSD Management <no-reply@institute.com>" . "\r\n";
 
     error_log("EMAIL TO ADMIN: $subject - Note: $note");
     return true; 
@@ -322,3 +322,4 @@ function getPendingFollowUps(PDO $pdo, int $limit = 5): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
+

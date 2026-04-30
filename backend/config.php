@@ -1,13 +1,13 @@
 <?php
 // =====================================================
-// LEARN Management - Application Configuration
+// ISSD Management - Application Configuration
 // =====================================================
 
 define('APP_NAME', 'ISSD Management');
 define('APP_VERSION', '1.0.0');
-define('APP_URL', 'http://localhost/Webbuilders%20Projects/ISSD%20Management');
+define('APP_URL', 'http://localhost/Webbuilders%20Projects/issd_management');
 define('BASE_PATH', dirname(__DIR__));
-define('BASE_URL', '/Webbuilders%20Projects/ISSD%20Management');
+define('BASE_URL', '/Webbuilders%20Projects/issd_management');
 
 // Database Configuration
 define('DB_HOST', '127.0.0.1');
@@ -31,3 +31,4 @@ define('ROLE_STUDENT', 'student');
 
 // Timezone
 date_default_timezone_set('Asia/Colombo');
+

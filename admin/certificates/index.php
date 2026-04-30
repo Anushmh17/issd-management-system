@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Certificates
+// ISSD Management - Admin: Certificates
 // admin/certificates/index.php
 // =====================================================
 define('PAGE_TITLE', 'Certificates');
@@ -66,7 +66,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <form method="GET" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
         <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
-          <input type="text" name="search" placeholder="Search by ID or Cert #…"
+          <input type="text" name="search" placeholder="Search by ID or Cert #..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
@@ -158,7 +158,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <?php if ($pages > 1): ?>
         <div class="pagination-lms">
           <div class="pagination-info">
-            Showing <?= (($page-1)*15)+1 ?>–<?= min($page*15,$total) ?> of <?= $total ?> records
+            Showing <?= (($page-1)*15)+1 ?>""<?= min($page*15,$total) ?> of <?= $total ?> records
           </div>
           <div class="pagination-controls">
             <?php if ($page>1): ?>
@@ -179,3 +179,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

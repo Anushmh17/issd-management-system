@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Payment Controller
+// ISSD Management - Payment Controller
 // backend/payment_controller.php
 // =====================================================
 
@@ -186,3 +186,4 @@ function getStudentsWithActiveCourses(PDO $pdo): array {
     ");
     return $stmt->fetchAll();
 }
+

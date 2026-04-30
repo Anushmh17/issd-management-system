@@ -1,9 +1,9 @@
--- =====================================================
--- LEARN Management - Students Table Migration
+﻿-- =====================================================
+-- ISSD Management - Students Table Migration
 -- Run this script to add the standalone students table
 -- =====================================================
 
-USE `learn_management`;
+USE `issd_management`;
 
 -- -------------------------------------------------------
 -- Table: students (standalone, no FK to users)
@@ -32,3 +32,4 @@ CREATE TABLE IF NOT EXISTS `students` (
   `created_at`            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at`            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

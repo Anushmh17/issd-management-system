@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/images/logo.png">
   <title>Login | ISSD Management</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -57,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Left Panel: Illustration & Branding -->
     <div class="login-visual">
       <div class="visual-content">
-        <div class="brand-badge">
-          <span>ISSD Management</span>
+        <div class="brand-badge-img">
+          <img src="<?= BASE_URL ?>/assets/images/logo.png" alt="ISSD Logo">
         </div>
         <img src="<?= BASE_URL ?>/assets/images/login-bg.png" alt="Login Illustration" class="illustration">
         <div class="visual-footer">
@@ -113,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 type="password"
                 id="password"
                 name="password"
-                placeholder="••••••••"
+                placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                 required
               >
               <i class="fas fa-eye toggle-password" data-target="#password"></i>

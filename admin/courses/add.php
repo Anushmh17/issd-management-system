@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Add Course
+// ISSD Management - Admin: Add Course
 // admin/courses/add.php
 // =====================================================
 define('PAGE_TITLE', 'Add Course');
@@ -125,7 +125,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms">
               <label for="description">Description</label>
               <textarea id="description" name="description" class="form-control-lms" rows="3"
-                        placeholder="Brief course description…"><?= htmlspecialchars($form['description']) ?></textarea>
+                        placeholder="Brief course description..."><?= htmlspecialchars($form['description']) ?></textarea>
             </div>
           </div>
 
@@ -143,3 +143,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

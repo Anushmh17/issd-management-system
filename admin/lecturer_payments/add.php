@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Add Lecturer Payment
+// ISSD Management - Admin: Add Lecturer Payment
 // admin/lecturer_payments/add.php
 // =====================================================
 define('PAGE_TITLE', 'Add Lecturer Payment');
@@ -77,7 +77,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms">
               <label>Select Lecturer <span class="req">*</span></label>
               <select name="lecturer_id" class="form-control-lms" required>
-                <option value="">— Choose a Lecturer —</option>
+                <option value="">"" Choose a Lecturer ""</option>
                 <?php foreach ($lecturers as $l): ?>
                   <option value="<?= $l['id'] ?>" <?= $form['lecturer_id']==$l['id']?'selected':'' ?>>
                     <?= htmlspecialchars($l['name']) ?>
@@ -137,3 +137,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

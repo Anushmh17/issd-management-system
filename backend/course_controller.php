@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Course Controller
+// ISSD Management - Course Controller
 // backend/course_controller.php
 // =====================================================
 
@@ -248,7 +248,7 @@ function updateStudentCourseStatus(PDO $pdo, int $id, string $status): bool {
 }
 
 // -------------------------------------------------------
-// Get all active lecturers (for dropdowns) — uses standalone lecturers table
+// Get all active lecturers (for dropdowns) "" uses standalone lecturers table
 // -------------------------------------------------------
 function getActiveLecturers(PDO $pdo): array {
     return $pdo->query("
@@ -297,3 +297,4 @@ function getCourseStudents(PDO $pdo, int $courseId): array {
     $stmt->execute([$courseId]);
     return $stmt->fetchAll();
 }
+

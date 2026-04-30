@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Notification Controller
+// ISSD Management - Notification Controller
 // backend/notification_controller.php
 // =====================================================
 require_once __DIR__ . '/db.php';
@@ -110,3 +110,4 @@ function getUrgentAlerts(PDO $pdo) {
     return $alerts;
 }
 ?>
+

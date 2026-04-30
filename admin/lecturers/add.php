@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Add Lecturer
+// ISSD Management - Admin: Add Lecturer
 // admin/lecturers/add.php
 // =====================================================
 define('PAGE_TITLE', 'Add Lecturer');
@@ -143,7 +143,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <input type="file" id="photoInput" name="photo" accept="image/*"
                    class="d-none" onchange="previewPhoto(this)">
             <p class="text-muted" style="font-size:11px;margin-top:8px;">
-              JPG, PNG, WebP · Max 5 MB
+              JPG, PNG, WebP Â· Max 5 MB
             </p>
           </div>
         </div>
@@ -182,7 +182,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                     <i class="fas fa-envelope"></i>
                     <input type="email" name="email" class="form-control-lms with-icon"
                            value="<?= htmlspecialchars($form['email']) ?>"
-                           placeholder="e.g. nimal@learn.com" required>
+                           placeholder="e.g. nimal@issd.com" required>
                   </div>
                 </div>
               </div>
@@ -404,3 +404,5 @@ function togglePwd(fieldId, icon) {
 </script>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+
+

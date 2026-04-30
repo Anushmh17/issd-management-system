@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Admin: Documents - Select Student
+// ISSD Management - Admin: Documents - Select Student
 // admin/documents/index.php
 // =====================================================
 define('PAGE_TITLE', 'Document Tracking');
@@ -128,7 +128,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap;">
         <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
-          <input type="text" name="search" placeholder="Search by Name, ID or NIC…"
+          <input type="text" name="search" placeholder="Search by Name, ID or NIC..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
                  value="<?= htmlspecialchars($search) ?>">
         </div>
@@ -249,7 +249,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <?php if ($pages > 1 && !$docStatus): ?>
       <div class="pagination-lms">
         <div class="pagination-info">
-          Showing <?= (($page-1)*20)+1 ?>–<?= min($page*20, $total) ?> of <?= $total ?> students
+          Showing <?= (($page-1)*20)+1 ?>""<?= min($page*20, $total) ?> of <?= $total ?> students
         </div>
         <div class="pagination-controls">
           <?php if ($page > 1): ?>
@@ -286,7 +286,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms mb-20">
                 <label>Select Student <span class="req">*</span></label>
                 <select name="student_id" class="form-control-lms" required>
-                    <option value="">— Select a student —</option>
+                    <option value="">"" Select a student ""</option>
                     <?php 
                       $allStudents = $pdo->query("SELECT id, full_name, student_id FROM students ORDER BY full_name")->fetchAll();
                       foreach ($allStudents as $as): 
@@ -299,7 +299,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms mb-20">
                 <label>Document Type <span class="req">*</span></label>
                 <select name="doc_key" id="quick_doc_key" class="form-control-lms" required onchange="toggleQuickLabel()">
-                    <option value="">— Select document type —</option>
+                    <option value="">"" Select document type ""</option>
                     <optgroup label="Standard Documents">
                         <?php 
                           $defs = getDocumentDefinitions();
@@ -324,7 +324,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                     <div class="form-group-lms mb-20">
                         <label>Collected Office</label>
                         <select name="other_collected_by" class="form-control-lms">
-                            <option value="">—</option>
+                            <option value="">""</option>
                             <option value="W1">W1</option><option value="W2">W2</option>
                             <option value="H1">H1</option><option value="H2">H2</option>
                         </select>
@@ -383,3 +383,4 @@ function studentAvatarColor(string $name): string {
 
 require_once dirname(__DIR__, 2) . '/includes/footer.php';
 ?>
+

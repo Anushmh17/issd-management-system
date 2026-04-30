@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management - Lecturer: Add Assignment
+// ISSD Management - Lecturer: Add Assignment
 // frontend/lecturer/assignments/add.php
 // =====================================================
 define('PAGE_TITLE', 'Add Assignment');
@@ -76,7 +76,7 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
             <div class="form-group-lms">
               <label>Select Course <span class="req">*</span></label>
               <select name="course_id" class="form-control-lms" required>
-                <option value="">— Choose a Course —</option>
+                <option value="">-- Choose a Course --</option>
                 <?php foreach ($courses as $c): ?>
                   <option value="<?= $c['id'] ?>" <?= $form['course_id']==$c['id'] ? 'selected' : '' ?>>
                     <?= htmlspecialchars($c['course_code'] . ' - ' . $c['course_name']) ?>
@@ -131,3 +131,4 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 3) . '/includes/footer.php'; ?>
+

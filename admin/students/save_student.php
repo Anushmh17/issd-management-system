@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// LEARN Management – Add Student POST Handler
+// ISSD Management "" Add Student POST Handler
 // admin/students/save_student.php
 // =====================================================
 
@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../backend/student_controller.php';
 require_once __DIR__ . '/../../backend/document_controller.php';
 
-// ── Guard: POST only, admin only ──────────────────────
+// â"€â"€ Guard: POST only, admin only â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: add.php');
     exit;
@@ -20,9 +20,9 @@ requireRole(ROLE_ADMIN);          // redirects to login if not authenticated
 
 $pdo = getDBConnection();
 
-// ─────────────────────────────────────────────────────
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // 1. Collect & sanitise student fields
-// ─────────────────────────────────────────────────────
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 $studentData = [
     'full_name'             => $_POST['full_name']             ?? '',
     'nic_number'            => $_POST['nic_number']            ?? '',
@@ -31,7 +31,7 @@ $studentData = [
     'office_email'          => $_POST['office_email']          ?? '',
     'office_email_password' => $_POST['office_email_password'] ?? '',
     'personal_email'        => $_POST['personal_email']        ?? '',
-    'phone_number'          => $_POST['telephone_number']      ?? '',   // form name → controller name
+    'phone_number'          => $_POST['telephone_number']      ?? '',   // form name â†' controller name
     'whatsapp_number'       => $_POST['whatsapp_number']       ?? '',
     'guardian_name'         => $_POST['guardian_name']         ?? '',
     'guardian_phone'        => $_POST['guardian_phone']        ?? '',
@@ -41,9 +41,9 @@ $studentData = [
     'status'                => 'new_joined',
 ];
 
-// ─────────────────────────────────────────────────────
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // 2. Insert student row (uses existing addStudent())
-// ─────────────────────────────────────────────────────
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 $result = addStudent($pdo, $studentData);
 
 if (!$result['success']) {
@@ -60,28 +60,28 @@ $studentRow = $pdo->prepare("SELECT id FROM students WHERE student_id = ?");
 $studentRow->execute([$result['student_id']]);
 $studentDbId = (int) $studentRow->fetchColumn();
 
-// ─────────────────────────────────────────────────────
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // 3. Create the student_documents row (blank skeleton)
-// ─────────────────────────────────────────────────────
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 getOrCreateDocRecord($pdo, $studentDbId);
 
-// ─────────────────────────────────────────────────────
-// 4. Document checklist — map form keys → DB column keys
-// ─────────────────────────────────────────────────────
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// 4. Document checklist "" map form keys â†' DB column keys
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 //
 // Form input name pattern:
-//   doc_{key}         → $_FILES  (file upload)
-//   collected_{key}   → $_POST   (checkbox)
-//   office_{key}      → $_POST   (H1/H2/W1/W2 select)
-//   date_{key}        → $_POST   (date input)
+//   doc_{key}         â†' $_FILES  (file upload)
+//   collected_{key}   â†' $_POST   (checkbox)
+//   office_{key}      â†' $_POST   (H1/H2/W1/W2 select)
+//   date_{key}        â†' $_POST   (date input)
 //
 // DB column pattern (from student_documents_table.sql):
-//   {db_key}               – file path
-//   {db_key}_status        – 0/1
-//   {db_key}_collected_by  – ENUM
-//   {db_key}_date          – DATE
+//   {db_key}               "" file path
+//   {db_key}_status        "" 0/1
+//   {db_key}_collected_by  "" ENUM
+//   {db_key}_date          "" DATE
 //
-// The form uses slightly different keys for OL/AL (ol_al → ol_results / al_results).
+// The form uses slightly different keys for OL/AL (ol_al â†' ol_results / al_results).
 // We map them explicitly here so the rest of the code is uniform.
 
 $docMap = [
@@ -100,7 +100,7 @@ $docErrors = [];    // collect non-fatal upload problems
 
 foreach ($docMap as $formKey => $dbKey) {
 
-    // ── a) Was a file submitted? ────────────────────
+    // â"€â"€ a) Was a file submitted? â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     $fileUploaded = false;
     $savedPath    = null;
 
@@ -122,7 +122,7 @@ foreach ($docMap as $formKey => $dbKey) {
         }
     }
 
-    // ── b) Tracking fields ──────────────────────────
+    // â"€â"€ b) Tracking fields â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     $isCollected = isset($_POST['collected_' . $formKey]);
     $office      = $_POST['office_' . $formKey] ?? '';
     $date        = $_POST['date_'   . $formKey] ?? '';
@@ -145,9 +145,9 @@ foreach ($docMap as $formKey => $dbKey) {
     }
 }
 
-// ─────────────────────────────────────────────────────
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // 5. Redirect with success (or partial-success) message
-// ─────────────────────────────────────────────────────
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 session_start();
 
 if (empty($docErrors)) {
@@ -159,3 +159,4 @@ if (empty($docErrors)) {
 
 header('Location: index.php');
 exit;
+
