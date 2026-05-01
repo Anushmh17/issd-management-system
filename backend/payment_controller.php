@@ -315,3 +315,28 @@ function getFinancialStats(PDO $pdo): array {
     ];
 }
 
+function getRecentStudentPayments(PDO $pdo, int $limit = 5): array {
+    $stmt = $pdo->prepare("
+        SELECT p.*, s.full_name, c.course_code
+        FROM student_payments p
+        JOIN students s ON p.student_id = s.id
+        JOIN courses c ON p.course_id = c.id
+        ORDER BY p.payment_date DESC
+        LIMIT ?
+    ");
+    $stmt->execute([$limit]);
+    return $stmt->fetchAll();
+}
+
+function getRecentLecturerPayments(PDO $pdo, int $limit = 5): array {
+    $stmt = $pdo->prepare("
+        SELECT lp.*, u.name as lecturer_name 
+        FROM lecturer_payments lp
+        JOIN users u ON lp.lecturer_id = u.id
+        ORDER BY lp.payment_date DESC
+        LIMIT ?
+    ");
+    $stmt->execute([$limit]);
+    return $stmt->fetchAll();
+}
+

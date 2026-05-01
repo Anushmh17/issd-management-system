@@ -10,6 +10,8 @@ require_once dirname(__DIR__) . '/backend/db.php';
 require_once dirname(__DIR__) . '/backend/notification_controller.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 
+require_once dirname(__DIR__) . '/backend/payment_controller.php';
+
 // Only allow logged in users
 if (!isLoggedIn()) {
     echo json_encode(['error' => 'Unauthorized']);
@@ -18,6 +20,13 @@ if (!isLoggedIn()) {
 
 $user = currentUser();
 $userId = $user['id'];
+
+// Trigger sync if admin
+if (hasRole(ROLE_ADMIN)) {
+    syncOverduePayments($pdo);
+    syncUpcomingPayments($pdo);
+}
+
 $action = $_GET['action'] ?? 'list';
 
 try {

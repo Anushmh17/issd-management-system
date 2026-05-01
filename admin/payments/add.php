@@ -11,20 +11,6 @@ require_once dirname(__DIR__, 2) . '/backend/payment_controller.php';
 
 requireRole(ROLE_ADMIN);
 
-// Handle AJAX Info Fetch
-if (isset($_GET['api']) && $_GET['api'] === 'info') {
-    $sid   = (int)($_GET['student_id'] ?? 0);
-    $cid   = (int)($_GET['course_id'] ?? 0);
-    $month = $_GET['month'] ?? date('Y-m');
-    if ($sid && $cid) {
-        header('Content-Type: application/json');
-        echo json_encode(getPaymentInfoForm($pdo, $sid, $cid, $month));
-        exit;
-    }
-    header('Content-Type: application/json');
-    echo json_encode(['monthly_fee'=>0, 'previous_balance'=>0, 'total_due'=>0]);
-    exit;
-}
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -56,6 +42,43 @@ foreach ($studentsWithCourses as $row) {
 require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
+
+
+<style>
+.select2-container--default .select2-selection--single {
+    height: 48px !important;
+    padding: 10px 15px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    background-color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: all 0.2s ease;
+}
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(91, 78, 250, 0.1) !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 46px !important;
+    top: 1px !important;
+    right: 12px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 28px !important;
+    color: #1e293b !important;
+    font-weight: 600 !important;
+    padding-left: 0 !important;
+    font-size: 14px !important;
+}
+.select2-dropdown {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-lg) !important;
+    overflow: hidden;
+    z-index: 9999;
+}
+</style>
 
 <div id="page-content">
   <div class="page-header">
@@ -94,7 +117,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="col-md-6">
             <div class="form-group-lms">
               <label>Select Student <span class="req">*</span></label>
-              <select name="student_id" id="student_id" class="form-control-lms select2-search" required onchange="updateCourseList()">
+              <select name="student_id" id="student_id" class="form-control-lms select2-search" required>
                 <option value="">-- Choose a Student --</option>
                 <?php foreach ($grouped as $sId => $sData): ?>
                   <option value="<?= $sId ?>"><?= htmlspecialchars($sData['reg'] . ' - ' . $sData['name']) ?></option>
@@ -106,7 +129,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="col-md-6">
             <div class="form-group-lms">
               <label>Select Course <span class="req">*</span></label>
-              <select name="course_id" id="course_id" class="form-control-lms" required onchange="fetchPaymentInfo()">
+              <select name="course_id" id="course_id" class="form-control-lms" required>
                 <option value="">-- Choose a Course --</option>
               </select>
             </div>
@@ -242,7 +265,7 @@ function fetchPaymentInfo() {
         return;
     }
 
-    fetch(`add.php?api=info&student_id=${sId}&course_id=${cId}&month=${month}`)
+    fetch(`api.php?api=info&student_id=${sId}&course_id=${cId}&month=${month}`)
         .then(res => res.json())
         .then(data => {
             document.getElementById('lbl_prev_bal').textContent = 'Rs. ' + parseFloat(data.previous_balance).toFixed(2);
@@ -284,29 +307,89 @@ function calcRemaining() {
         document.getElementById('next_due_date').required = true;
     }
 }
-document.addEventListener('DOMContentLoaded', () => {
-    // Check for URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const sid = urlParams.get('student_id');
-    const cid = urlParams.get('course_id');
-
-    if (sid) {
-        document.getElementById('student_id').value = sid;
-        updateCourseList();
-        if (cid) {
-            document.getElementById('course_id').value = cid;
-            fetchPaymentInfo();
-        }
-    }
-
-    // Initialize Select2
-    $('.select2-search').select2({ width: '100%' });
-    // Re-bind change event for Select2
-    $('#student_id').on('change', function() {
-        updateCourseList();
-    });
-});
 </script>
 
-<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+<?php
+$extraJS = <<<'JS'
+<script>
+$(document).ready(function() {
+    console.log("Finance JS Initializing...");
+    
+    // Initialize Select2
+    if ($.fn.select2) {
+        $('#student_id, #course_id').select2({ 
+            width: '100%',
+            placeholder: '-- Select --'
+        });
+    } else {
+        console.warn("Select2 not found, using standard dropdown");
+    }
+
+    // Handle Student Selection
+    $(document).on('change', '#student_id', function() {
+        const sId = $(this).val();
+        const $courseSelect = $('#course_id');
+        
+        console.log("Student selected ID:", sId);
+        
+        if (!sId) {
+            $courseSelect.html('<option value="">-- Choose a Course --</option>');
+            if (typeof fetchPaymentInfo === 'function') fetchPaymentInfo();
+            return;
+        }
+
+        $courseSelect.html('<option value="">-- Loading Courses... --</option>');
+
+        $.ajax({
+            url: 'api.php',
+            data: { api: 'courses', student_id: sId },
+            dataType: 'json',
+            success: function(courses) {
+                console.log("AJAX Success. Courses:", courses);
+                $courseSelect.html('<option value="">-- Choose a Course --</option>');
+                if (!courses || courses.length === 0) {
+                    $courseSelect.append('<option value="">No enrolled courses found</option>');
+                } else {
+                    courses.forEach(function(c) {
+                        $courseSelect.append($('<option>', {
+                            value: c.id,
+                            text: c.course_code + ' - ' + c.course_name
+                        }));
+                    });
+                    if (courses.length === 1) {
+                        $courseSelect.val(courses[0].id).trigger('change');
+                    }
+                }
+                if (typeof fetchPaymentInfo === 'function') fetchPaymentInfo();
+            },
+            error: function(xhr, status, err) {
+                console.error("AJAX Error:", status, err);
+                $courseSelect.html('<option value="">-- Error loading courses --</option>');
+            }
+        });
+    });
+
+    $(document).on('change', '#course_id', function() {
+        if (typeof fetchPaymentInfo === 'function') fetchPaymentInfo();
+    });
+
+    if (typeof flatpickr === 'function') {
+        flatpickr("#next_due_date", {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            altInput: true,
+            altFormat: "F j, Y"
+        });
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const sid = urlParams.get('student_id');
+    if (sid) {
+        $('#student_id').val(sid).trigger('change');
+    }
+});
+</script>
+JS;
+require_once dirname(__DIR__, 2) . '/includes/footer.php'; 
+?>
 

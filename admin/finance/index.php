@@ -60,175 +60,177 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
 }
 </style>
 
-<div id="page-content">
-    <div class="page-header">
-        <div class="page-header-left">
-            <h1>Financial Oversight Dashboard</h1>
-            <div class="breadcrumb-custom">
-                <i class="fas fa-home"></i> Admin &rsaquo; <span>Financial Hub</span>
-            </div>
+<div id="page-content" class="px-4">
+    <div class="d-flex justify-content-between align-items-center mb-30">
+        <div>
+            <h2 class="fw-800 text-dark mb-1">Financial Oversight</h2>
+            <div class="text-muted small">Real-time revenue and expenditure tracking</div>
         </div>
         <div class="d-flex gap-2">
-            <a href="../payments/add.php" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <a href="../payments/add.php" class="btn-primary-grad shadow-sm">
                 <i class="fas fa-plus me-2"></i>New Student Payment
             </a>
-            <a href="../lecturer_payments/add.php" class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+            <a href="../lecturer_payments/add.php" class="btn-lms btn-outline px-4 shadow-sm" style="border-radius:50px;">
                 <i class="fas fa-hand-holding-dollar me-2"></i>Pay Lecturer
             </a>
         </div>
     </div>
 
-    <!-- Master Stats -->
-    <div class="row g-4 mb-50">
-        <div class="col-md-4">
-            <div class="stat-card" style="--sc-color: var(--accent);">
-                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-                <div class="stat-body">
-                    <div class="stat-value">Rs. <?= number_format($stats['monthly_income'], 2) ?></div>
-                    <div class="stat-label">Total Collected (<?= date('M') ?>)</div>
-                </div>
+    <div class="row g-3 mb-20">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                <div class="stat-value">Rs. <?= number_format($stats['monthly_income'], 2) ?></div>
+                <div class="stat-label">Income (<?= date('M') ?>)</div>
+                <div class="mt-2 text-success" style="font-size:10px;"><i class="fas fa-arrow-up"></i> Collected</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="stat-card" style="--sc-color: var(--danger);">
-                <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
-                <div class="stat-body">
-                    <div class="stat-value">Rs. <?= number_format($stats['total_outstanding'], 2) ?></div>
-                    <div class="stat-label">Total Outstanding Debt</div>
-                </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="color:var(--danger);"><i class="fas fa-hand-holding-dollar"></i></div>
+                <div class="stat-value">Rs. <?= number_format($stats['total_outstanding'], 2) ?></div>
+                <div class="stat-label">Total Receivables</div>
+                <div class="mt-2 text-danger" style="font-size:10px;"><i class="fas fa-clock"></i> Pending</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="stat-card" style="--sc-color: var(--warning);">
-                <div class="stat-icon"><i class="fas fa-users-viewfinder"></i></div>
-                <div class="stat-body">
-                    <div class="stat-value"><?= count($overdueItems) ?></div>
-                    <div class="stat-label">Overdue Student Accounts</div>
-                </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="color:var(--warning);"><i class="fas fa-clock-rotate-left"></i></div>
+                <div class="stat-value"><?= count($upcomingItems) ?></div>
+                <div class="stat-label">Upcoming Dues</div>
+                <div class="mt-2 text-warning" style="font-size:10px;"><i class="fas fa-exclamation-triangle"></i> Next 7 Days</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="color:var(--info);"><i class="fas fa-receipt"></i></div>
+                <div class="stat-value">Rs. <?= number_format($stats['monthly_expense'], 2) ?></div>
+                <div class="stat-label">Total Payouts</div>
+                <div class="mt-2 text-info" style="font-size:10px;"><i class="fas fa-check-circle"></i> Completed</div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-3 mb-30">
         <!-- Upcoming Payments Column -->
-        <div class="col-lg-6">
-            <div class="card-lms h-100">
-                <div class="card-lms-header d-flex justify-content-between align-items-center">
-                    <div class="card-lms-title">
-                        <i class="fas fa-clock text-warning"></i> Upcoming Dues (Next 7 Days)
+        <div class="col-lg-4">
+            <div class="card-lms h-100 border shadow-sm">
+                <div class="card-lms-header border-bottom bg-white py-3 px-3">
+                    <div class="card-lms-title fw-700" style="font-size:13px;">
+                        <i class="fas fa-calendar-alt text-primary me-2"></i> Upcoming Collections
                     </div>
                 </div>
                 <div class="card-lms-body p-0">
                     <?php if (empty($upcomingItems)): ?>
-                        <div class="p-4 text-center text-muted">No payments due this week.</div>
+                        <div class="py-4 text-center">
+                            <div class="text-muted small fw-500">No collections scheduled.</div>
+                        </div>
                     <?php else: ?>
-                        <table class="table-lms mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Student</th>
-                                    <th>Due Date</th>
-                                    <th>Balance</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($upcomingItems as $item): ?>
-                                    <tr class="<?= ($highlightId === (int)$item['id']) ? 'row-highlight' : '' ?>">
-                                        <td>
-                                            <div class="fw-700"><?= htmlspecialchars($item['full_name']) ?></div>
-                                            <small class="text-muted"><?= htmlspecialchars($item['course_name']) ?></small>
-                                        </td>
-                                        <td><span class="badge bg-light text-dark"><?= date('d M', strtotime($item['next_due_date'])) ?></span></td>
-                                        <td class="fw-800 text-primary">Rs. <?= number_format($item['balance'], 2) ?></td>
-                                        <td>
-                                            <a href="../payments/add.php?student_id=<?= $item['student_id'] ?>&course_id=<?= $item['course_id'] ?>" 
-                                               class="btn btn-sm btn-outline-primary" title="Record Payment">
-                                                <i class="fas fa-plus"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless align-middle mb-0" style="font-size:12px;">
+                                <tbody>
+                                    <?php foreach (array_slice($upcomingItems, 0, 4) as $item): ?>
+                                        <tr class="border-bottom-light">
+                                            <td class="ps-3 py-2">
+                                                <div class="fw-600 text-dark"><?= htmlspecialchars($item['full_name']) ?></div>
+                                            </td>
+                                            <td><?= date('d M', strtotime($item['next_due_date'])) ?></td>
+                                            <td class="text-end pe-3 fw-700">Rs. <?= number_format($item['balance'], 0) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
 
-        <!-- Overdue Payments Column -->
-        <div class="col-lg-6">
-            <div class="card-lms h-100 border-danger-subtle">
-                <div class="card-lms-header d-flex justify-content-between align-items-center bg-danger-subtle">
-                    <div class="card-lms-title text-danger">
-                        <i class="fas fa-triangle-exclamation"></i> Critical Overdue Accounts
+        <!-- Recent Student Payouts -->
+        <div class="col-lg-4">
+            <div class="card-lms h-100 border shadow-sm">
+                <div class="card-lms-header border-bottom bg-white py-3 px-3">
+                    <div class="card-lms-title fw-700" style="font-size:13px;">
+                        <i class="fas fa-history text-success me-2"></i> Recent Receipts
                     </div>
                 </div>
                 <div class="card-lms-body p-0">
-                    <?php if (empty($overdueItems)): ?>
-                        <div class="p-4 text-center text-muted">No overdue accounts found.</div>
+                    <?php if (empty($recentStudentPayments)): ?>
+                        <div class="py-4 text-center text-muted x-small">No recent receipts.</div>
                     <?php else: ?>
-                        <table class="table-lms mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Student</th>
-                                    <th>Was Due</th>
-                                    <th>Amount</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($overdueItems as $item): ?>
-                                    <tr class="table-danger <?= ($highlightId === (int)$item['id']) ? 'row-highlight' : '' ?>">
-                                        <td>
-                                            <div class="fw-700"><?= htmlspecialchars($item['full_name']) ?></div>
-                                            <small class="text-muted"><?= htmlspecialchars($item['student_reg']) ?></small>
-                                        </td>
-                                        <td><span class="text-danger fw-700"><?= date('d M Y', strtotime($item['next_due_date'])) ?></span></td>
-                                        <td class="fw-800 text-danger">Rs. <?= number_format($item['balance'], 2) ?></td>
-                                        <td>
-                                            <div class="d-flex gap-1">
-                                                <a href="../payments/add.php?student_id=<?= $item['student_id'] ?>&course_id=<?= $item['course_id'] ?>" 
-                                                   class="btn btn-sm btn-danger" title="Process Payment">
-                                                    <i class="fas fa-dollar-sign"></i>
-                                                </a>
-                                                <button class="btn btn-sm btn-outline-danger" title="Send Nudge" onclick="alert('Nudge sent to student via In-App notification!')">
-                                                    <i class="fas fa-bell"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless align-middle mb-0" style="font-size:12px;">
+                                <tbody>
+                                    <?php foreach ($recentStudentPayments as $p): ?>
+                                        <tr class="border-bottom-light">
+                                            <td class="ps-3 py-2">
+                                                <div class="fw-600 text-dark"><?= htmlspecialchars($p['full_name']) ?></div>
+                                            </td>
+                                            <td class="text-muted"><?= date('d M', strtotime($p['payment_date'])) ?></td>
+                                            <td class="text-end pe-3 text-success fw-700">+<?= number_format($p['amount_paid'], 0) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Lecturer Payouts -->
+        <div class="col-lg-4">
+            <div class="card-lms h-100 border shadow-sm">
+                <div class="card-lms-header border-bottom bg-white py-3 px-3">
+                    <div class="card-lms-title fw-700" style="font-size:13px;">
+                        <i class="fas fa-user-tie text-info me-2"></i> Recent Lecturer Payouts
+                    </div>
+                </div>
+                <div class="card-lms-body p-0">
+                    <?php if (empty($recentLecturerPayments)): ?>
+                        <div class="py-4 text-center text-muted x-small">No recent payouts.</div>
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless align-middle mb-0" style="font-size:12px;">
+                                <tbody>
+                                    <?php foreach ($recentLecturerPayments as $lp): ?>
+                                        <tr class="border-bottom-light">
+                                            <td class="ps-3 py-2">
+                                                <div class="fw-600 text-dark"><?= htmlspecialchars($lp['lecturer_name']) ?></div>
+                                            </td>
+                                            <td class="text-muted"><?= date('d M', strtotime($lp['payment_date'])) ?></td>
+                                            <td class="text-end pe-3 text-danger fw-700">-<?= number_format($lp['amount'], 0) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Quick Analytics Section -->
-    <div class="row g-4 mt-1">
-        <div class="col-md-12">
-            <div class="card-lms">
-                <div class="card-lms-header">
-                    <div class="card-lms-title"><i class="fas fa-file-invoice-dollar"></i> Financial Summary (This Month)</div>
+    <!-- Compact Summary Section -->
+    <div class="card-lms border-0 shadow-lg mb-30" style="background: linear-gradient(135deg, #1e4d4d 0%, #133333 100%); border-radius: 16px;">
+        <div class="card-lms-body p-4">
+            <div class="row align-items-center text-center text-md-start">
+                <div class="col-md-3 border-end border-white border-opacity-10 mb-3 mb-md-0">
+                    <div class="text-white opacity-60 x-small text-uppercase fw-600 mb-1">Monthly Revenue</div>
+                    <h3 class="text-white fw-700 mb-0" style="font-size:1.3rem;">Rs. <?= number_format($stats['monthly_income'], 2) ?></h3>
                 </div>
-                <div class="card-lms-body">
-                    <div class="row text-center">
-                        <div class="col-md-4 border-end">
-                            <h4 class="text-success mb-1">Rs. <?= number_format($stats['monthly_income'], 2) ?></h4>
-                            <p class="text-muted small mb-0">Total Income</p>
-                        </div>
-                        <div class="col-md-4 border-end">
-                            <h4 class="text-danger mb-1">Rs. <?= number_format($stats['monthly_expense'], 2) ?></h4>
-                            <p class="text-muted small mb-0">Lecturer Payouts</p>
-                        </div>
-                        <div class="col-md-4">
-                            <h4 class="<?= ($stats['monthly_income'] - $stats['monthly_expense'] >= 0) ? 'text-primary' : 'text-danger' ?> mb-1">
-                                Rs. <?= number_format($stats['monthly_income'] - $stats['monthly_expense'], 2) ?>
-                            </h4>
-                            <p class="text-muted small mb-0">Net Position</p>
-                        </div>
+                <div class="col-md-3 border-end border-white border-opacity-10 mb-3 mb-md-0">
+                    <div class="text-white opacity-60 x-small text-uppercase fw-600 mb-1">Total Payouts</div>
+                    <h3 class="text-white fw-700 mb-0" style="font-size:1.3rem;">Rs. <?= number_format($stats['monthly_expense'], 2) ?></h3>
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <div class="text-white opacity-60 x-small text-uppercase fw-600 mb-1">Net Position</div>
+                    <h3 class="text-white fw-700 mb-0" style="font-size:1.3rem;">Rs. <?= number_format($stats['monthly_income'] - $stats['monthly_expense'], 2) ?></h3>
+                </div>
+                <div class="col-md-3">
+                    <div class="bg-white bg-opacity-10 p-3 rounded-3 border border-white border-opacity-20 text-center">
+                        <div class="text-white opacity-80 x-small fw-700 mb-1"><i class="fas fa-sync-alt fa-spin me-1"></i> SYSTEM SNAPSHOT</div>
+                        <div class="text-white fw-500 x-small"><?= date('D, d M Y | H:i') ?></div>
                     </div>
                 </div>
             </div>

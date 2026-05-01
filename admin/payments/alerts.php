@@ -45,8 +45,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <div class="breadcrumb-custom"><i class="fas fa-home"></i> Admin &rsaquo; <span>Financial Control</span></div>
     </div>
     <div class="d-flex gap-2">
-        <a href="index.php" class="btn btn-light rounded-pill px-4 fw-700 shadow-sm"><i class="fas fa-history me-2"></i>History</a>
-        <a href="add.php" class="btn btn-primary rounded-pill px-4 fw-700 shadow-sm"><i class="fas fa-plus me-2"></i>New Payment</a>
+        <a href="index.php" class="btn-lms btn-outline px-4 shadow-sm" style="border-radius:50px;">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
     </div>
   </div>
 
