@@ -758,14 +758,26 @@ function restrictNumbers(e) {
 }
 function restrictPhone(e) {
     let val = e.value;
-    // Only allow + at the very beginning
-    if (val.length > 0) {
-        if (val[0] === '+') {
-            e.value = '+' + val.slice(1).replace(/[^0-9+]/g, '').replace(/\+/g, '');
-        } else {
-            e.value = val.replace(/[^0-9]/g, '');
-        }
+    // Remove all characters except numbers and +
+    val = val.replace(/[^0-9+]/g, '');
+    
+    // Only allow + at index 0
+    if (val.indexOf('+') > 0) {
+        val = val.substring(0, 1) + val.substring(1).replace(/\+/g, '');
     }
+
+    if (val.startsWith('0')) {
+        // Sri Lankan local format: 10 digits max
+        if (val.length > 10) val = val.substring(0, 10);
+    } else if (val.startsWith('+94')) {
+        // Sri Lankan international format: 12 characters max (+94XXXXXXXXX)
+        if (val.length > 12) val = val.substring(0, 12);
+    } else if (val.startsWith('94')) {
+        // Without +, but still 11 digits
+        if (val.length > 11) val = val.substring(0, 11);
+    }
+    
+    e.value = val;
 }
 
 document.addEventListener('DOMContentLoaded', function() {

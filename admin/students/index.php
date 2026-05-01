@@ -124,7 +124,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <div class="row g-3 mb-20">
     <div class="col-6 col-md-3">
       <a href="index.php" class="text-decoration-none">
-        <div class="stat-card" style="--sc-color:#5b4efa;">
+        <div class="stat-card" style="--sc-color: var(--primary);">
           <div class="stat-icon"><i class="fas fa-users"></i></div>
           <div class="stat-body">
             <div class="stat-value"><?= $totalAll ?></div>
@@ -135,7 +135,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
     <div class="col-6 col-md-3">
       <a href="index.php?status=new_joined" class="text-decoration-none">
-        <div class="stat-card" style="--sc-color:#3b82f6;">
+        <div class="stat-card" style="--sc-color: var(--info);">
           <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
           <div class="stat-body">
             <div class="stat-value"><?= $totalNew ?></div>
@@ -146,7 +146,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
     <div class="col-6 col-md-3">
       <a href="index.php?status=dropout" class="text-decoration-none">
-        <div class="stat-card" style="--sc-color:#ef4444;">
+        <div class="stat-card" style="--sc-color: var(--danger);">
           <div class="stat-icon"><i class="fas fa-user-minus"></i></div>
           <div class="stat-body">
             <div class="stat-value"><?= $totalDrop ?></div>
@@ -157,7 +157,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
     <div class="col-6 col-md-3">
       <a href="index.php?status=completed" class="text-decoration-none">
-        <div class="stat-card" style="--sc-color:#10b981;">
+        <div class="stat-card" style="--sc-color: var(--accent);">
           <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
           <div class="stat-body">
             <div class="stat-value"><?= $totalDone ?></div>

@@ -121,7 +121,7 @@ function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
         ")->execute([
             trim($d['name']),
             trim($d['email']),
-            trim($d['phone'] ?? ''),
+            formatSriLankanPhone($d['phone'] ?? ''),
             trim($d['qualifications'] ?? ''),
             trim($d['username']),
             password_hash(trim($d['password']), PASSWORD_DEFAULT),
@@ -165,7 +165,7 @@ function updateLecturer(PDO $pdo, int $id, array $d, ?array $photoFile = null): 
         $params = [
             trim($d['name']),
             trim($d['email']),
-            trim($d['phone'] ?? ''),
+            formatSriLankanPhone($d['phone'] ?? ''),
             trim($d['qualifications'] ?? ''),
             trim($d['username']),
             trim($d['department'] ?? ''),

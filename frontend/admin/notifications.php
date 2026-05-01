@@ -17,7 +17,7 @@ $category = isset($_GET['category']) ? trim($_GET['category']) : 'all';
 // Debug check (temporary)
 // echo "<!-- Current Category: $category -->";
 
-$notifications = getRecentNotifications($pdo, $user['id'], 'admin', $category, 50);
+$notifications = getRecentNotifications($pdo, $user['id'], 'admin', $category, 50, false, true);
 
 require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';

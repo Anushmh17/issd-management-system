@@ -6,15 +6,15 @@
 
 /* --- CSS Variables / Design Tokens --- */
 :root {
-  /* --- Core Palette --- */
-  --primary: #064e3b; /* Emerald-900 */
-  --primary-dark: #022c22;
-  --primary-light: #f0fdf4;
-  --primary-glow: rgba(6, 78, 59, 0.15);
+  /* --- Core Palette (Logo Matched) --- */
+  --primary: #1e4d4d; /* Deep Forest Teal */
+  --primary-dark: #133333;
+  --primary-light: #f0fafa;
+  --primary-glow: rgba(30, 77, 77, 0.15);
 
-  --accent: #15803d; /* Green-700 */
-  --accent-dark: #14532d;
-  --accent-light: #dcfce7;
+  --accent: #34d399; /* Mint Green Accent */
+  --accent-dark: #059669;
+  --accent-light: #ecfdf5;
 
   --warning: #f59e0b;
   --warning-light: #fffbeb;
@@ -31,8 +31,8 @@
   --sidebar-active: #064e3b;
 
   --navbar-h: 70px;
-  --navbar-bg: rgba(240, 253, 244, 0.85); /* Emerald-50 tint */
-  --navbar-shadow: 0 4px 20px rgba(6, 78, 59, 0.04);
+  --navbar-bg: rgba(240, 250, 250, 0.85); /* Teal tint */
+  --navbar-shadow: 0 4px 20px rgba(30, 77, 77, 0.04);
 
   --bg-page: #f9fafb;
   --bg-card: #ffffff;
@@ -50,7 +50,7 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 20px 40px -12px rgba(0, 0, 0, 0.08);
-  --shadow-premium: 0 20px 50px rgba(6, 78, 59, 0.1);
+  --shadow-premium: 0 20px 50px rgba(30, 77, 77, 0.1);
 
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --glass: rgba(255, 255, 255, 0.7);
@@ -76,17 +76,15 @@ body {
     min-height: 100%;
     display: flex;
     flex-direction: column;
-    background: #f1f5f9;
+    background-color: #f8fbfb;
     background-image: 
-      radial-gradient(at 0% 0%, hsla(253,100%,95%,1) 0, transparent 50%), 
-      radial-gradient(at 50% 0%, hsla(225,100%,92%,1) 0, transparent 50%), 
-      radial-gradient(at 100% 0%, hsla(339,100%,94%,1) 0, transparent 50%),
-      radial-gradient(at 50% 100%, hsla(217,100%,93%,1) 0, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(52, 211, 153, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(30, 77, 77, 0.05) 0px, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e4d4d' fill-opacity='0.03'%3E%3Cpath d='M0 38.59V40h1.41l37.18-37.18V1.41L1.41 38.59H0zm0-2.82V37.18l35.77-35.77V0h-1.41L0 34.36v1.41zM0 31.54V32.95l32.95-32.95V0h-1.41L0 31.54zM0 28.71V30.12l30.12-30.12V0h-1.41L0 28.71zM0 25.89V27.3L27.3-27.3V0h-1.41L0 25.89zM0 23.06V24.47L24.47-24.47V0h-1.41L0 23.06zM0 20.24V21.65L21.65-21.65V0h-1.41L0 20.24z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.6;
     overflow-x: hidden;
-    animation: bgAnimate 20s ease infinite alternate;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -1482,6 +1480,18 @@ img {
 }
 
 .mb-20 {
+  margin-bottom: 20px;
+}
+.mb-25 {
+  margin-bottom: 25px;
+}
+.mb-30 {
+  margin-bottom: 30px;
+}
+.mb-40 {
+  margin-bottom: 40px;
+}
+.mb-50 {
   margin-bottom: 20px;
 }
 
@@ -2889,12 +2899,7 @@ img {
     background: rgba(91, 78, 250, 0.02);
 }
 .notif-read {
-    opacity: 0.7;
-    background: transparent;
-}
-.notif-read:hover {
-    opacity: 1;
-    background: #f8fafc;
+    opacity: 0.8;
 }
 .notif-dot {
     width: 8px;
@@ -3028,4 +3033,126 @@ img {
   flex-direction: column;
   gap: 15px;
   pointer-events: none;
+}
+@charset " UTF-8\;
+/* Notification Popover Styles */
+.notif-dropdown {
+    width: 380px;
+    height: 600px; /* Fixed height for absolute stability */
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    margin-top: 15px !important;
+}
+.notif-list {
+    flex: 1; /* Take up all remaining space */
+    overflow-y: auto;
+    position: relative;
+    background: #fff;
+}
+.notif-tabs {
+ display: flex;
+ background: #f8fafc;
+ padding: 5px;
+ border-bottom: 1px solid #f1f5f9;
+}
+.notif-tab {
+ flex: 1;
+ text-align: center;
+ padding: 12px;
+ font-size: 11px;
+ font-weight: 800;
+ color: #94a3b8;
+ cursor: pointer;
+ border-radius: 12px;
+ transition: all 0.2s ease;
+ text-transform: uppercase;
+ letter-spacing: 0.5px;
+}
+.notif-tab:hover {
+ color: var(--primary);
+ background: rgba(99, 102, 241, 0.05);
+}
+.notif-tab.active {
+ background: #fff;
+ color: var(--primary);
+ box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+/* Custom Styles for stability and clean navigation */
+.notif-dropdown {
+    width: 380px;
+    height: 600px;
+    display: none; /* Hide by default */
+    flex-direction: column;
+    padding: 0 !important;
+    border: none !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 22px !important;
+    margin-top: 15px !important;
+}
+
+.notif-dropdown.show {
+    display: flex !important; /* Only show when Bootstrap triggers it */
+}
+
+.notif-list {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    background: transparent !important;
+}
+
+/* Enhanced Premium Notification Styles */
+.notif-dropdown {
+    border: none !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15) !important;
+}
+.notif-header {
+    background: linear-gradient(to right, #ffffff, #f8faff) !important;
+    padding: 20px 25px !important;
+}
+.notif-tab {
+    font-size: 10px !important;
+    letter-spacing: 1.2px !important;
+    font-weight: 800 !important;
+    padding: 14px !important;
+}
+.notif-tab.active {
+    background: var(--primary) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3) !important;
+}
+.notif-item-enhanced {
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideInNotif 0.4s ease forwards;
+    opacity: 0;
+}
+.notif-item-enhanced:hover {
+    background: rgba(99, 102, 241, 0.03) !important;
+    transform: translateX(5px);
+}
+@keyframes slideInNotif {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Skeleton Loader */
+.skeleton-loader {
+    background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 8px;
+}
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }

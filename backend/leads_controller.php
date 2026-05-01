@@ -37,7 +37,7 @@ function addLead(PDO $pdo, array $d): array {
             VALUES (?,?,?,?,?,?)
         ")->execute([
             trim($d['name']),
-            trim($d['phone']),
+            formatSriLankanPhone($d['phone']),
             trim($d['source']),
             $d['status'] ?? 'new',
             !empty($d['next_followup_datetime']) ? $d['next_followup_datetime'] : null,
@@ -88,7 +88,7 @@ function updateLead(PDO $pdo, int $id, array $d): array {
             WHERE id=?
         ")->execute([
             trim($d['name']),
-            trim($d['phone']),
+            formatSriLankanPhone($d['phone']),
             trim($d['source']),
             trim($d['status']),
             $newFollowup,

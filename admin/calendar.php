@@ -30,7 +30,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
     while($row = $stmt1->fetch()) {
         $events[] = [
             'id' => 'lead_' . $row['id'],
-            'title' => 'ðŸ"ž Lead: ' . $row['name'],
+            'title' => '📞 Lead: ' . $row['name'],
             'start' => $row['start'],
             'color' => '#f43f5e',
             'extendedProps' => ['type' => 'Lead', 'desc' => $row['notes'], 'link' => BASE_URL . '/admin/leads/index.php?highlight_id=' . $row['id']]
@@ -43,7 +43,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
     while($row = $stmt2->fetch()) {
         $events[] = [
             'id' => 'stu_' . $row['id'],
-            'title' => 'ðŸ‘¥ Stu: ' . $row['full_name'],
+            'title' => '👥 Stu: ' . $row['full_name'],
             'start' => $row['start'],
             'color' => '#6366f1',
             'extendedProps' => ['type' => 'Student', 'desc' => $row['follow_up_note'], 'link' => BASE_URL . '/admin/students/index.php?highlight_id=' . $row['id']]
@@ -56,7 +56,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
     while($row = $stmt3->fetch()) {
         $events[] = [
             'id' => 'pay_' . $row['id'],
-            'title' => 'ðŸ'° Pay: ' . $row['full_name'],
+            'title' => '💰 Pay: ' . $row['full_name'],
             'start' => $row['start'],
             'color' => '#10b981',
             'extendedProps' => ['type' => 'Payment', 'desc' => $row['course_name'], 'link' => BASE_URL . '/admin/payments/index.php?highlight_id=' . $row['id']]

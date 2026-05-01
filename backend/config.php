@@ -30,5 +30,31 @@ define('ROLE_LECTURER', 'lecturer');
 define('ROLE_STUDENT', 'student');
 
 // Timezone
-date_default_timezone_set('Asia/Colombo');
+
+/**
+ * Standardize Sri Lankan phone numbers to +94 format
+ */
+function formatSriLankanPhone($phone) {
+    if (empty($phone)) return null;
+    
+    // Remove all non-numeric characters except +
+    $phone = preg_replace('/[^0-9+]/', '', $phone);
+    
+    // If starts with 0 (e.g. 0712345678) -> convert to +94712345678
+    if (preg_match('/^0([0-9]{9})$/', $phone, $matches)) {
+        return '+94' . $matches[1];
+    }
+    
+    // If starts with 94 (e.g. 94712345678) -> prepend +
+    if (preg_match('/^94([0-9]{9})$/', $phone, $matches)) {
+        return '+94' . $matches[1];
+    }
+    
+    // If starts with +94... already perfect
+    if (preg_match('/^\+94[0-9]{9}$/', $phone)) {
+        return $phone;
+    }
+    
+    return $phone; 
+}
 

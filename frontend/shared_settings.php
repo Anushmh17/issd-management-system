@@ -67,7 +67,7 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
   <?php endif; ?>
 
   <div class="row g-4">
-    <div class="col-md-6">
+    <div class="col-md-6 mx-auto">
         <div class="card-lms">
             <div class="card-lms-header"><div class="card-lms-title"><i class="fas fa-lock"></i> Change Password</div></div>
             <div class="card-lms-body">
@@ -95,23 +95,6 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
                     </div>
                     <button type="submit" class="btn-lms btn-primary mt-2 w-100"><i class="fas fa-key"></i> Update Password</button>
                 </form>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card-lms h-100">
-            <div class="card-lms-header"><div class="card-lms-title"><i class="fas fa-shield-alt"></i> Security Info</div></div>
-            <div class="card-lms-body">
-                <p class="text-muted" style="font-size:14px;line-height:1.6;">
-                    For security reasons, we highly recommend that you:
-                </p>
-                <ul style="font-size:13px;color:var(--text-main);padding-left:20px;line-height:2;">
-                    <li>Use a strong password combining letters, numbers, and special characters.</li>
-                    <li>Do not share your password with anyone, including staff members.</li>
-                    <li>Always log out when accessing the system from a public or shared computer.</li>
-                    <li>Change your password periodically.</li>
-                </ul>
             </div>
         </div>
     </div>

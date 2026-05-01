@@ -37,8 +37,11 @@ $myAssignments->execute([$userId]); $myAssignments = $myAssignments->fetchColumn
 $submitted = $pdo->prepare("SELECT COUNT(*) FROM submissions WHERE student_id=?");
 $submitted->execute([$userId]); $submitted = $submitted->fetchColumn();
 
-$totalPaid = $pdo->prepare("SELECT COALESCE(SUM(amount_paid),0) FROM student_payments WHERE student_id=? AND status='paid'");
+$totalPaid = $pdo->prepare("SELECT COALESCE(SUM(amount_paid),0) FROM student_payments WHERE student_id=?");
 $totalPaid->execute([$studentId]); $totalPaid = $totalPaid->fetchColumn();
+
+$totalBalance = $pdo->prepare("SELECT COALESCE(SUM(balance),0) FROM student_payments WHERE student_id=? AND status != 'paid'");
+$totalBalance->execute([$studentId]); $totalBalance = $totalBalance->fetchColumn();
 
 // My enrolled courses
 $courses = $pdo->prepare("
@@ -168,6 +171,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="stat-label">Total Paid</div>
       </div>
     </div>
+    <div class="stat-card">
+      <div class="stat-icon red" style="background:rgba(239, 68, 68, 0.1); color:#ef4444;"><i class="fas fa-hand-holding-dollar"></i></div>
+      <div>
+        <div class="stat-value text-danger">Rs.<?= number_format($totalBalance,0) ?></div>
+        <div class="stat-label">Outstanding</div>
+      </div>
+    </div>
   </div>
 
   <div class="row g-4">
@@ -206,6 +216,37 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
     <!-- Right Column -->
     <div class="col-lg-5 d-flex flex-column gap-4">
+
+      <!-- Payment History -->
+      <div class="card-lms">
+        <div class="card-lms-header">
+          <div class="card-lms-title"><i class="fas fa-receipt"></i> Recent Payments</div>
+          <a href="<?= BASE_URL ?>/frontend/student/payments.php" class="btn-lms btn-outline btn-sm">History</a>
+        </div>
+        <div class="card-lms-body" style="padding:0;">
+          <?php if (empty($payments)): ?>
+            <div class="empty-state"><i class="fas fa-receipt"></i><p>No payment records found.</p></div>
+          <?php else: ?>
+          <table class="table-lms">
+            <thead><tr><th>Date</th><th>Course</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <?php foreach ($payments as $p): ?>
+              <tr>
+                <td style="font-size:11px;"><?= date('M d', strtotime($p['paid_date'])) ?></td>
+                <td><div style="font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?= htmlspecialchars($p['course']) ?></div></td>
+                <td class="fw-700 text-success" style="font-size:12px;">Rs.<?= number_format($p['amount'],0) ?></td>
+                <td>
+                    <span class="badge-lms <?= $p['status']==='paid'?'success':($p['status']==='partial'?'warning':'danger') ?>" style="font-size:9px;padding:2px 6px;">
+                        <?= ucfirst($p['status']) ?>
+                    </span>
+                </td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+          <?php endif; ?>
+        </div>
+      </div>
 
       <!-- Assignments -->
       <div class="card-lms">

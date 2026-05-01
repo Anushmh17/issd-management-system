@@ -25,6 +25,7 @@ $adminNav = [
   ['icon'=>'fa-chalkboard-user','label'=>'Lecturers', 'href'=>BASE_URL.'/admin/lecturers/index.php'],
   ['icon'=>'fa-book-open',    'label'=>'Courses',     'href'=>BASE_URL.'/admin/courses/index.php'],
   ['icon'=>'fa-list-check',   'label'=>'Enrollments', 'href'=>BASE_URL.'/frontend/admin/enrollments.php'],
+  ['icon'=>'fa-chart-pie',      'label'=>'Finance Hub', 'href'=>BASE_URL.'/admin/finance/index.php'],
   ['icon'=>'fa-money-bill-wave','label'=>'Student Payments',  'href'=>BASE_URL.'/admin/payments/index.php'],
   ['icon'=>'fa-sack-dollar',  'label'=>'Lecturer Pays','href'=>BASE_URL.'/admin/lecturer_payments/index.php'],
   ['icon'=>'fa-bell',         'label'=>'Notices',     'href'=>BASE_URL.'/frontend/admin/notices.php'],
@@ -126,14 +127,20 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
     <div class="navbar-right">
       <!-- Notifications -->
       <div class="dropdown">
-        <button class="navbar-icon-btn" id="notifDropdown" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" title="Notifications">
+        <button class="navbar-icon-btn" id="notifDropdown" data-bs-toggle="dropdown" data-bs-display="static" data-bs-offset="-150,15" aria-expanded="false" title="Notifications">
           <i class="fas fa-bell"></i>
           <span class="badge rounded-pill bg-danger position-absolute" id="notif-badge" style="font-size:8px;top:5px;right:5px;padding:2px 4px; display:none;">0</span>
         </button>
         <div class="dropdown-menu dropdown-menu-end notif-dropdown shadow-lg" aria-labelledby="notifDropdown">
-          <div class="notif-header d-flex justify-content-between align-items-center">
-            <span class="fw-700">Notifications</span>
-            <span class="badge bg-white text-primary" id="notif-count-text" style="font-size:10px;">0 New</span>
+          <div class="notif-header d-flex justify-content-between align-items-center" style="background:#fff; border-bottom:1px solid #f1f5f9; padding: 15px 20px;">
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="fw-800 m-0" style="font-size:15px; color:var(--text-main);">Notifications</h6>
+              <div id="notif-header-spinner" class="spinner-border spinner-border-sm text-primary" style="width:12px; height:12px; border-width:2px; display:none;"></div>
+              <span class="text-muted" id="notif-count-text" style="font-size:10px; font-weight:600;">0 New</span>
+            </div>
+            <a href="javascript:void(0)" class="text-primary fw-700" style="font-size:11px; text-decoration:none;" onclick="notificationManager.markAllRead()">
+                <i class="fas fa-check-double me-1"></i> Mark All
+            </a>
           </div>
           
           <!-- Categorization Tabs -->
@@ -152,7 +159,10 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
             </div>
           </div>
 
-          <div class="p-2 text-center" style="background:#f8fafc; border-top:1px solid #e2e8f0;">
+          <div class="p-2 d-flex justify-content-between align-items-center" style="background:#f8fafc; border-top:1px solid #e2e8f0; padding: 10px 15px !important;">
+            <a href="javascript:void(0)" class="text-muted" style="font-size:11px; text-decoration:none;" onclick="notificationManager.clearRead()">
+                <i class="fas fa-trash-can me-1"></i> Clear Read
+            </a>
             <a href="<?= BASE_URL ?>/frontend/<?= $role ?>/notifications.php" class="fw-700 text-primary" style="font-size:11px;">View Full History</a>
           </div>
         </div>

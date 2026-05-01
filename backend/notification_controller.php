@@ -25,11 +25,23 @@ function markAsRead(PDO $pdo, $id) {
 }
 
 /**
+ * Mark all notifications as read for a user
+ */
+function markAllAsRead(PDO $pdo, $userId) {
+    $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE (user_id = ? OR user_id IS NULL) AND status = 'unread'");
+    return $stmt->execute([$userId]);
+}
+
+/**
  * Get notifications for a user with categorization
  */
-function getRecentNotifications(PDO $pdo, $userId, $role, $category = 'all', $limit = 15, $onlyUnread = false) {
+function getRecentNotifications(PDO $pdo, $userId, $role, $category = 'all', $limit = 15, $onlyUnread = false, $includeCleared = false) {
     $sql = "SELECT * FROM notifications WHERE (user_id = ? OR user_id IS NULL)";
     $params = [$userId];
+
+    if (!$includeCleared) {
+        $sql .= " AND is_cleared = 0";
+    }
 
     if ($onlyUnread) {
         $sql .= " AND status = 'unread'";
@@ -108,6 +120,14 @@ function getUrgentAlerts(PDO $pdo) {
     }
 
     return $alerts;
+}
+/**
+ * Mark all read notifications as cleared (hidden from dropdown)
+ */
+function clearReadNotifications(PDO $pdo, $userId) {
+    // Clear notifications for this specific user OR global ones (user_id IS NULL) that are marked as read
+    $stmt = $pdo->prepare("UPDATE notifications SET is_cleared = 1 WHERE (user_id = ? OR user_id IS NULL) AND status = 'read'");
+    return $stmt->execute([$userId]);
 }
 ?>
 

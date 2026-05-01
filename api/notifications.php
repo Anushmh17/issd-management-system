@@ -23,8 +23,10 @@ $action = $_GET['action'] ?? 'list';
 try {
     if ($action === 'list') {
         $category = $_GET['category'] ?? 'all';
+        $includeCleared = isset($_GET['history']) && $_GET['history'] == 1;
+        
         // Show both read and unread to allow viewing history
-        $notifications = getRecentNotifications($pdo, $userId, $user['role'], $category, 50, false);
+        $notifications = getRecentNotifications($pdo, $userId, $user['role'], $category, 50, false, $includeCleared);
         $unreadCount   = count(array_filter($notifications, function($n) { return !$n['is_read']; }));
         
         // Check for urgent follow-ups (Call alerts)
@@ -50,6 +52,10 @@ try {
             ob_clean();
             echo json_encode(['success' => false, 'error' => 'Invalid ID']);
         }
+    } elseif ($action === 'read_all') {
+        markAllAsRead($pdo, $userId);
+        ob_clean();
+        echo json_encode(['success' => true]);
     } elseif ($action === 'dismiss') {
         $type    = $_POST['type']    ?? 'system';
         $title   = $_POST['title']   ?? 'Alert Closed';
@@ -66,9 +72,8 @@ try {
             echo json_encode(['success' => false]);
         }
     } elseif ($action === 'clear') {
-        // Delete all read notifications for this user
-        $stmt = $pdo->prepare("DELETE FROM notifications WHERE user_id = ? AND status = 'read'");
-        if ($stmt->execute([$userId])) {
+        // Mark all read notifications as cleared for this user
+        if (clearReadNotifications($pdo, $userId)) {
             ob_clean();
             echo json_encode(['success' => true]);
         } else {

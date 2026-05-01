@@ -366,6 +366,29 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <script>
+function restrictPhone(e) {
+    let val = e.value;
+    val = val.replace(/[^0-9+]/g, '');
+    if (val.indexOf('+') > 0) {
+        val = val.substring(0, 1) + val.substring(1).replace(/\+/g, '');
+    }
+    if (val.startsWith('0')) {
+        if (val.length > 10) val = val.substring(0, 10);
+    } else if (val.startsWith('+94')) {
+        if (val.length > 12) val = val.substring(0, 12);
+    } else if (val.startsWith('94')) {
+        if (val.length > 11) val = val.substring(0, 11);
+    }
+    e.value = val;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.querySelector('input[name="phone"]');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() { restrictPhone(this); });
+    }
+});
+
 let cropper = null;
 let originalFileName = "";
 

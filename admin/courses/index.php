@@ -200,15 +200,15 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <table class="table-lms" id="coursesTable">
         <thead>
           <tr>
-            <th>#</th>
+            <th style="width: 50px;">#</th>
             <th>Course</th>
-            <th>Code</th>
-            <th>Duration</th>
-            <th>Monthly Fee</th>
-            <th>Assigned Lecturer</th>
-            <th>Students</th>
-            <th>Status</th>
-            <th style="text-align:center;">Actions</th>
+            <th style="width: 90px;">Code</th>
+            <th style="width: 100px;">Duration</th>
+            <th style="width: 120px;">Monthly Fee</th>
+            <th style="width: 160px;">Assigned Lecturer</th>
+            <th style="width: 100px;">Students</th>
+            <th style="width: 100px;">Status</th>
+            <th style="width: 140px; text-align:center;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -216,14 +216,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <tr class="<?= $c['status']==='inactive' ? 'course-inactive-row' : '' ?>">
             <td style="color:#94a3b8;font-size:13px;"><?= (($page-1)*15)+$i+1 ?></td>
             <td>
-              <div class="d-flex align-center gap-10">
-                <div class="course-icon-box">
-                  <i class="fas fa-book-open"></i>
-                </div>
-                <div>
-                  <div class="fw-600" style="font-size:14px;"><?= htmlspecialchars($c['course_name']) ?></div>
-                  <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars(substr($c['description'] ?? '', 0, 50)) ?>...</div>
-                </div>
+              <div>
+                <div class="fw-600" style="font-size:13px; line-height: 1.2;"><?= htmlspecialchars($c['course_name']) ?></div>
+                <div class="text-muted" style="font-size:10px;"><?= htmlspecialchars(substr($c['description'] ?? '', 0, 45)) ?>...</div>
               </div>
             </td>
             <td>

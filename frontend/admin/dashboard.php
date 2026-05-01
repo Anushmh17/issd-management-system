@@ -102,7 +102,7 @@ while($row = $stmtPayments->fetch()) {
         'time' => 'URGENT',
         'title' => "Collection: " . $row['full_name'],
         'desc' => $row['course_name'] . " &bull; Rs. " . number_format($row['total_due'], 0),
-        'link' => BASE_URL . "/admin/payments/index.php?highlight_id=" . $row['id']
+        'link' => BASE_URL . "/admin/finance/index.php?highlight_id=" . $row['id']
     ];
 }
 
@@ -196,19 +196,94 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   /* --- Welcome Hero --- */
   .hero-card {
-    background: linear-gradient(135deg, var(--accent-indigo) 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, #1e4d4d 0%, #345b5b 50%, #34d399 100%);
     color: #fff;
     grid-column: span 8;
     display: flex;
+    position: relative;
+    overflow: hidden;
+    padding: 40px !important;
+    box-shadow: 0 20px 50px rgba(79, 70, 229, 0.3) !important;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    display: flex;
     flex-direction: column;
     justify-content: center;
+    max-width: 550px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
   }
-  .hero-title { font-size: 36px; font-weight: 900; margin-bottom: 8px; letter-spacing: -1px; }
-  .hero-sub { font-size: 16px; opacity: 0.9; font-weight: 500; }
-  .hero-decoration {
-    position: absolute; right: -50px; bottom: -50px; width: 300px; height: 300px;
-    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
-    filter: blur(20px); border-radius: 50%;
+  .hero-title { 
+    font-size: 36px; /* Slightly smaller */
+    font-weight: 900; 
+    margin-bottom: 8px; 
+    letter-spacing: -1.2px; 
+    line-height: 1.1; 
+    color: #fff;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.1), 
+                 4px 4px 10px rgba(0,0,0,0.2),
+                 0 0 30px rgba(255,255,255,0.2);
+    transform: perspective(1000px) rotateX(2deg);
+  }
+  .hero-sub { 
+    font-size: 16px; 
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500; 
+    line-height: 1.6; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .hero-illustration {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 450px; /* Slightly larger to fill space */
+    height: auto;
+    z-index: 1;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
+    animation: floatIllustration 6s ease-in-out infinite;
+    mask-image: linear-gradient(to left, black 80%, transparent 100%); /* Smooth fade into text area */
+    pointer-events: none; /* Prevent illustration from blocking clicks */
+  }
+  @keyframes floatIllustration {
+    0%, 100% { transform: translateY(-50%) translateX(0); }
+    50% { transform: translateY(-55%) translateX(-10px); }
+  }
+  .hero-clock {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+    font-size: 13px;
+    font-weight: 800;
+    background: rgba(255,255,255,0.8); /* Brighter for black text */
+    padding: 6px 15px;
+    border-radius: 100px;
+    backdrop-filter: blur(5px);
+    letter-spacing: 1px;
+    z-index: 10; /* Ensure it is above the background */
+    color: #000; /* Pure Black */
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .hero-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    color: #fbbf24; /* Vibrant Gold Accent */
   }
 
   /* --- Quick Actions --- */
@@ -229,8 +304,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     transition: 0.3s;
     text-align: center;
   }
-  .action-btn:hover { background: var(--accent-indigo); color: #fff; transform: scale(1.05); }
-  .action-btn i { font-size: 20px; }
+  .action-btn:hover { background: var(--primary); color: #fff; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(30, 77, 77, 0.1); }
+  .action-btn:hover i { color: #fff !important; }
+  .action-btn i { font-size: 20px; transition: 0.3s; }
 
   /* --- Schedule List --- */
   .bento-schedule { display: flex; flex-direction: column; gap: 16px; }
@@ -262,26 +338,54 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 <div id="page-content">
 <div class="dashboard-grid">
 
+  <?php 
+    $hour = date('H');
+    $greeting = "Good Evening";
+    if ($hour < 12) $greeting = "Good Morning";
+    elseif ($hour < 17) $greeting = "Good Afternoon";
+  ?>
   <div class="bento-card hero-card">
-    <div class="hero-decoration"></div>
-    <div class="hero-title">Welcome Back, Admin</div>
-    <div class="hero-sub">
-      Institute operations are running smoothly today. 
-      <a href="<?= BASE_URL ?>/admin/payments/index.php?status=overdue" class="text-white fw-700 text-decoration-underline">
-        You have <?= $pending_payments ?> payment alerts
-      </a> to review.
+    <div class="hero-clock" id="live-clock"><?= date('H:i:s') ?></div>
+    <img src="<?= BASE_URL ?>/assets/images/dashboard/welcome.png" class="hero-illustration" alt="Welcome">
+    
+    <div class="hero-content">
+      <div class="hero-tag">System Administrator</div>
+      <div class="hero-title"><?= $greeting ?>, Admin</div>
+      <div class="hero-sub">
+        Institute operations are running smoothly today. <br>
+        <a href="<?= BASE_URL ?>/admin/finance/index.php" class="fw-800 text-decoration-none" style="background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 10px; color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); display: inline-block; margin-top: 8px;">
+          <i class="fas fa-bell me-1"></i> You have <span style="font-size: 18px;"><?= $pending_payments ?></span> payment alerts
+        </a> <span style="font-size: 13px; opacity: 0.8; margin-left: 5px;">to review.</span>
+      </div>
+      
+      <div class="mt-4 d-flex gap-3">
+        <a href="reports.php" class="btn btn-light rounded-pill px-4 fw-800 shadow-sm transition-all hover-scale" style="font-size: 13px; position: relative; z-index: 10;">
+          <i class="fas fa-chart-line me-2"></i> View Analytics
+        </a>
+      </div>
     </div>
   </div>
+
+  <script>
+    function updateClock() {
+        const now = new Date();
+        const clock = document.getElementById('live-clock');
+        if (clock) {
+            clock.innerText = now.toLocaleTimeString('en-US', { hour12: false });
+        }
+    }
+    setInterval(updateClock, 1000);
+  </script>
 
   <!-- QUICK ACTIONS -->
   <div class="bento-card span-4" style="overflow: visible; z-index: 100;">
     <div class="action-grid">
       <a href="<?= BASE_URL ?>/admin/students/add.php" class="action-btn">
-        <i class="fas fa-user-plus text-primary"></i> Add Student
+        <i class="fas fa-user-plus" style="color: var(--info);"></i> Add Student
       </a>
       <div class="dropdown" style="height:100%;">
-        <button class="action-btn w-100 h-100 dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background:#fff; border-radius:18px;">
-            <i class="fas fa-receipt text-success"></i> Payment
+        <button class="action-btn w-100 h-100 dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius:18px;">
+            <i class="fas fa-receipt" style="color: var(--accent);"></i> Payment
         </button>
         <ul class="dropdown-menu p-2 animate__animated animate__fadeIn" style="border-radius:18px; width:240px; z-index: 9999; transform:translateY(10px) !important; box-shadow: 0 30px 90px -15px rgba(15, 23, 42, 0.45) !important; border: 1px solid var(--accent-rose) !important;">
             <li>
@@ -310,10 +414,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </ul>
       </div>
       <a href="<?= BASE_URL ?>/admin/courses/add.php" class="action-btn">
-        <i class="fas fa-book text-warning"></i> New Course
+        <i class="fas fa-book" style="color: var(--warning);"></i> New Course
       </a>
       <a href="<?= BASE_URL ?>/admin/notices.php" class="action-btn">
-        <i class="fas fa-bullhorn text-danger"></i> Post Notice
+        <i class="fas fa-bullhorn" style="color: var(--danger);"></i> Post Notice
       </a>
     </div>
   </div>
@@ -337,14 +441,14 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     <div class="stat-label">Active Learners</div>
   </div>
 
-  <div class="bento-card span-3">
+  <a href="<?= BASE_URL ?>/admin/finance/index.php" class="bento-card span-3 text-decoration-none">
     <div class="stat-header">
       <div class="stat-icon" style="background:#fef3c7; color:var(--accent-amber);"><i class="fas fa-clock"></i></div>
       <div class="stat-trend text-danger" style="background:#fee2e2; padding:4px 8px; border-radius:100px;">Low</div>
     </div>
     <div class="stat-value"><?= $pending_payments ?></div>
     <div class="stat-label">Pending Payments</div>
-  </div>
+  </a>
 
   <div class="bento-card span-3">
     <div class="stat-header">

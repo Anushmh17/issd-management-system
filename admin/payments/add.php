@@ -94,7 +94,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="col-md-6">
             <div class="form-group-lms">
               <label>Select Student <span class="req">*</span></label>
-              <select name="student_id" id="student_id" class="form-control-lms" required onchange="updateCourseList()">
+              <select name="student_id" id="student_id" class="form-control-lms select2-search" required onchange="updateCourseList()">
                 <option value="">-- Choose a Student --</option>
                 <?php foreach ($grouped as $sId => $sData): ?>
                   <option value="<?= $sId ?>"><?= htmlspecialchars($sData['reg'] . ' - ' . $sData['name']) ?></option>
@@ -183,6 +183,20 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </div>
         </div>
 
+        <!-- Next Due Date (Conditional) -->
+        <div class="row g-3 mt-3" id="next_due_row" style="display:none;">
+          <div class="col-md-6">
+            <div class="form-group-lms">
+              <label>Next Due Date <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-calendar-day" style="color:var(--primary);"></i>
+                <input type="date" name="next_due_date" id="next_due_date" class="form-control-lms with-icon" value="<?= date('Y-m-d', strtotime('+1 month')) ?>">
+              </div>
+              <small class="text-muted">When should the student pay the remaining balance?</small>
+            </div>
+          </div>
+        </div>
+
       </div>
       <div class="card-lms-body" style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 20px;">
         <button type="submit" class="btn-primary-grad">
@@ -256,6 +270,8 @@ function calcRemaining() {
         val.style.color = '#166534';
         lbl.textContent = rem < 0 ? 'Advance Payment' : 'Paid in Full';
         val.textContent = 'Rs. ' + Math.abs(rem).toFixed(2);
+        document.getElementById('next_due_row').style.display = 'none';
+        document.getElementById('next_due_date').required = false;
     } else {
         // Partial
         box.style.background = '#fef2f2';
@@ -264,6 +280,8 @@ function calcRemaining() {
         val.style.color = '#dc2626';
         lbl.textContent = 'Remaining Balance';
         val.textContent = 'Rs. ' + rem.toFixed(2);
+        document.getElementById('next_due_row').style.display = 'block';
+        document.getElementById('next_due_date').required = true;
     }
 }
 document.addEventListener('DOMContentLoaded', () => {
@@ -280,6 +298,13 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchPaymentInfo();
         }
     }
+
+    // Initialize Select2
+    $('.select2-search').select2({ width: '100%' });
+    // Re-bind change event for Select2
+    $('#student_id').on('change', function() {
+        updateCourseList();
+    });
 });
 </script>
 

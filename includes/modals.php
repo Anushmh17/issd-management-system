@@ -222,6 +222,18 @@ if (!isset($role)) {
   background: #fff !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1) !important;
 }
+.lms-modal-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(91, 78, 250, 0.1);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin: 0 auto;
+}
 .notice-card-clickable {
   cursor: pointer;
   transition: all 0.3s ease;
@@ -236,5 +248,24 @@ if (!isset($role)) {
   to   { opacity: 1; transform: translateX(0); }
 }
 </style>
+
+<!-- Action Confirmation Modal (Reusable) -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
+    <div class="modal-content lms-modal">
+      <div class="modal-body text-center p-4">
+        <div class="lms-modal-icon mb-3" id="confirm-modal-icon">
+          <i class="fas fa-question-circle"></i>
+        </div>
+        <h3 class="fw-800 mb-2" style="font-size:22px; color:var(--text-main);" id="confirm-modal-title">Are you sure?</h3>
+        <p class="text-muted mb-4" style="font-size:14px; line-height:1.5;" id="confirm-modal-message">Do you really want to perform this action? This might be permanent.</p>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-light py-3 rounded-4 fw-700 w-100" data-bs-dismiss="modal" style="font-size:13px; border:1px solid #e2e8f0;">Cancel</button>
+          <button type="button" class="btn-lms btn-primary py-3 rounded-4 fw-800 w-100" id="confirm-modal-btn" style="font-size:13px; box-shadow:0 8px 15px rgba(91, 78, 250, 0.2);">Confirm Action</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 

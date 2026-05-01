@@ -12,14 +12,83 @@ require_once __DIR__ . '/db.php';
 // -------------------------------------------------------
 function syncOverduePayments(PDO $pdo) {
     try {
+        // 1. Update status to 'overdue' in DB
         $pdo->exec("
             UPDATE student_payments 
             SET status = 'overdue' 
             WHERE CURRENT_DATE > next_due_date 
               AND status NOT IN ('paid', 'overdue')
         ");
+
+        // 2. Generate Notifications for these overdue students
+        $overdue = $pdo->query("
+            SELECT p.id, s.user_id, s.full_name, p.balance, p.next_due_date 
+            FROM student_payments p
+            JOIN students s ON p.student_id = s.id
+            WHERE p.status = 'overdue'
+        ")->fetchAll();
+
+        foreach ($overdue as $o) {
+            // A. Admin Notification
+            $adminTitle = "Payment Overdue: " . $o['full_name'];
+            $adminMsg = "A payment of Rs. " . number_format($o['balance'], 2) . " was due on " . $o['next_due_date'] . ".";
+            $adminLink = BASE_URL . "/admin/payments/index.php?highlight_id=" . $o['id'];
+            
+            $checkAdmin = $pdo->prepare("SELECT id FROM notifications WHERE user_id IS NULL AND title = ? AND status = 'unread' LIMIT 1");
+            $checkAdmin->execute([$adminTitle]);
+            if (!$checkAdmin->fetch()) {
+                $stmt = $pdo->prepare("INSERT INTO notifications (type, title, message, link, status) VALUES ('payment', ?, ?, ?, 'unread')");
+                $stmt->execute([$adminTitle, $adminMsg, $adminLink]);
+            }
+
+            // B. Student Notification
+            $studentTitle = "Payment Overdue Notice";
+            $studentMsg = "Your payment of Rs. " . number_format($o['balance'], 2) . " was due on " . $o['next_due_date'] . ". Please clear it as soon as possible.";
+            
+            $checkStudent = $pdo->prepare("SELECT id FROM notifications WHERE user_id = ? AND title = ? AND status = 'unread' LIMIT 1");
+            $checkStudent->execute([$o['user_id'], $studentTitle]);
+            if (!$checkStudent->fetch()) {
+                $stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, status) VALUES (?, 'payment', ?, ?, 'unread')");
+                $stmt->execute([$o['user_id'], $studentTitle, $studentMsg]);
+            }
+        }
     } catch (PDOException $e) {
         error_log('syncOverduePayments: ' . $e->getMessage());
+    }
+}
+
+// -------------------------------------------------------
+// Trigger In-App Notifications for Upcoming Dues
+// -------------------------------------------------------
+function syncUpcomingPayments(PDO $pdo) {
+    try {
+        // Find payments due in exactly 5 days or 1 day
+        $upcoming = $pdo->query("
+            SELECT p.id, s.user_id, s.full_name, p.balance, p.next_due_date,
+                   DATEDIFF(p.next_due_date, CURRENT_DATE) as days_left
+            FROM student_payments p
+            JOIN students s ON p.student_id = s.id
+            WHERE p.balance > 0 
+              AND p.status NOT IN ('paid', 'overdue')
+              AND DATEDIFF(p.next_due_date, CURRENT_DATE) IN (5, 1)
+        ")->fetchAll();
+
+        foreach ($upcoming as $u) {
+            $days = $u['days_left'];
+            $title = "Payment Reminder: " . ($days == 1 ? "Due Tomorrow" : "Due in 5 Days");
+            $msg = "Dear " . $u['full_name'] . ", a payment of Rs. " . number_format($u['balance'], 2) . " is due on " . $u['next_due_date'] . ".";
+            
+            // Check if notification already exists for this specific day to avoid spam
+            $check = $pdo->prepare("SELECT id FROM notifications WHERE user_id = ? AND title = ? AND created_at >= CURRENT_DATE LIMIT 1");
+            $check->execute([$u['user_id'], $title]);
+            
+            if (!$check->fetch()) {
+                $stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, status) VALUES (?, 'payment', ?, ?, 'unread')");
+                $stmt->execute([$u['user_id'], $title, $msg]);
+            }
+        }
+    } catch (PDOException $e) {
+        error_log('syncUpcomingPayments: ' . $e->getMessage());
     }
 }
 
@@ -91,7 +160,7 @@ function addPayment(PDO $pdo, array $d): array {
     $status  = ($balance <= 0) ? 'paid' : 'partial';
 
     // Next due date logic
-    $nextDueDate = date('Y-m-d', strtotime('+1 month'));
+    $nextDueDate = !empty($d['next_due_date']) ? $d['next_due_date'] : date('Y-m-d', strtotime('+1 month'));
 
     try {
         $pdo->prepare("
@@ -124,6 +193,7 @@ function addPayment(PDO $pdo, array $d): array {
 // -------------------------------------------------------
 function getPaymentsList(PDO $pdo, array $filters = [], int $page = 1, int $perPage = 15): array {
     syncOverduePayments($pdo); // Ensure overdue status is accurate before fetch
+    syncUpcomingPayments($pdo); // Ensure upcoming alerts are sent before fetch
 
     $where  = [];
     $params = [];
@@ -185,5 +255,63 @@ function getStudentsWithActiveCourses(PDO $pdo): array {
         ORDER BY s.full_name ASC
     ");
     return $stmt->fetchAll();
+}
+
+// -------------------------------------------------------
+// Lecturer Payment Functions
+// -------------------------------------------------------
+function addLecturerPayment(PDO $pdo, array $d): array {
+    $lecturerId   = (int)($d['lecturer_id'] ?? 0);
+    $amount       = (float)($d['amount'] ?? 0);
+    $paymentMonth = trim($d['month'] ?? date('Y-m'));
+    $notes        = trim($d['notes'] ?? '');
+
+    if (!$lecturerId || $amount <= 0) {
+        return ['success' => false, 'errors' => ['Lecturer and Amount are required.']];
+    }
+
+    try {
+        $pdo->prepare("
+            INSERT INTO lecturer_payments (lecturer_id, amount, payment_month, payment_date, status, notes)
+            VALUES (?, ?, ?, NOW(), 'paid', ?)
+        ")->execute([$lecturerId, $amount, $paymentMonth, $notes]);
+        return ['success' => true];
+    } catch (PDOException $e) {
+        return ['success' => false, 'errors' => [$e->getMessage()]];
+    }
+}
+
+function getLecturerPaymentsList(PDO $pdo, int $page = 1): array {
+    $perPage = 15;
+    $total = (int)$pdo->query("SELECT COUNT(*) FROM lecturer_payments")->fetchColumn();
+    $pages = (int)ceil($total / $perPage);
+    $offset = ($page - 1) * $perPage;
+
+    $stmt = $pdo->prepare("
+        SELECT lp.*, u.name as lecturer_name 
+        FROM lecturer_payments lp
+        JOIN users u ON lp.lecturer_id = u.id
+        ORDER BY lp.payment_date DESC
+        LIMIT ? OFFSET ?
+    ");
+    $stmt->execute([$perPage, $offset]);
+    return ['payments' => $stmt->fetchAll(), 'total' => $total, 'pages' => $pages];
+}
+
+// -------------------------------------------------------
+// Financial Overview Stats
+// -------------------------------------------------------
+function getFinancialStats(PDO $pdo): array {
+    $thisMonth = date('Y-m');
+    
+    $income = (float)$pdo->query("SELECT SUM(amount_paid) FROM student_payments WHERE month = '$thisMonth'")->fetchColumn();
+    $expense = (float)$pdo->query("SELECT SUM(amount) FROM lecturer_payments WHERE payment_month = '$thisMonth'")->fetchColumn();
+    $pending = (float)$pdo->query("SELECT SUM(balance) FROM student_payments WHERE status != 'paid'")->fetchColumn();
+
+    return [
+        'monthly_income' => $income,
+        'monthly_expense' => $expense,
+        'total_outstanding' => $pending
+    ];
 }
 
