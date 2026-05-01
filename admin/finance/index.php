@@ -236,4 +236,14 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const highlightedRow = document.querySelector('.row-highlight');
+    if (highlightedRow) {
+        setTimeout(() => {
+            highlightedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+    }
+});
+</script>
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

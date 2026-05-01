@@ -114,7 +114,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="col-md-4">
             <div class="form-group-lms">
               <label for="status">Status</label>
-              <select id="status" name="status" class="form-control-lms">
+              <select id="status" name="status" class="form-control-lms select2-search">
                 <option value="active"   <?= $form['status']==='active'   ? 'selected' : '' ?>>Active</option>
                 <option value="inactive" <?= $form['status']==='inactive' ? 'selected' : '' ?>>Inactive</option>
               </select>
@@ -142,5 +142,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </form>
 </div>
 
+<script>
+$(document).ready(function() {
+    $('.select2-search').select2({ width: '100%' });
+});
+</script>
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
 

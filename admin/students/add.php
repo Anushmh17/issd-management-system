@@ -303,7 +303,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <div class="col-md-3">
                 <div class="form-group-lms">
                   <label for="course_id">Course <span class="req">*</span></label>
-                  <select id="course_id" name="course_id" class="form-control-lms" required>
+                  <select id="course_id" name="course_id" class="form-control-lms select2-search" required>
                     <option value="">-- Select Course --</option>
                     <?php foreach ($courses as $c): ?>
                       <option value="<?= $c['id'] ?>" <?= $form['course_id'] == $c['id'] ? 'selected' : '' ?>>
@@ -918,6 +918,8 @@ document.getElementById('addStudentForm').addEventListener('submit', function(e)
         // Usually registration might happen even if docs are pending, but "Required" implies they should be there.
         // I will just highlight them for now unless it's a hard rule.
     }
+    // Initialize Select2
+    $('.select2-search').select2({ width: '100%' });
 });
 </script>
 JS;
