@@ -66,66 +66,89 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <span class="section-badge">Required fields marked *</span>
       </div>
       <div class="card-lms-body">
-        <div class="row g-3">
+        <div class="row g-4">
 
-          <div class="col-md-6">
+          <div class="col-md-8">
             <div class="form-group-lms">
-              <label for="course_name">Course Name <span class="req">*</span></label>
-              <input type="text" id="course_name" name="course_name" class="form-control-lms"
-                     value="<?= htmlspecialchars($form['course_name']) ?>"
-                     placeholder="e.g. Web Development Fundamentals" required>
-            </div>
-          </div>
-
-          <div class="col-md-3">
-            <div class="form-group-lms">
-              <label for="course_code">Course Code <span class="req">*</span></label>
-              <input type="text" id="course_code" name="course_code" class="form-control-lms"
-                     value="<?= htmlspecialchars($form['course_code']) ?>"
-                     placeholder="e.g. WD101"
-                     oninput="this.value=this.value.toUpperCase()" required>
-              <small style="font-size:11px;color:#94a3b8;">Must be unique</small>
-            </div>
-          </div>
-
-          <div class="col-md-3">
-            <div class="form-group-lms">
-              <label for="duration">Duration</label>
-              <input type="text" id="duration" name="duration" class="form-control-lms"
-                     value="<?= htmlspecialchars($form['duration']) ?>"
-                     placeholder="e.g. 3 Months">
+              <label for="course_name" class="premium-label">
+                <i class="fas fa-book-bookmark"></i> Course Name <span class="req">*</span>
+              </label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-heading"></i>
+                <input type="text" id="course_name" name="course_name" class="form-control-lms with-icon"
+                       placeholder="e.g. Web Development Fundamentals"
+                       value="<?= htmlspecialchars($form['course_name']) ?>" required>
+              </div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="monthly_fee">Monthly Fee (Rs.) <span class="req">*</span></label>
+              <label for="course_code" class="premium-label">
+                <i class="fas fa-barcode"></i> Course Code <span class="req">*</span>
+              </label>
               <div class="input-icon-wrap">
-                <i class="fas fa-money-bill-wave" style="color:#10b981;"></i>
+                <i class="fas fa-hashtag"></i>
+                <input type="text" id="course_code" name="course_code" class="form-control-lms with-icon"
+                       placeholder="e.g. WD101"
+                       value="<?= htmlspecialchars($form['course_code']) ?>"
+                       oninput="this.value=this.value.toUpperCase()" required>
+              </div>
+              <small class="form-text-hint">Must be unique for the system</small>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label for="duration" class="premium-label">
+                <i class="fas fa-hourglass-half"></i> Duration
+              </label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-calendar-day"></i>
+                <input type="text" id="duration" name="duration" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['duration']) ?>" placeholder="e.g. 3 Months">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label for="monthly_fee" class="premium-label">
+                <i class="fas fa-coins"></i> Monthly Fee (Rs.) <span class="req">*</span>
+              </label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-money-bill-wave"></i>
                 <input type="number" id="monthly_fee" name="monthly_fee"
                        class="form-control-lms with-icon"
                        value="<?= htmlspecialchars($form['monthly_fee']) ?>"
                        placeholder="0.00" step="0.01" min="0" required>
               </div>
-              <small style="font-size:11px;color:#94a3b8;">Used for payment calculations</small>
+              <small class="form-text-hint">Used for automated invoice generation</small>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="status">Status</label>
-              <select id="status" name="status" class="form-control-lms select2-search">
-                <option value="active"   <?= $form['status']==='active'   ? 'selected' : '' ?>>Active</option>
-                <option value="inactive" <?= $form['status']==='inactive' ? 'selected' : '' ?>>Inactive</option>
-              </select>
+              <label for="status" class="premium-label">
+                <i class="fas fa-toggle-on"></i> Status
+              </label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-shield-halved"></i>
+                <select id="status" name="status" class="form-control-lms with-icon select2-search">
+                  <option value="active"   <?= $form['status']==='active'   ? 'selected' : '' ?>>Active</option>
+                  <option value="inactive" <?= $form['status']==='inactive' ? 'selected' : '' ?>>Inactive</option>
+                </select>
+              </div>
             </div>
           </div>
 
           <div class="col-12">
             <div class="form-group-lms">
-              <label for="description">Description</label>
-              <textarea id="description" name="description" class="form-control-lms" rows="3"
-                        placeholder="Brief course description..."><?= htmlspecialchars($form['description']) ?></textarea>
+              <label for="description" class="premium-label">
+                <i class="fas fa-align-left"></i> Course Description
+              </label>
+              <textarea id="description" name="description" class="form-control-lms" rows="4"
+                        placeholder="Briefly describe what students will learn in this course..."><?= htmlspecialchars($form['description']) ?></textarea>
             </div>
           </div>
 

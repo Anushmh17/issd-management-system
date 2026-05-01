@@ -57,29 +57,45 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     <a href="index.php" class="btn-lms btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
   </div>
 
-  <!-- Course Banner -->
-  <div class="course-edit-banner mb-20">
-    <div class="ceb-icon"><i class="fas fa-book-open"></i></div>
-    <div class="ceb-info">
-      <div class="ceb-name"><?= htmlspecialchars($course['course_name']) ?></div>
-      <div class="ceb-meta">
-        <span><i class="fas fa-hashtag"></i> <?= htmlspecialchars($course['course_code']) ?></span>
-        <span><i class="fas fa-clock"></i> <?= htmlspecialchars($course['duration'] ?: 'N/A') ?></span>
-        <span><i class="fas fa-money-bill"></i> Rs. <?= number_format((float)$course['monthly_fee'], 0) ?>/mo</span>
-        <?php if ($course['lecturer_name']): ?>
-          <span><i class="fas fa-chalkboard-user"></i> <?= htmlspecialchars($course['lecturer_name']) ?></span>
-        <?php endif; ?>
+  <!-- Premium Course Header Card -->
+  <div class="course-premium-header mb-30">
+    <div class="cph-content">
+      <div class="cph-icon-wrap">
+        <div class="cph-icon">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
       </div>
-    </div>
-    <div class="ceb-actions">
-      <a href="assign_lecturer.php?course_id=<?= $id ?>" class="btn-lms btn-sm"
-         style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;">
-        <i class="fas fa-chalkboard-user"></i> Assign Lecturer
-      </a>
-      <a href="assign_student.php?course_id=<?= $id ?>" class="btn-lms btn-sm"
-         style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;">
-        <i class="fas fa-user-graduate"></i> Enroll Student
-      </a>
+      <div class="cph-body">
+        <h2 class="cph-title"><?= htmlspecialchars($course['course_name']) ?></h2>
+        <div class="cph-meta">
+          <div class="cph-meta-item">
+            <i class="fas fa-hashtag"></i>
+            <span><?= htmlspecialchars($course['course_code']) ?></span>
+          </div>
+          <div class="cph-meta-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span><?= htmlspecialchars($course['duration'] ?: 'N/A') ?></span>
+          </div>
+          <div class="cph-meta-item">
+            <i class="fas fa-tag"></i>
+            <span>Rs. <?= number_format((float)$course['monthly_fee'], 0) ?>/mo</span>
+          </div>
+          <?php if ($course['lecturer_name']): ?>
+          <div class="cph-meta-item lecturer">
+            <i class="fas fa-chalkboard-user"></i>
+            <span><?= htmlspecialchars($course['lecturer_name']) ?></span>
+          </div>
+          <?php endif; ?>
+        </div>
+      </div>
+      <div class="cph-actions">
+        <a href="assign_lecturer.php?course_id=<?= $id ?>" class="cph-btn lecturer">
+          <i class="fas fa-user-tie"></i> Assign Lecturer
+        </a>
+        <a href="assign_student.php?course_id=<?= $id ?>" class="cph-btn student">
+          <i class="fas fa-user-plus"></i> Enroll Student
+        </a>
+      </div>
     </div>
   </div>
 
@@ -102,60 +118,89 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <span class="section-badge">Required fields marked *</span>
           </div>
           <div class="card-lms-body">
-            <div class="row g-3">
+            <div class="row g-4">
 
               <div class="col-md-8">
                 <div class="form-group-lms">
-                  <label for="course_name">Course Name <span class="req">*</span></label>
-                  <input type="text" id="course_name" name="course_name" class="form-control-lms"
-                         value="<?= htmlspecialchars($form['course_name']) ?>" required>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label for="course_code">Course Code <span class="req">*</span></label>
-                  <input type="text" id="course_code" name="course_code" class="form-control-lms"
-                         value="<?= htmlspecialchars($form['course_code']) ?>"
-                         oninput="this.value=this.value.toUpperCase()" required>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label for="duration">Duration</label>
-                  <input type="text" id="duration" name="duration" class="form-control-lms"
-                         value="<?= htmlspecialchars($form['duration']) ?>" placeholder="e.g. 3 Months">
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label for="monthly_fee">Monthly Fee (Rs.) <span class="req">*</span></label>
+                  <label for="course_name" class="premium-label">
+                    <i class="fas fa-book-bookmark"></i> Course Name <span class="req">*</span>
+                  </label>
                   <div class="input-icon-wrap">
-                    <i class="fas fa-money-bill-wave" style="color:#10b981;"></i>
-                    <input type="number" id="monthly_fee" name="monthly_fee"
-                           class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['monthly_fee']) ?>"
-                           step="0.01" min="0" required>
+                    <i class="fas fa-heading"></i>
+                    <input type="text" id="course_name" name="course_name" class="form-control-lms with-icon"
+                           placeholder="e.g. Web Development Fundamentals"
+                           value="<?= htmlspecialchars($form['course_name']) ?>" required>
                   </div>
                 </div>
               </div>
 
               <div class="col-md-4">
                 <div class="form-group-lms">
-                  <label for="status">Status</label>
-                  <select id="status" name="status" class="form-control-lms">
-                    <option value="active"   <?= $form['status']==='active'   ? 'selected' : '' ?>>Active</option>
-                    <option value="inactive" <?= $form['status']==='inactive' ? 'selected' : '' ?>>Inactive</option>
-                  </select>
+                  <label for="course_code" class="premium-label">
+                    <i class="fas fa-barcode"></i> Course Code <span class="req">*</span>
+                  </label>
+                  <div class="input-icon-wrap">
+                    <i class="fas fa-hashtag"></i>
+                    <input type="text" id="course_code" name="course_code" class="form-control-lms with-icon"
+                           placeholder="e.g. WD101"
+                           value="<?= htmlspecialchars($form['course_code']) ?>"
+                           oninput="this.value=this.value.toUpperCase()" required>
+                  </div>
+                  <small class="form-text-hint">Must be unique for the system</small>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group-lms">
+                  <label for="duration" class="premium-label">
+                    <i class="fas fa-hourglass-half"></i> Duration
+                  </label>
+                  <div class="input-icon-wrap">
+                    <i class="fas fa-calendar-day"></i>
+                    <input type="text" id="duration" name="duration" class="form-control-lms with-icon"
+                           value="<?= htmlspecialchars($form['duration']) ?>" placeholder="e.g. 3 Months">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group-lms">
+                  <label for="monthly_fee" class="premium-label">
+                    <i class="fas fa-coins"></i> Monthly Fee (Rs.) <span class="req">*</span>
+                  </label>
+                  <div class="input-icon-wrap">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <input type="number" id="monthly_fee" name="monthly_fee"
+                           class="form-control-lms with-icon"
+                           value="<?= htmlspecialchars($form['monthly_fee']) ?>"
+                           step="0.01" min="0" required>
+                  </div>
+                  <small class="form-text-hint">Used for automated invoice generation</small>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group-lms">
+                  <label for="status" class="premium-label">
+                    <i class="fas fa-toggle-on"></i> Status
+                  </label>
+                  <div class="input-icon-wrap">
+                    <i class="fas fa-shield-halved"></i>
+                    <select id="status" name="status" class="form-control-lms with-icon">
+                      <option value="active"   <?= $form['status']==='active'   ? 'selected' : '' ?>>Active</option>
+                      <option value="inactive" <?= $form['status']==='inactive' ? 'selected' : '' ?>>Inactive</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
               <div class="col-12">
                 <div class="form-group-lms">
-                  <label for="description">Description</label>
-                  <textarea id="description" name="description" class="form-control-lms" rows="3"><?= htmlspecialchars($form['description']) ?></textarea>
+                  <label for="description" class="premium-label">
+                    <i class="fas fa-align-left"></i> Course Description
+                  </label>
+                  <textarea id="description" name="description" class="form-control-lms" 
+                            rows="4" placeholder="Briefly describe what students will learn in this course..."><?= htmlspecialchars($form['description']) ?></textarea>
                 </div>
               </div>
 

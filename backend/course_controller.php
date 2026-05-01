@@ -100,11 +100,11 @@ function getCourseById(PDO $pdo, int $id): ?array {
     $stmt = $pdo->prepare("
         SELECT c.*,
                ca.lecturer_id,
-               u.name AS lecturer_name,
+               l.name AS lecturer_name,
                (SELECT COUNT(*) FROM student_courses sc WHERE sc.course_id=c.id AND sc.status='ongoing') AS student_count
         FROM courses c
         LEFT JOIN course_assignments ca ON ca.course_id = c.id
-        LEFT JOIN users u ON u.id = ca.lecturer_id
+        LEFT JOIN lecturers l ON l.id = ca.lecturer_id
         WHERE c.id = ?
     ");
     $stmt->execute([$id]);
@@ -147,11 +147,11 @@ function getCoursesList(PDO $pdo, array $filters = [], int $page = 1, int $perPa
         SELECT c.*,
                ca.lecturer_id,
                ca.assigned_date,
-               u.name AS lecturer_name,
+               l.name AS lecturer_name,
                (SELECT COUNT(*) FROM student_courses sc WHERE sc.course_id=c.id AND sc.status='ongoing') AS student_count
         FROM courses c
         LEFT JOIN course_assignments ca ON ca.course_id = c.id
-        LEFT JOIN users u ON u.id = ca.lecturer_id
+        LEFT JOIN lecturers l ON l.id = ca.lecturer_id
         {$whereSQL}
         ORDER BY c.created_at DESC
         LIMIT {$perPage} OFFSET {$offset}
@@ -229,6 +229,30 @@ function assignStudentToCourse(PDO $pdo, int $studentId, int $courseId, array $d
     } catch (PDOException $e) {
         error_log('assignStudentToCourse: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to enroll student.']];
+    }
+}
+
+// -------------------------------------------------------
+// Update Enrollment Details
+// -------------------------------------------------------
+function updateStudentCourse(PDO $pdo, int $id, array $data): array {
+    try {
+        $pdo->prepare("
+            UPDATE student_courses SET
+              start_date = ?,
+              end_date = ?,
+              status = ?
+            WHERE id = ?
+        ")->execute([
+            !empty($data['start_date']) ? $data['start_date'] : date('Y-m-d'),
+            !empty($data['end_date'])   ? $data['end_date']   : null,
+            $data['status'] ?? 'ongoing',
+            $id
+        ]);
+        return ['success' => true];
+    } catch (PDOException $e) {
+        error_log('updateStudentCourse: ' . $e->getMessage());
+        return ['success' => false, 'errors' => ['Failed to update enrollment.']];
     }
 }
 
