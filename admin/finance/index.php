@@ -58,9 +58,55 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
   animation: pulse-highlight 2s infinite;
   border-left: 5px solid var(--primary) !important;
 }
+
+/* Mobile-only fixes */
+@media (max-width: 768px) {
+  /* Stack page header vertically */
+  #page-content > .d-flex.justify-content-between {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+  /* Stack action buttons vertically */
+  #page-content > .d-flex.justify-content-between .d-flex.gap-2 {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+  #page-content > .d-flex.justify-content-between .d-flex.gap-2 a {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  /* Financial summary card: 2x2 grid on mobile */
+  .card-lms .row > .col-md-3 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    border-right: none !important;
+    padding: 10px 12px !important;
+    text-align: center !important;
+  }
+  .card-lms .row > .col-md-3 h3 {
+    font-size: 1rem !important;
+  }
+  .card-lms .row > .col-md-3 .x-small {
+    font-size: 9px !important;
+  }
+  /* Add dividers for 2x2 layout */
+  .card-lms .row > .col-md-3:nth-child(1),
+  .card-lms .row > .col-md-3:nth-child(2) {
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  }
+  .card-lms .row > .col-md-3:nth-child(1),
+  .card-lms .row > .col-md-3:nth-child(3) {
+    border-right: 1px solid rgba(255,255,255,0.1) !important;
+  }
+}
 </style>
 
-<div id="page-content" class="px-4">
+<div id="page-content">
     <div class="d-flex justify-content-between align-items-center mb-30">
         <div>
             <h2 class="fw-800 text-dark mb-1">Financial Oversight</h2>

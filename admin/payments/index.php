@@ -37,6 +37,44 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   animation: pulse-highlight 2s infinite;
   border-left: 5px solid var(--primary) !important;
 }
+
+@media (max-width: 768px) {
+  /* Stack page header: title above buttons */
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+  .page-header .d-flex.gap-2 {
+    width: 100% !important;
+    gap: 8px !important;
+  }
+  .page-header .d-flex.gap-2 a {
+    flex: 1 !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  /* Stat cards: 2x2 grid */
+  .row.g-3 > .col-md-3 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+  }
+  .stat-card {
+    padding: 14px 12px !important;
+  }
+  .stat-card .stat-icon {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 16px !important;
+  }
+  .stat-card .stat-value {
+    font-size: 18px !important;
+  }
+  .stat-card .stat-label {
+    font-size: 10px !important;
+  }
+}
 </style>
 
 <div id="page-content">

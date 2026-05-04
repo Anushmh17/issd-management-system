@@ -178,7 +178,193 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     .span-3, .span-4, .span-6, .span-8 { grid-column: span 6; }
   }
   @media (max-width: 768px) {
-    .span-3, .span-4, .span-6, .span-8 { grid-column: span 12; }
+    /* --- 2-column grid: stat cards side by side, rest full width --- */
+    .dashboard-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      padding: 10px 20px !important;
+      gap: 12px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      overflow-x: hidden !important;
+    }
+
+    /* Full-width cards: hero, quick actions, activity, docs, agenda */
+    .bento-card.hero-card,
+    .span-4, .span-6, .span-8, .span-12 {
+      grid-column: span 2 !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+    }
+
+    /* Stat cards: 2 per row */
+    .bento-card.span-3 {
+      grid-column: span 1 !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+    }
+
+    /* Hero Card: uniform padding so inner box is centered */
+    .bento-card.hero-card,
+    .hero-card {
+      padding: 12px !important;
+      flex-direction: column !important;
+      height: auto !important;
+      min-height: auto !important;
+      position: relative !important;
+    }
+
+    /* Show illustration but dimmed — overlay via pseudo-element */
+    .hero-card::after {
+      content: '' !important;
+      position: absolute !important;
+      inset: 0 !important;
+      background: rgba(0, 0, 0, 0.45) !important;
+      border-radius: inherit !important;
+      z-index: 2 !important;
+      pointer-events: none !important;
+    }
+
+    /* Illustration: visible, scaled up, floating animation restored */
+    .hero-card .hero-illustration {
+      display: block !important;
+      opacity: 0.4 !important;
+      visibility: visible !important;
+      width: 160% !important;
+      max-width: none !important;
+      right: -30% !important;
+      top: 50% !important;
+      z-index: 1 !important;
+      /* Let the keyframe handle transform (it already includes translateY(-50%)) */
+      animation: floatIllustration 6s ease-in-out infinite !important;
+    }
+
+    /* Clock: anchor inside card, top-right — above overlay */
+    .hero-card .hero-clock {
+      position: absolute !important;
+      top: 10px !important;
+      right: 10px !important;
+      font-size: 10px !important;
+      padding: 3px 9px !important;
+      background: rgba(255,255,255,0.9) !important;
+      color: #000 !important;
+      border-radius: 100px !important;
+      font-weight: 800 !important;
+      z-index: 10 !important;
+    }
+
+    /* Inner glass box: centered, full width within padding */
+    .hero-content {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 16px 18px !important;
+      margin-top: 30px !important;
+      margin-bottom: 0 !important;
+      flex: 1 !important;
+      align-self: stretch !important;
+      box-sizing: border-box !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      backdrop-filter: blur(6px) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    /* Text styles */
+    .hero-tag {
+      font-size: 9px !important;
+      padding: 3px 8px !important;
+      margin-bottom: 5px !important;
+      background: rgba(255,255,255,0.2) !important;
+      color: #fbbf24 !important;
+      border-color: rgba(251,191,36,0.4) !important;
+      text-shadow: none !important;
+    }
+    .hero-title {
+      font-size: 18px !important;
+      margin-bottom: 4px !important;
+      word-break: break-word !important;
+      line-height: 1.25 !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.4) !important;
+    }
+    .hero-sub {
+      font-size: 12px !important;
+      line-height: 1.5 !important;
+      color: rgba(255,255,255,0.95) !important;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+      margin-bottom: 6px !important;
+    }
+    .hero-sub br { display: block !important; }
+    .hero-sub a {
+      display: block !important;
+      font-size: 11px !important;
+      padding: 4px 10px !important;
+      margin-top: 5px !important;
+      width: fit-content !important;
+      background: rgba(255,255,255,0.18) !important;
+      border-color: rgba(251,191,36,0.5) !important;
+    }
+    .mt-4 { margin-top: 8px !important; }
+    .hero-content .btn { font-size: 11px !important; padding: 6px 14px !important; }
+
+    /* Keep "to review" span inline */
+    .hero-sub > span {
+      display: inline !important;
+      white-space: normal !important;
+      font-size: 11px !important;
+      color: rgba(255,255,255,0.85) !important;
+    }
+
+    /* --- Action Buttons Grid: 2 per row --- */
+    .action-grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px !important;
+      height: auto !important;
+    }
+    .action-btn {
+      padding: 14px 10px !important;
+      font-size: 12px !important;
+    }
+    .action-btn i { font-size: 20px !important; }
+    .action-btn span.action-sub { font-size: 9px !important; }
+
+    /* --- Stat Cards mobile: scale down to fit 2-column grid --- */
+    .bento-card.span-3 {
+      padding: 12px 10px !important;
+    }
+    .bento-card.span-3 .stat-header {
+      margin-bottom: 6px !important;
+    }
+    .bento-card.span-3 .stat-icon {
+      width: 32px !important;
+      height: 32px !important;
+      font-size: 14px !important;
+      border-radius: 10px !important;
+    }
+    .bento-card.span-3 .stat-value {
+      font-size: 22px !important;
+      margin-bottom: 2px !important;
+    }
+    .bento-card.span-3 .stat-label {
+      font-size: 9px !important;
+      letter-spacing: 0.3px !important;
+      white-space: normal !important;
+      word-break: break-word !important;
+    }
+    .bento-card.span-3 .stat-trend {
+      font-size: 9px !important;
+      padding: 2px 5px !important;
+    }
   }
 
   /* --- Stat Components --- */

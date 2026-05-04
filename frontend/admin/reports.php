@@ -428,26 +428,26 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
         <div class="rpt-card-body" style="padding-top:10px;">
           <div class="rpt-insight-grid">
-            <div class="rpt-insight">
+          <a href="../../admin/notices" class="rpt-insight" style="text-decoration:none;">
               <i class="fas fa-bell" style="color:#FF9F43;"></i>
               <div class="rpt-insight-val"><?= $totalNotices ?></div>
               <div class="rpt-insight-lbl">Notices Posted</div>
-            </div>
-            <div class="rpt-insight">
+            </a>
+            <a href="../../admin/payments" class="rpt-insight" style="text-decoration:none;">
               <i class="fas fa-dollar-sign" style="color:#00C9A7;"></i>
               <div class="rpt-insight-val"><?= !empty($monthlyRevenue) ? 'Rs.'.number_format(array_values($monthlyRevenue)[0],0) : '""' ?></div>
               <div class="rpt-insight-lbl">This Month</div>
-            </div>
-            <div class="rpt-insight">
+            </a>
+            <a href="../../admin/courses" class="rpt-insight" style="text-decoration:none;">
               <i class="fas fa-trophy" style="color:#5B4EFA;"></i>
               <div class="rpt-insight-val"><?= !empty($courseEnrollments) ? array_key_first($courseEnrollments) : '""' ?></div>
               <div class="rpt-insight-lbl">Top Course</div>
-            </div>
-            <div class="rpt-insight">
+            </a>
+            <a href="../../admin/enrollments" class="rpt-insight" style="text-decoration:none;">
               <i class="fas fa-chart-line" style="color:#FF6B6B;"></i>
               <div class="rpt-insight-val"><?= $totalEnrollments > 0 && $totalStudents > 0 ? round($totalEnrollments/$totalStudents,1) : 0 ?>x</div>
               <div class="rpt-insight-lbl">Avg Courses/Student</div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
@@ -702,7 +702,16 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     padding: 16px 14px;
     text-align: center;
     border: 1.5px solid var(--border-color);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    display: block;
   }
+  .rpt-insight:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border-color: var(--primary);
+  }
+  .rpt-insight:active { transform: scale(0.95); }
   .rpt-insight i { font-size: 22px; margin-bottom: 8px; display: block; }
   .rpt-insight-val {
     font-size: 15px;
