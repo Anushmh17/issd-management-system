@@ -27,18 +27,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strlen($new_password) < 6) {
         $error = "New password must be at least 6 characters long.";
     } else {
+        $source = $user['source'] ?? 'users';
+        $table  = ($source === 'lecturers') ? 'lecturers' : 'users';
+
         // Fetch current pass
-        $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT password FROM $table WHERE id = ?");
         $stmt->execute([$userId]);
         $dbPass = $stmt->fetchColumn();
 
-        if (!password_verify($current_password, $dbPass) && $current_password !== $dbPass) {
+        if (!$dbPass || (!password_verify($current_password, $dbPass) && $current_password !== $dbPass)) {
             $error = "Current password is incorrect.";
         } else {
             // Update
             try {
                 $hash = password_hash($new_password, PASSWORD_DEFAULT);
-                $pdo->prepare("UPDATE users SET password = ? WHERE id = ?")->execute([$hash, $userId]);
+                $pdo->prepare("UPDATE $table SET password = ? WHERE id = ?")->execute([$hash, $userId]);
                 $success = "Password changed successfully.";
             } catch (PDOException $e) {
                 $error = "Failed to update password.";

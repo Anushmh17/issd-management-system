@@ -192,33 +192,6 @@ $extraCSS = <<<'CSS'
 @media (max-width: 991px) {
     .form-actions-sticky.is-sticky { left: 20px; right: 20px; }
 }
-/* Cropping Modal */
-.crop-modal {
-  display: none;
-  position: fixed;
-  z-index: 10000;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(5px);
-  align-items: center;
-  justify-content: center;
-}
-.crop-modal-content {
-  background: #fff;
-  width: 90%;
-  max-width: 500px;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-}
-.crop-container {
-  width: 100%;
-  height: 400px;
-  background: #f1f5f9;
-  margin: 15px 0;
-  border-radius: 12px;
-  overflow: hidden;
 }
 .crop-actions {
   display: flex;
@@ -226,10 +199,6 @@ $extraCSS = <<<'CSS'
   justify-content: flex-end;
 }
 </style>
-
-<!-- Cropper.js -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 CSS;
 
 require_once dirname(__DIR__, 2) . '/includes/header.php';
@@ -415,6 +384,18 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                       </div>
                     </div>
                   </div>
+                  <div class="col-md-6">
+                    <div class="form-group-lms">
+                      <label for="office_email_password">LMS Email Password</label>
+                      <div class="input-icon-wrap" style="position:relative;">
+                        <i class="fas fa-key" style="color:#64748b;"></i>
+                        <input type="password" id="office_email_password" name="office_email_password"
+                               class="form-control-lms with-icon"
+                               value="<?= htmlspecialchars($form['office_email_password']) ?>">
+                        <i class="fas fa-eye toggle-password" data-target="#office_email_password" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -467,7 +448,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                     <?php endif; ?>
                     <div class="fw-700 color-primary" style="font-size:14px;">Change Photo</div>
                     <div class="text-muted" style="font-size:12px;">Click to upload JPG/PNG</div>
-                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display:none;" onchange="previewProfileImage(this)">
+                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display:none;" onchange="handlePhotoSelect(this)">
                 </div>
               </div>
             </div>
@@ -524,19 +505,22 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
 
     <!-- Sticky Bottom Bar -->
-    <div class="form-actions-sticky mt-20">
-      <div class="d-flex align-items-center justify-content-between w-100">
-          <div class="text-muted d-none d-md-block" style="font-size:13px;">
-              <i class="fas fa-info-circle"></i> Carefully review all changes before updating.
+    <div class="form-actions-wrapper" style="min-height: 70px; margin-top: 20px;">
+        <div class="form-actions-sticky">
+          <div class="d-flex align-items-center justify-content-between w-100">
+              <div class="text-muted d-none d-md-block" style="font-size:13px;">
+                  <i class="fas fa-info-circle"></i> Carefully review all changes before updating.
+              </div>
+              <div class="d-flex gap-12">
+                  <a href="index.php" class="btn-lms btn-outline">Cancel Changes</a>
+                  <button type="submit" class="btn-primary-grad px-40">
+                    <i class="fas fa-check-circle"></i> Save Profile Changes
+                  </button>
+              </div>
           </div>
-          <div class="d-flex gap-12">
-              <a href="index.php" class="btn-lms btn-outline">Cancel Changes</a>
-              <button type="submit" class="btn-primary-grad px-40">
-                <i class="fas fa-check-circle"></i> Save Profile Changes
-              </button>
-          </div>
-      </div>
+        </div>
     </div>
+    <div id="sticky-sentinel"></div>
 
   </form>
 </div>
@@ -559,33 +543,30 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php
-$extraJS = <<<JS
+$extraJS = <<<'JS'
 <script>
 let cropper = null;
 let originalFileName = "";
 
-function previewProfileImage(input) {
+function handlePhotoSelect(input) {
     if (input.files && input.files[0]) {
         originalFileName = input.files[0].name;
         const reader = new FileReader();
         reader.onload = function(e) {
             const modal = document.getElementById('cropModal');
             const cropImg = document.getElementById('cropImage');
+            if (cropper) cropper.destroy();
             cropImg.src = e.target.result;
             modal.style.display = 'flex';
-            
-            if (cropper) cropper.destroy();
-            cropper = new Cropper(cropImg, {
-                aspectRatio: 1,
-                viewMode: 2,
-                guides: true,
-                center: true,
-                highlight: false,
-                cropBoxMovable: true,
-                cropBoxResizable: true,
-                toggleDragModeOnDblclick: false,
-            });
-        }
+            cropImg.onload = function() {
+                cropper = new Cropper(cropImg, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.8,
+                });
+            };
+        };
         reader.readAsDataURL(input.files[0]);
     }
 }
@@ -630,42 +611,20 @@ function restrictNumbers(e) {
 }
 function restrictPhone(e) {
     let val = e.value;
-    // Remove all characters except numbers and +
     val = val.replace(/[^0-9+]/g, '');
-    
-    // Only allow + at index 0
     if (val.indexOf('+') > 0) {
         val = val.substring(0, 1) + val.substring(1).replace(/\+/g, '');
     }
-
     if (val.startsWith('0')) {
-        // Sri Lankan local format: 10 digits max
         if (val.length > 10) val = val.substring(0, 10);
     } else if (val.startsWith('+94')) {
-        // Sri Lankan international format: 12 characters max (+94XXXXXXXXX)
         if (val.length > 12) val = val.substring(0, 12);
     } else if (val.startsWith('94')) {
-        // Without +, but still 11 digits
         if (val.length > 11) val = val.substring(0, 11);
     }
-    
     e.value = val;
 }
 
-// Sticky bar logic
-window.addEventListener('scroll', function() {
-    const bar = document.querySelector('.form-actions-sticky');
-    if (!bar) return;
-    const scrollPos = window.innerHeight + window.scrollY;
-    const bodyHeight = document.body.offsetHeight;
-    if (scrollPos < bodyHeight - 50) {
-        bar.classList.add('is-sticky');
-    } else {
-        bar.classList.remove('is-sticky');
-    }
-});
-
-// Apply restrictions
 document.addEventListener('DOMContentLoaded', function() {
     const phoneFields = ['phone_number', 'whatsapp_number', 'guardian_phone'];
     phoneFields.forEach(id => {
@@ -678,10 +637,66 @@ document.addEventListener('DOMContentLoaded', function() {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', function() { restrictNumbers(this); });
     });
+
+    // Toggle Password
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = document.querySelector(this.getAttribute('data-target'));
+            if (target) {
+                const type = target.getAttribute('type') === 'password' ? 'text' : 'password';
+                target.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            }
+        });
+    });
+
+    flatpickr("#join_date", {
+        dateFormat: "Y-m-d",
+        maxDate: "today",
+        altInput: true,
+        altFormat: "F j, Y"
+    });
+
+    flatpickr("#next_follow_up", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        altInput: true,
+        altFormat: "F j, Y"
+    });
+});
+
+    // Sticky Bar Observer
+    const sentinel = document.getElementById('sticky-sentinel');
+    const stickyBar = document.querySelector('.form-actions-sticky');
+    if (sentinel && stickyBar) {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                stickyBar.classList.remove('is-sticky');
+            } else {
+                // Only make sticky if sentinel is BELOW the viewport
+                const rect = sentinel.getBoundingClientRect();
+                if (rect.top > window.innerHeight) {
+                    stickyBar.classList.add('is-sticky');
+                } else {
+                    stickyBar.classList.remove('is-sticky');
+                }
+            }
+        }, { threshold: 0 });
+        observer.observe(sentinel);
+        
+        // Also handle scroll to re-check if we scroll UP past the sentinel
+        window.addEventListener('scroll', () => {
+            const rect = sentinel.getBoundingClientRect();
+            if (rect.top > window.innerHeight) {
+                stickyBar.classList.add('is-sticky');
+            } else {
+                stickyBar.classList.remove('is-sticky');
+            }
+        });
+    }
 });
 </script>
 JS;
-
-require_once dirname(__DIR__, 2) . '/includes/footer.php';
+require_once dirname(__DIR__, 2) . '/includes/footer.php'; 
 ?>
-

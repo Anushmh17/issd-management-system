@@ -87,6 +87,11 @@ $extraCSS = <<<CSS
 .doc-badge.pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
 .doc-badge.missing { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
 
+.row-highlight {
+    background-color: rgba(91, 78, 250, 0.08) !important;
+    border-left: 4px solid var(--primary) !important;
+}
+
 .id-badge-lms { background: #f1f5f9; color: #475569; font-weight: 700; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
 .batch-badge-lms { background: #e0f2fe; color: #0369a1; font-weight: 600; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
 

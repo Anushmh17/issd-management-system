@@ -155,42 +155,56 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
 
         <!-- Assigned Courses Card -->
-        <div class="card-lms">
-          <div class="card-lms-header">
+        <div class="card-lms premium-border">
+          <div class="card-lms-header" style="background: var(--primary-light);">
             <div class="card-lms-title">
-              <i class="fas fa-book-open" style="color:#3b82f6;"></i> Assigned Courses
+              <i class="fas fa-book-open" style="color: var(--primary);"></i> Assigned Courses
             </div>
-            <span class="badge-lms info"><?= $lecturer['course_count'] ?></span>
+            <div class="premium-badge-count"><?= $lecturer['course_count'] ?></div>
           </div>
-          <div class="card-lms-body" style="padding:0;max-height:320px;overflow-y:auto;">
+          <div class="card-lms-body" style="padding:0;max-height:380px;overflow-y:auto;">
             <?php if (empty($lecturer['courses'])): ?>
-              <div class="empty-state" style="padding:24px 16px;">
-                <i class="fas fa-book-open" style="font-size:24px;"></i>
-                <p style="font-size:12px;">No courses assigned yet.</p>
-                <a href="<?= BASE_URL ?>/admin/courses/assign_lecturer.php"
-                   class="btn-lms btn-primary btn-sm mt-10" style="font-size:11px;">
-                  <i class="fas fa-link"></i> Assign Course
+              <div class="empty-state" style="padding:40px 20px;">
+                <div class="avatar-initials mb-3" style="background: var(--border-light); color: var(--text-muted); width:60px; height:60px;">
+                  <i class="fas fa-book-slash" style="font-size:24px;"></i>
+                </div>
+                <h4 class="fw-700" style="font-size:15px; color: var(--text-main);">No Courses Yet</h4>
+                <p style="font-size:12px; color: var(--text-muted); margin-bottom:15px;">This lecturer hasn't been assigned to any courses.</p>
+                <a href="<?= BASE_URL ?>/admin/courses/assign_lecturer.php?lecturer_id=<?= $id ?>"
+                   class="btn-primary-grad btn-sm" style="font-size:11px;">
+                  <i class="fas fa-link"></i> Assign First Course
                 </a>
               </div>
             <?php else: ?>
-              <?php foreach ($lecturer['courses'] as $c): ?>
-              <div class="course-student-item">
-                <div class="course-icon-box" style="width:30px;height:30px;font-size:12px;flex-shrink:0;">
-                  <i class="fas fa-book-open"></i>
-                </div>
-                <div style="flex:1;min-width:0;">
-                  <div class="fw-600" style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                    <?= htmlspecialchars($c['course_name']) ?>
+              <div class="course-list-wrap">
+                <?php foreach ($lecturer['courses'] as $c): ?>
+                <div class="course-student-item">
+                  <div class="course-icon-box" style="width:34px; height:34px; font-size:13px;">
+                    <i class="fas fa-graduation-cap"></i>
                   </div>
-                  <span class="course-code-badge" style="font-size:9px;"><?= htmlspecialchars($c['course_code']) ?></span>
+                  <div style="flex:1;min-width:0;">
+                    <div class="fw-700" style="font-size:13px; color: var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                      <?= htmlspecialchars($c['course_name']) ?>
+                    </div>
+                    <div class="d-flex align-center gap-2 mt-1">
+                        <span class="course-code-badge" style="font-size:9px; padding:2px 6px;"><?= htmlspecialchars($c['course_code']) ?></span>
+                        <?php if ($c['status'] === 'active'): ?>
+                          <span class="badge-lms success" style="font-size:8px; padding:2px 6px; border-radius:4px;">Active</span>
+                        <?php endif; ?>
+                    </div>
+                  </div>
+                  <a href="<?= BASE_URL ?>/admin/courses/edit.php?id=<?= $c['id'] ?>" class="text-muted hover-primary" style="font-size:14px;" title="View Course">
+                    <i class="fas fa-chevron-right"></i>
+                  </a>
                 </div>
-                <?php if ($c['status'] === 'active'): ?>
-                  <span style="font-size:9px;font-weight:700;color:#059669;">â--</span>
-                <?php else: ?>
-                  <span style="font-size:9px;font-weight:700;color:#94a3b8;">â--</span>
-                <?php endif; ?>
+                <?php endforeach; ?>
               </div>
-              <?php endforeach; ?>
+              <div style="padding:16px; background: #fff;">
+                <a href="<?= BASE_URL ?>/admin/courses/assign_lecturer.php?lecturer_id=<?= $id ?>"
+                   class="btn-primary-grad btn-sm w-100" style="font-size:11px; justify-content:center; border-radius:10px; padding:12px;">
+                  <i class="fas fa-plus-circle"></i> Assign Another Course
+                </a>
+              </div>
             <?php endif; ?>
           </div>
         </div>
@@ -392,27 +406,24 @@ document.addEventListener('DOMContentLoaded', function() {
 let cropper = null;
 let originalFileName = "";
 
-function previewPhoto(input) {
+function handlePhotoSelect(input) {
   if (input.files && input.files[0]) {
     originalFileName = input.files[0].name;
     const reader = new FileReader();
-    reader.onload = e => {
+    reader.onload = function(e) {
       const modal = document.getElementById('cropModal');
       const cropImg = document.getElementById('cropImage');
+      if (cropper) cropper.destroy();
       cropImg.src = e.target.result;
       modal.style.display = 'flex';
-      
-      if (cropper) cropper.destroy();
-      cropper = new Cropper(cropImg, {
-        aspectRatio: 1,
-        viewMode: 2,
-        guides: true,
-        center: true,
-        highlight: false,
-        cropBoxMovable: true,
-        cropBoxResizable: true,
-        toggleDragModeOnDblclick: false,
-      });
+      cropImg.onload = function() {
+        cropper = new Cropper(cropImg, {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 0.8,
+        });
+      };
     };
     reader.readAsDataURL(input.files[0]);
   }
@@ -420,7 +431,7 @@ function previewPhoto(input) {
 
 function closeCropModal() {
   document.getElementById('cropModal').style.display = 'none';
-  document.getElementById('photoInput').value = ''; // Reset input
+  document.getElementById('photoInput').value = '';
   if (cropper) cropper.destroy();
 }
 
@@ -462,5 +473,19 @@ function togglePwd(fieldId, icon) {
 }
 </script>
 
-<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+<?php
+$extraJS = <<<'JS'
+<script>
+$(document).ready(function() {
+    flatpickr("input[name='joined_date']", {
+        dateFormat: "Y-m-d",
+        maxDate: "today",
+        altInput: true,
+        altFormat: "F j, Y"
+    });
+});
+</script>
+JS;
+require_once dirname(__DIR__, 2) . '/includes/footer.php'; 
+?>
 

@@ -288,25 +288,93 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   /* --- Quick Actions --- */
   .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; height: 100%; }
+  /* --- Quick Actions (Premium Glassmorphism) --- */
+  .action-grid { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 16px; 
+    height: 100%; 
+  }
+
   .action-btn {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-    padding: 16px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+    padding: 20px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     color: #1e293b;
-    font-weight: 700;
-    font-size: 12px;
-    transition: 0.3s;
+    font-weight: 800;
+    font-size: 13px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-align: center;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
   }
-  .action-btn:hover { background: var(--primary); color: #fff; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(30, 77, 77, 0.1); }
-  .action-btn:hover i { color: #fff !important; }
-  .action-btn i { font-size: 20px; transition: 0.3s; }
+
+  .action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+    z-index: 1;
+    opacity: 0;
+    transition: 0.3s;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 1);
+  }
+
+  .action-btn:hover::before { opacity: 1; }
+
+  .action-btn i {
+    font-size: 26px;
+    margin-bottom: 4px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+  }
+
+  .action-btn:hover i {
+    transform: scale(1.2) rotate(5deg);
+  }
+
+  .action-btn span.action-label {
+    position: relative;
+    z-index: 2;
+    display: block;
+  }
+
+  .action-btn span.action-sub {
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+    opacity: 0.8;
+    margin-top: -2px;
+    z-index: 2;
+  }
+
+  /* Specific Button Themes */
+  .btn-student i { color: #6366f1; }
+  .btn-payment i { color: #10b981; }
+  .btn-course i  { color: #f59e0b; }
+  .btn-notice i  { color: #f43f5e; }
+
+  .btn-student:hover { border-bottom: 3px solid #6366f1; }
+  .btn-payment:hover { border-bottom: 3px solid #10b981; }
+  .btn-course:hover  { border-bottom: 3px solid #f59e0b; }
+  .btn-notice:hover  { border-bottom: 3px solid #f43f5e; }
 
   /* --- Schedule List --- */
   .bento-schedule { display: flex; flex-direction: column; gap: 16px; }
@@ -378,19 +446,23 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </script>
 
   <!-- QUICK ACTIONS -->
-  <div class="bento-card span-4" style="overflow: visible; z-index: 100;">
+  <div class="bento-card span-4" style="overflow: visible; z-index: 100; background: rgba(248, 250, 252, 0.4);">
     <div class="action-grid">
-      <a href="<?= BASE_URL ?>/admin/students/add.php" class="action-btn">
-        <i class="fas fa-user-plus" style="color: var(--info);"></i> Add Student
+      <a href="<?= BASE_URL ?>/admin/students/add.php" class="action-btn btn-student">
+        <i class="fas fa-user-plus"></i>
+        <span class="action-label">Add Student</span>
+        <span class="action-sub">New Enrollment</span>
       </a>
       <div class="dropdown" style="height:100%;">
-        <button class="action-btn w-100 h-100 dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius:18px;">
-            <i class="fas fa-receipt" style="color: var(--accent);"></i> Payment
+        <button class="action-btn w-100 h-100 dropdown-toggle border-0 btn-payment" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-receipt"></i>
+            <span class="action-label">Payment</span>
+            <span class="action-sub">Fees & Payouts</span>
         </button>
-        <ul class="dropdown-menu p-2 animate__animated animate__fadeIn" style="border-radius:18px; width:240px; z-index: 9999; transform:translateY(10px) !important; box-shadow: 0 30px 90px -15px rgba(15, 23, 42, 0.45) !important; border: 1px solid var(--accent-rose) !important;">
+        <ul class="dropdown-menu p-2 animate__animated animate__fadeIn" style="border-radius:24px; width:240px; z-index: 9999; transform:translateY(15px) !important; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(20px); background: rgba(255,255,255,0.9);">
             <li>
                 <a class="dropdown-item p-3 rounded-4 d-flex align-items-center gap-3" href="<?= BASE_URL ?>/admin/payments/add.php">
-                    <div class="stat-icon" style="width:32px; height:32px; background:#e0e7ff; color:var(--accent-indigo); font-size:12px;">
+                    <div class="stat-icon" style="width:36px; height:36px; background:#e0e7ff; color:var(--accent-indigo); font-size:14px; border-radius: 12px;">
                         <i class="fas fa-user-graduate"></i>
                     </div>
                     <div>
@@ -399,10 +471,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                     </div>
                 </a>
             </li>
-            <li><hr class="dropdown-divider opacity-50"></li>
+            <li><hr class="dropdown-divider opacity-10 my-2"></li>
             <li>
                 <a class="dropdown-item p-3 rounded-4 d-flex align-items-center gap-3" href="<?= BASE_URL ?>/admin/lecturer_payments/index.php">
-                    <div class="stat-icon" style="width:32px; height:32px; background:#dcfce7; color:var(--accent-emerald); font-size:12px;">
+                    <div class="stat-icon" style="width:36px; height:36px; background:#dcfce7; color:var(--accent-emerald); font-size:14px; border-radius: 12px;">
                         <i class="fas fa-chalkboard-user"></i>
                     </div>
                     <div>
@@ -413,11 +485,15 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </li>
         </ul>
       </div>
-      <a href="<?= BASE_URL ?>/admin/courses/add.php" class="action-btn">
-        <i class="fas fa-book" style="color: var(--warning);"></i> New Course
+      <a href="<?= BASE_URL ?>/admin/courses/add.php" class="action-btn btn-course">
+        <i class="fas fa-book"></i>
+        <span class="action-label">New Course</span>
+        <span class="action-sub">Expand Catalog</span>
       </a>
-      <a href="<?= BASE_URL ?>/admin/notices.php" class="action-btn">
-        <i class="fas fa-bullhorn" style="color: var(--danger);"></i> Post Notice
+      <a href="<?= BASE_URL ?>/admin/notices.php" class="action-btn btn-notice">
+        <i class="fas fa-bullhorn"></i>
+        <span class="action-label">Post Notice</span>
+        <span class="action-sub">Announcements</span>
       </a>
     </div>
   </div>

@@ -153,54 +153,6 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
-<!-- Cropper.js -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
-<style>
-/* Cropping Modal */
-.crop-modal {
-  display: none;
-  position: fixed;
-  z-index: 10000;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(5px);
-  align-items: center;
-  justify-content: center;
-}
-.crop-modal-content {
-  background: #fff;
-  width: 90%;
-  max-width: 550px;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-}
-.crop-container {
-  width: 100%;
-  height: 450px;
-  background: #0f172a;
-  margin: 15px 0;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.crop-container img {
-  display: block;
-  max-width: 100%;
-}
-.crop-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-</style>
-
 <div id="page-content">
 
   <!-- Page Header -->
@@ -824,6 +776,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Initialize Flatpickr for Join Date (No Future)
+    flatpickr("#join_date", {
+        dateFormat: "Y-m-d",
+        maxDate: "today",
+        altInput: true,
+        altFormat: "F j, Y"
+    });
+
+    // Initialize Flatpickr for Follow-up (Future ALLOWED)
+    flatpickr("#next_follow_up", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        altInput: true,
+        altFormat: "F j, Y"
+    });
+
+    // Initialize Flatpickr for Document dates (No Future)
+    flatpickr(".doc-date-input", {
+        dateFormat: "Y-m-d",
+        maxDate: "today",
+        altInput: true,
+        altFormat: "F j, Y"
+    });
 });
 
 function toggleDocFields(key) {

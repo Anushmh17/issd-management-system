@@ -198,8 +198,12 @@ function updateLecturer(PDO $pdo, int $id, array $d, ?array $photoFile = null): 
         }
 
         $params[] = $id;
-        $pdo->prepare("UPDATE lecturers SET " . implode(',', $sets) . " WHERE id=?")
-            ->execute($params);
+        $stmt = $pdo->prepare("UPDATE lecturers SET " . implode(',', $sets) . " WHERE id=?");
+        $success = $stmt->execute($params);
+
+        if (!$success) {
+            return ['success' => false, 'errors' => ['Database update failed.']];
+        }
 
         return ['success' => true];
     } catch (PDOException $e) {

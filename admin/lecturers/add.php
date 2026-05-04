@@ -427,6 +427,20 @@ function togglePwd(fieldId, icon) {
 }
 </script>
 
-<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+<?php
+$extraJS = <<<'JS'
+<script>
+$(document).ready(function() {
+    flatpickr("input[name='joined_date']", {
+        dateFormat: "Y-m-d",
+        maxDate: "today",
+        altInput: true,
+        altFormat: "F j, Y"
+    });
+});
+</script>
+JS;
+require_once dirname(__DIR__, 2) . '/includes/footer.php'; 
+?>
 
 

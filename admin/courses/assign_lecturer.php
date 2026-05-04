@@ -14,8 +14,9 @@ requireRole(ROLE_ADMIN); // STRICTLY ADMIN ONLY
 $errors  = [];
 $success = false;
 
-// Pre-select course from query string
-$preselectedCourseId = (int)($_GET['course_id'] ?? 0);
+// Pre-select course or lecturer from query string
+$preselectedCourseId   = (int)($_GET['course_id'] ?? 0);
+$preselectedLecturerId = (int)($_GET['lecturer_id'] ?? 0);
 
 // Handle POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -47,12 +48,11 @@ $lecturers = getActiveLecturers($pdo);
 
 // Get existing assignments for display
 $assignedStmt = $pdo->query("
-    SELECT ca.*, c.course_name, c.course_code, u.name AS lecturer_name, u.id AS lid,
-           lp.department
+    SELECT ca.*, c.course_name, c.course_code, l.name AS lecturer_name, l.id AS lid,
+           l.department
     FROM course_assignments ca
     JOIN courses c ON c.id = ca.course_id
-    JOIN users u   ON u.id = ca.lecturer_id
-    LEFT JOIN lecturer_profiles lp ON lp.user_id = u.id
+    JOIN lecturers l ON l.id = ca.lecturer_id
     ORDER BY ca.created_at DESC
 ");
 $assignments = $assignedStmt->fetchAll();
@@ -121,9 +121,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <select id="lecturer_id" name="lecturer_id" class="form-control-lms" required>
                 <option value="">"" Choose a lecturer ""</option>
                 <?php foreach ($lecturers as $l): ?>
-                  <option value="<?= $l['id'] ?>">
+                  <option value="<?= $l['id'] ?>"
+                    <?= (int)$l['id'] === $preselectedLecturerId ? 'selected' : '' ?>>
                     <?= htmlspecialchars($l['name']) ?>
-                    <?= $l['department'] ? ' (' . htmlspecialchars($l['department']) . ')' : '' ?>
+                    <?= !empty($l['department']) ? ' (' . htmlspecialchars($l['department']) . ')' : '' ?>
                   </option>
                 <?php endforeach; ?>
               </select>
@@ -139,9 +140,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-actions" style="margin-bottom:0;">
               <button type="submit" class="btn-primary-grad" id="btn-assign-lecturer"
                       <?= empty($lecturers) ? 'disabled' : '' ?>>
-                <i class="fas fa-link"></i> Assign Lecturer
+                <i class="fas fa-link"></i> <span id="submit-text">Assign Lecturer</span>
               </button>
-              <a href="index.php" class="btn-lms btn-outline"><i class="fas fa-xmark"></i> Cancel</a>
+              <button type="button" class="btn-lms btn-outline" onclick="resetAssignForm()" id="btn-cancel-edit" style="display:none;">
+                <i class="fas fa-xmark"></i> Cancel Edit
+              </button>
+              <a href="index.php" class="btn-lms btn-outline" id="btn-back-courses"><i class="fas fa-arrow-left"></i> Back</a>
             </div>
           </form>
         </div>
@@ -197,16 +201,23 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <?= $a['assigned_date'] ? date('d M Y', strtotime($a['assigned_date'])) : '""' ?>
                 </td>
                 <td style="text-align:center;">
-                  <form method="POST" action="assign_lecturer.php" style="display:inline;">
-                    <input type="hidden" name="act"       value="remove">
-                    <input type="hidden" name="course_id" value="<?= $a['course_id'] ?>">
-                    <button type="submit"
-                            class="btn-lms btn-danger btn-sm"
-                            title="Remove Assignment"
-                            data-confirm="Remove lecturer from '<?= htmlspecialchars($a['course_name']) ?>'?">
-                      <i class="fas fa-unlink"></i>
+                  <div class="d-flex gap-2 justify-content-center">
+                    <button type="button" class="btn-lms btn-primary btn-sm"
+                            title="Edit Assignment"
+                            onclick="editAssignment(<?= $a['course_id'] ?>, <?= $a['lecturer_id'] ?>, '<?= $a['assigned_date'] ?>')">
+                      <i class="fas fa-edit"></i>
                     </button>
-                  </form>
+                    <form method="POST" action="assign_lecturer.php" style="display:inline;">
+                      <input type="hidden" name="act"       value="remove">
+                      <input type="hidden" name="course_id" value="<?= $a['course_id'] ?>">
+                      <button type="submit"
+                              class="btn-lms btn-danger btn-sm"
+                              title="Remove Assignment"
+                              data-confirm="Remove lecturer from '<?= htmlspecialchars($a['course_name']) ?>'?">
+                        <i class="fas fa-unlink"></i>
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
               <?php endforeach; ?>
@@ -220,5 +231,59 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </div>
 </div>
 
-<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+<?php
+$extraJS = <<<'JS'
+<script>
+function editAssignment(courseId, lecturerId, date) {
+    document.getElementById('course_id').value = courseId;
+    document.getElementById('lecturer_id').value = lecturerId;
+    document.getElementById('assigned_date').value = date;
+    
+    // Update UI
+    document.getElementById('submit-text').innerText = 'Update Assignment';
+    document.getElementById('btn-cancel-edit').style.display = 'inline-block';
+    document.getElementById('btn-back-courses').style.display = 'none';
+    
+    // Scroll to form
+    document.getElementById('assignLecturerForm').scrollIntoView({ behavior: 'smooth' });
+
+    // Sync Select2 if initialized
+    if (typeof jQuery !== 'undefined') {
+        $('#course_id').trigger('change');
+        $('#lecturer_id').trigger('change');
+    }
+}
+
+function resetAssignForm() {
+    document.getElementById('assignLecturerForm').reset();
+    document.getElementById('submit-text').innerText = 'Assign Lecturer';
+    document.getElementById('btn-cancel-edit').style.display = 'none';
+    document.getElementById('btn-back-courses').style.display = 'inline-block';
+    
+    if (typeof jQuery !== 'undefined') {
+        $('#course_id').trigger('change');
+        $('#lecturer_id').trigger('change');
+    }
+}
+
+$(document).ready(function() {
+    $('#course_id, #lecturer_id').select2({
+        width: '100%',
+        placeholder: 'Select an option'
+    });
+
+    // Initialize Flatpickr for Assignment Date
+    flatpickr("#assigned_date", {
+        dateFormat: "Y-m-d",
+        maxDate: "today",
+        allowInput: true,
+        altInput: true,
+        altFormat: "F j, Y"
+    });
+});
+</script>
+JS;
+
+require_once dirname(__DIR__, 2) . '/includes/footer.php'; 
+?>
 

@@ -232,46 +232,53 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     <?php endif; ?>
 
     <!-- Table Section -->
-    <div class="card-lms shadow-sm">
+    <div class="card-lms shadow-sm mb-50">
         <div class="card-lms-header d-flex flex-column gap-3 p-4 bg-white border-0">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="list-legend">
-                    <div class="list-legend-label">ACTIVE CLASS REGISTER</div>
-                    <div class="list-legend-title fw-800" style="font-size: 22px;">Student Enrollments</div>
-                </div>
-                <div class="d-flex gap-2">
-                    <span class="badge rounded-pill bg-light text-dark border px-3 py-2 fw-700"><?= count($enrollments) ?> Total Records</span>
+            <div class="text-center w-100">
+                <div class="list-legend-label mb-1" style="display:inline-block; background: var(--primary-light); color: var(--primary); padding: 4px 12px; border-radius: 8px; font-size: 10px;">ACTIVE CLASS REGISTER</div>
+                <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
+                    <h2 class="fw-800 mb-0" style="font-size: 28px; color: var(--text-main); letter-spacing: -0.5px;">Student Enrollments</h2>
+                    <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 fw-700" style="font-size: 13px;"><?= count($enrollments) ?> Total Records</span>
                 </div>
             </div>
 
             <!-- Enhanced Filters -->
-            <form method="GET" class="row g-2 align-items-center">
-                <div class="col-md-5">
-                    <div class="input-group-lms" style="position:relative;">
-                        <i class="fas fa-search" style="position:absolute; left:15px; top:50%; transform:translateY(-50%); color: #94a3b8; z-index:10;"></i>
-                        <input type="text" name="q" class="form-control-lms ps-5" placeholder="Search student name, ID or course..." value="<?= htmlspecialchars($search) ?>">
+            <form method="GET" class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-2 w-100">
+                <div style="flex: 1; min-width: 240px; max-width: 400px;">
+                    <div class="input-group-lms shadow-sm" style="position:relative; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+                        <i class="fas fa-search" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color: var(--primary); z-index:10; font-size: 14px;"></i>
+                        <input type="text" name="q" class="form-control-lms border-0 bg-transparent" 
+                               style="height: 42px; font-weight: 500; font-size: 14px; padding-left: 40px;"
+                               placeholder="Search student, ID or course..." value="<?= htmlspecialchars($search) ?>">
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <select name="course_id" class="form-control-lms" onchange="this.form.submit()">
+                <div style="min-width: 155px;">
+                    <select name="course_id" class="form-control-lms shadow-sm" 
+                            style="height: 42px; border-radius: 12px; border: 1.5px solid #e2e8f0; font-weight: 600; background-color: #fff; font-size: 14px; padding-left: 12px;">
                         <option value="">All Courses</option>
                         <?php foreach($coursesList as $c): ?>
                             <option value="<?= $c['id'] ?>" <?= $f_course == $c['id'] ? 'selected' : '' ?>><?= htmlspecialchars($c['course_code']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <select name="status" class="form-control-lms" onchange="this.form.submit()">
+                <div style="min-width: 155px;">
+                    <select name="status" class="form-control-lms shadow-sm" 
+                            style="height: 42px; border-radius: 12px; border: 1.5px solid #e2e8f0; font-weight: 600; background-color: #fff; font-size: 14px; padding-left: 12px;">
                         <option value="">Any Status</option>
                         <option value="ongoing" <?= $f_status==='ongoing'?'selected':'' ?>>Ongoing</option>
                         <option value="completed" <?= $f_status==='completed'?'selected':'' ?>>Completed</option>
                         <option value="dropped" <?= $f_status==='dropped'?'selected':'' ?>>Dropped</option>
                     </select>
                 </div>
-                <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn-lms btn-primary px-3 flex-grow-1">Apply Filters</button>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn-primary-grad px-3 fw-700" style="height: 42px; border-radius: 12px; font-size: 14px; min-width: 90px;">
+                        Apply Filters
+                    </button>
                     <?php if($search || $f_status || $f_course): ?>
-                        <a href="enrollments.php" class="btn-lms btn-outline"><i class="fas fa-times"></i></a>
+                        <a href="enrollments.php" class="btn-lms btn-outline d-flex align-items-center justify-content-center" 
+                           style="height: 42px; width: 42px; border-radius: 12px;">
+                            <i class="fas fa-times" style="font-size: 14px;"></i>
+                        </a>
                     <?php endif; ?>
                 </div>
             </form>
@@ -290,13 +297,14 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </thead>
                 <tbody>
                     <?php foreach ($enrollments as $e): 
+                        $isEditing = ($action === 'edit' && (int)$_GET['id'] === (int)$e['id']);
                         // Payment Health Logic
                         $payStatus = $e['last_pay_status'];
                         $payBalance = (float)($e['last_pay_balance'] ?? 0);
                         $isHealthy = ($payStatus === 'paid' && $payBalance <= 0);
                         $isNew = (empty($payStatus)); // Never paid
                     ?>
-                    <tr>
+                    <tr class="<?= $isEditing ? 'row-editing-highlight' : '' ?>">
                         <td style="padding-left:24px;">
                             <div class="d-flex align-items-center gap-3">
                                 <div style="position:relative;">
@@ -387,6 +395,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 .bg-primary-light { background-color: rgba(79, 70, 229, 0.1); }
 .fw-800 { font-weight: 800; }
 .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important; }
+.row-editing-highlight {
+    background-color: rgba(79, 70, 229, 0.08) !important;
+    border-left: 4px solid var(--primary) !important;
+}
 </style>
 
 <?php

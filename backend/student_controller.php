@@ -41,14 +41,8 @@ function validateStudentFields(array $data): array {
     if (empty(trim($data['guardian_phone'] ?? ''))) $errors[] = 'Guardian phone is required.';
     if (empty(trim($data['house_address'] ?? ''))) $errors[] = 'House address is required.';
     
-    if (empty(trim($data['office_email'] ?? ''))) {
-        $errors[] = 'Office email is required.';
-    } elseif (!filter_var($data['office_email'], FILTER_VALIDATE_EMAIL)) {
+    if (!empty($data['office_email']) && !filter_var($data['office_email'], FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'Office email format is invalid.';
-    }
-    
-    if (empty(trim($data['office_email_password'] ?? ''))) {
-        $errors[] = 'Office email password is required.';
     }
 
     if (!empty($data['personal_email']) && !filter_var($data['personal_email'], FILTER_VALIDATE_EMAIL)) {
