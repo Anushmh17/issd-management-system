@@ -176,13 +176,14 @@ if (!isset($role)) {
    align-items: center;
    text-align: left;
    padding: 12px 18px;
-   border-radius: 12px;
+   border-radius: 50px;
    color: #64748b;
    font-weight: 600;
    font-size: 13.5px;
    margin-bottom: 6px;
-   border: 1px solid transparent;
+   border: none;
    transition: all 0.2s;
+   background: transparent;
 }
 /* Explicit icon styling — bypasses Bootstrap's inheritance override */
 .help-nav .nav-link i {
@@ -193,22 +194,22 @@ if (!isset($role)) {
    transition: color 0.2s;
 }
 .help-nav .nav-link:hover {
-   background: #fff;
+   background: rgba(30, 77, 77, 0.07);
    color: var(--primary);
-   border-color: #e2e8f0;
 }
 .help-nav .nav-link:hover i {
    color: var(--primary);
 }
 .help-nav .nav-link.active {
-   background: #fff !important;
-   color: var(--primary) !important;
-   border-color: var(--primary);
-   box-shadow: 0 4px 12px rgba(30, 77, 77, 0.1);
+   background: var(--primary) !important;
+   color: #fff !important;
+   border: none;
+   box-shadow: 0 4px 14px rgba(30, 77, 77, 0.25);
 }
 .help-nav .nav-link.active i {
-   color: var(--primary) !important;
+   color: #fff !important;
 }
+
 
 .help-section {
    margin-bottom: 25px;
