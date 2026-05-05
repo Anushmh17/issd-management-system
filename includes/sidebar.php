@@ -10,6 +10,7 @@ $initial = strtoupper(substr($uname, 0, 1));
 
 // Notifications Initialization
 require_once dirname(__DIR__) . '/backend/notification_controller.php';
+if (!isset($pdo)) require_once dirname(__DIR__) . '/backend/db.php';
 $recentNotifs = getRecentNotifications($pdo, (int)$user['id'], $role);
 $unreadNotifs = array_filter($recentNotifs, function($n) { return !($n['is_read'] ?? false); });
 $notifCount    = count($unreadNotifs);
