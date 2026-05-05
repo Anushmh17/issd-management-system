@@ -58,80 +58,58 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 <style>
 /* Cropping Modal */
 .crop-modal {
-  display: none;
-  position: fixed;
-  z-index: 10000;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(5px);
-  align-items: center;
-  justify-content: center;
+  display: none; position: fixed; z-index: 10000;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15,23,42,0.9); backdrop-filter: blur(5px);
+  align-items: center; justify-content: center;
 }
 .crop-modal-content {
-  background: #fff;
-  width: 90%;
-  max-width: 500px;
-  border-radius: 20px;
-  padding: 24px;
+  background: #fff; width: 90%; max-width: 500px;
+  border-radius: 20px; padding: 24px;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
 }
-.crop-container {
-  width: 100%;
-  height: 400px;
-  background: #f1f5f9;
-  margin: 15px 0;
-  border-radius: 12px;
-  overflow: hidden;
-}
-.crop-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-}
+.crop-container { width:100%; height:400px; background:#f1f5f9; margin:15px 0; border-radius:12px; overflow:hidden; }
+.crop-actions { display:flex; gap:12px; justify-content:flex-end; }
 
-/* Eye Icon Fix */
-.pwd-toggle-icon {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #94a3b8;
-  transition: 0.2s;
-  z-index: 10;
+/* Eye Icon */
+.pwd-toggle-icon { position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8; transition:0.2s; z-index:10; }
+.pwd-toggle-icon:hover { color:var(--primary); }
+
+/* Profile Banner inside card */
+.profile-banner { text-align:center; padding-bottom:20px; }
+.profile-banner-bg {
+  height:120px;
+  background: linear-gradient(135deg, var(--primary) 0%, #2d8f6f 100%);
+  border-radius:20px 20px 0 0; position:relative; overflow:hidden;
 }
-.pwd-toggle-icon:hover { color: var(--primary); }
+.profile-banner-bg::after {
+  content:''; position:absolute; inset:0;
+  background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='20' cy='20' r='10'/%3E%3C/g%3E%3C/svg%3E");
+}
+.profile-photo-center { margin-top:-55px; position:relative; z-index:2; }
+.photo-upload-ring {
+  width:110px; height:110px; border-radius:50%;
+  border:4px solid #fff; overflow:hidden;
+  margin:0 auto 8px; position:relative; cursor:pointer;
+  box-shadow:0 8px 25px rgba(30,77,77,0.25); transition:transform 0.2s;
+}
+.photo-upload-ring:hover { transform:scale(1.04); }
+.photo-upload-ring:hover .photo-upload-overlay { opacity:1; }
+.photo-ring-img { width:100%; height:100%; object-fit:cover; display:block; }
+.photo-upload-overlay {
+  position:absolute; inset:0;
+  background:rgba(20,60,50,0.72);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:#fff; font-size:11px; font-weight:700; opacity:0; transition:opacity 0.2s; gap:3px;
+}
+.photo-upload-overlay i { font-size:18px; }
+.photo-hint { font-size:11px; color:#94a3b8; margin:4px 0 0; }
 
 /* Payment Mode Cards */
-.payment-mode-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  cursor: pointer;
-  margin: 0;
-}
-.payment-mode-option input[type="radio"] {
-  margin-top: 4px;
-  accent-color: var(--primary);
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-.payment-mode-card {
-  flex: 1;
-  padding: 12px 16px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
-  background: #f8fafc;
-  transition: all 0.2s;
-}
-.payment-mode-option:has(input:checked) .payment-mode-card {
-  border-color: var(--primary);
-  background: #f0fdf9;
-  box-shadow: 0 2px 8px rgba(30,77,77,0.08);
-}
-
+.payment-mode-option { display:flex; align-items:flex-start; gap:12px; cursor:pointer; margin:0; }
+.payment-mode-option input[type="radio"] { margin-top:4px; accent-color:var(--primary); width:16px; height:16px; flex-shrink:0; }
+.payment-mode-card { flex:1; padding:12px 16px; border:1.5px solid #e2e8f0; border-radius:12px; background:#f8fafc; transition:all 0.2s; }
+.payment-mode-option:has(input:checked) .payment-mode-card { border-color:var(--primary); background:#f0fdf9; box-shadow:0 2px 8px rgba(30,77,77,0.08); }
 </style>
 
 <div id="page-content">
@@ -160,183 +138,169 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <form method="POST" action="add.php" enctype="multipart/form-data" id="addLecturerForm">
 
-    <div class="row g-3">
+    <!-- Card 1: Personal Information with integrated photo banner -->
+    <div class="card-lms mb-20">
 
-      <!-- Left: Photo Upload -->
-      <div class="col-lg-3">
-        <div class="card-lms mb-20">
-          <div class="card-lms-header">
-            <div class="card-lms-title"><i class="fas fa-image" style="color:#5b4efa;"></i> Photo</div>
-          </div>
-          <div class="card-lms-body" style="text-align:center;padding:24px;">
-            <div class="lect-photo-preview-wrap" id="photoPreviewWrap">
-              <img id="photoPreview" src="<?= BASE_URL ?>/assets/images/avatar-default.png"
-                   alt="Preview" class="lect-photo-preview">
+      <!-- Profile Banner -->
+      <div class="profile-banner">
+        <div class="profile-banner-bg"></div>
+        <div class="profile-photo-center">
+          <div class="photo-upload-ring" onclick="document.getElementById('photoInput').click()" title="Click to upload photo">
+            <img id="photoPreview" src="<?= BASE_URL ?>/assets/images/avatar-default.png" alt="Preview" class="photo-ring-img">
+            <div class="photo-upload-overlay">
+              <i class="fas fa-camera"></i>
+              <span>Change</span>
             </div>
-            <label class="lect-upload-btn" for="photoInput">
-              <i class="fas fa-cloud-arrow-up"></i> Upload Photo
-            </label>
-            <input type="file" id="photoInput" name="photo" accept="image/*"
-                   class="d-none" onchange="previewPhoto(this)">
-            <p class="text-muted" style="font-size:11px;margin-top:8px;">
-              JPG, PNG, WebP Â· Max 5 MB
-            </p>
           </div>
+          <input type="file" id="photoInput" name="photo" accept="image/*" class="d-none" onchange="previewPhoto(this)">
+          <p class="photo-hint">JPG, PNG, WebP · Max 5 MB</p>
         </div>
       </div>
 
-      <!-- Right: Form Fields -->
-      <div class="col-lg-9">
-
-        <!-- Personal Info -->
-        <div class="card-lms mb-20">
-          <div class="card-lms-header">
-            <div class="card-lms-title">
-              <i class="fas fa-user" style="color:#5b4efa;"></i> Personal Information
-            </div>
-            <span class="section-badge">Required fields marked *</span>
-          </div>
-          <div class="card-lms-body">
-            <div class="row g-3">
-
-              <div class="col-md-6">
-                <div class="form-group-lms">
-                  <label>Full Name <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-user"></i>
-                    <input type="text" name="name" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['name']) ?>"
-                           placeholder="e.g. Dr. Nimal Silva" required>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group-lms">
-                  <label>Email Address <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" name="email" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['email']) ?>"
-                           placeholder="e.g. nimal@issd.com" required>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Phone Number</label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-phone"></i>
-                    <input type="text" name="phone" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['phone']) ?>"
-                           placeholder="07X XXX XXXX">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Employee ID</label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-id-badge"></i>
-                    <input type="text" name="employee_id" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['employee_id']) ?>"
-                           placeholder="e.g. LEC-001">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Department</label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-building"></i>
-                    <input type="text" name="department" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['department']) ?>"
-                           placeholder="e.g. Computer Science">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Joined Date</label>
-                  <input type="date" name="joined_date" class="form-control-lms"
-                         value="<?= htmlspecialchars($form['joined_date']) ?>">
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Status</label>
-                  <select name="status" class="form-control-lms select2-search">
-                    <option value="active"   <?= $form['status']==='active'   ? 'selected' : '' ?>>Active</option>
-                    <option value="inactive" <?= $form['status']==='inactive' ? 'selected' : '' ?>>Inactive</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="col-12">
-                <div class="form-group-lms">
-                  <label>Qualifications</label>
-                  <textarea name="qualifications" class="form-control-lms" rows="2"
-                            placeholder="e.g. B.Sc.(Hons), M.Sc. Computer Science, PGCE"><?= htmlspecialchars($form['qualifications']) ?></textarea>
-                </div>
-              </div>
-
-            </div>
-          </div>
+      <div class="card-lms-header" style="border-top:1px solid #f1f5f9;">
+        <div class="card-lms-title">
+          <i class="fas fa-user" style="color:#5b4efa;"></i> Personal Information
         </div>
+        <span class="section-badge">Required fields marked *</span>
+      </div>
+      <div class="card-lms-body">
+        <div class="row g-3">
 
-        <!-- Login Credentials -->
-        <div class="card-lms mb-20">
-          <div class="card-lms-header">
-            <div class="card-lms-title">
-              <i class="fas fa-lock" style="color:#ef4444;"></i> Login Credentials
-            </div>
-            <span class="section-badge" style="background:#fee2e2;color:#dc2626;">Secure Access</span>
-          </div>
-          <div class="card-lms-body">
-            <div class="alert-lms info" style="margin-bottom:16px;padding:10px 14px;font-size:13px;">
-              <i class="fas fa-info-circle"></i>
-              Lecturer can log in using their <strong>email</strong> or <strong>username</strong>.
-            </div>
-            <div class="row g-3">
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Username <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-at"></i>
-                    <input type="text" name="username" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['username']) ?>"
-                           placeholder="e.g. nimal_silva" required
-                           oninput="this.value=this.value.toLowerCase().replace(/\s/g,'_')">
-                  </div>
-                  <small class="text-muted" style="font-size:11px;">Must be unique</small>
-                </div>
+          <div class="col-md-6">
+            <div class="form-group-lms">
+              <label>Full Name <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-user"></i>
+                <input type="text" name="name" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['name']) ?>"
+                       placeholder="e.g. Dr. Nimal Silva" required>
               </div>
-
-              <div class="col-md-8">
-                <div class="form-group-lms">
-                  <label>Password <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-key"></i>
-                    <input type="password" id="lect_password" name="password"
-                           class="form-control-lms with-icon"
-                           placeholder="Min 6 characters" required>
-                    <i class="fas fa-eye pwd-toggle-icon" onclick="togglePwd('lect_password', this)"></i>
-                  </div>
-                </div>
-              </div>
-
             </div>
           </div>
+
+          <div class="col-md-6">
+            <div class="form-group-lms">
+              <label>Email Address <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['email']) ?>"
+                       placeholder="e.g. nimal@issd.com" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Phone Number</label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-phone"></i>
+                <input type="text" name="phone" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['phone']) ?>"
+                       placeholder="07X XXX XXXX">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Employee ID</label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-id-badge"></i>
+                <input type="text" name="employee_id" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['employee_id']) ?>"
+                       placeholder="e.g. LEC-001">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Department</label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-building"></i>
+                <input type="text" name="department" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['department']) ?>"
+                       placeholder="e.g. Computer Science">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Joined Date</label>
+              <input type="date" name="joined_date" class="form-control-lms"
+                     value="<?= htmlspecialchars($form['joined_date']) ?>">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Status</label>
+              <select name="status" class="form-control-lms select2-search">
+                <option value="active"   <?= $form['status']==='active'   ? 'selected' : '' ?>>Active</option>
+                <option value="inactive" <?= $form['status']==='inactive' ? 'selected' : '' ?>>Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-group-lms">
+              <label>Qualifications</label>
+              <textarea name="qualifications" class="form-control-lms" rows="2"
+                        placeholder="e.g. B.Sc.(Hons), M.Sc. Computer Science, PGCE"><?= htmlspecialchars($form['qualifications']) ?></textarea>
+            </div>
+          </div>
+
         </div>
+      </div>
+    </div>
 
-      </div><!-- /col -->
-    </div><!-- /row -->
+    <!-- Card 2: Login Credentials -->
+    <div class="card-lms mb-20">
+      <div class="card-lms-header">
+        <div class="card-lms-title">
+          <i class="fas fa-lock" style="color:#ef4444;"></i> Login Credentials
+        </div>
+        <span class="section-badge" style="background:#fee2e2;color:#dc2626;">Secure Access</span>
+      </div>
+      <div class="card-lms-body">
+        <div class="alert-lms info" style="margin-bottom:16px;padding:10px 14px;font-size:13px;">
+          <i class="fas fa-info-circle"></i>
+          Lecturer can log in using their <strong>email</strong> or <strong>username</strong>.
+        </div>
+        <div class="row g-3">
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Username <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-at"></i>
+                <input type="text" name="username" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['username']) ?>"
+                       placeholder="e.g. nimal_silva" required
+                       oninput="this.value=this.value.toLowerCase().replace(/\s/g,'_')">
+              </div>
+              <small class="text-muted" style="font-size:11px;">Must be unique</small>
+            </div>
+          </div>
+
+          <div class="col-md-8">
+            <div class="form-group-lms">
+              <label>Password <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-key"></i>
+                <input type="password" id="lect_password" name="password"
+                       class="form-control-lms with-icon"
+                       placeholder="Min 6 characters" required>
+                <i class="fas fa-eye pwd-toggle-icon" onclick="togglePwd('lect_password', this)"></i>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
     <!-- Course Assignment -->
     <div class="card-lms mb-20">
