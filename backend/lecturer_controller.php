@@ -112,12 +112,17 @@ function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
     $errors = validateLecturerFields($d, true);
     if ($errors) return ['success' => false, 'errors' => $errors];
 
+    $paymentMode    = in_array($d['payment_mode'] ?? '', ['flat_monthly','per_student']) ? $d['payment_mode'] : 'flat_monthly';
+    $perStudentRate = ($paymentMode === 'per_student' && isset($d['per_student_rate']) && is_numeric($d['per_student_rate']))
+                      ? round((float)$d['per_student_rate'], 2) : null;
+    $courseId       = !empty($d['course_id']) ? (int)$d['course_id'] : null;
+
     try {
         $pdo->prepare("
             INSERT INTO lecturers
               (name, email, phone, qualifications, username, password,
-               department, employee_id, joined_date, status)
-            VALUES (?,?,?,?,?,?,?,?,?,?)
+               department, employee_id, joined_date, status, payment_mode, per_student_rate)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
         ")->execute([
             trim($d['name']),
             trim($d['email']),
@@ -129,8 +134,23 @@ function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
             trim($d['employee_id'] ?? '') ?: null,
             !empty($d['joined_date']) ? $d['joined_date'] : date('Y-m-d'),
             $d['status'] ?? 'active',
+            $paymentMode,
+            $perStudentRate,
         ]);
         $newId = (int)$pdo->lastInsertId();
+
+        // Assign course if selected
+        if ($courseId) {
+            try {
+                $pdo->prepare("
+                    INSERT INTO course_assignments (course_id, lecturer_id, assigned_date)
+                    VALUES (?, ?, CURDATE())
+                    ON DUPLICATE KEY UPDATE lecturer_id = VALUES(lecturer_id), assigned_date = CURDATE()
+                ")->execute([$courseId, $newId]);
+            } catch (PDOException $ce) {
+                error_log('addLecturer course_assignment: ' . $ce->getMessage());
+            }
+        }
 
         // Handle photo upload
         if ($photoFile && !empty($photoFile['name'])) {

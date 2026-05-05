@@ -13,8 +13,8 @@ requireRole(ROLE_ADMIN);
 
 $preselect = (int)($_GET['lecturer_id'] ?? 0);
 
-// Load all active lecturers
-$lecturers = $pdo->query("SELECT id, name, department FROM lecturers WHERE status = 'active' ORDER BY name ASC")->fetchAll();
+// Load all active lecturers with their payment settings
+$lecturers = $pdo->query("SELECT id, name, department, payment_mode, per_student_rate FROM lecturers WHERE status = 'active' ORDER BY name ASC")->fetchAll();
 
 // Load all course assignments with student count + monthly fee
 $courseRows = $pdo->query("
@@ -118,7 +118,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <select name="lecturer_id" id="lecturer_select" class="form-select-lms" required onchange="loadCourses()">
                 <option value="">— Choose Lecturer —</option>
                 <?php foreach ($lecturers as $l): ?>
-                  <option value="<?= $l['id'] ?>" <?= $preselect === (int)$l['id'] ? 'selected' : '' ?>>
+                  <option value="<?= $l['id'] ?>"
+                    data-payment-mode="<?= htmlspecialchars($l['payment_mode'] ?? 'flat_monthly') ?>"
+                    data-rate="<?= htmlspecialchars($l['per_student_rate'] ?? '') ?>"
+                    <?= $preselect === (int)$l['id'] ? 'selected' : '' ?>>
                     <?= htmlspecialchars($l['name']) ?><?= $l['department'] ? ' (' . htmlspecialchars($l['department']) . ')' : '' ?>
                   </option>
                 <?php endforeach; ?>
@@ -239,7 +242,8 @@ const coursesByLecturer = <?= json_encode($coursesByLecturer) ?>;
 let currentPaymentType = 'flat';
 
 function loadCourses() {
-    const lid = parseInt(document.getElementById('lecturer_select').value);
+    const sel  = document.getElementById('lecturer_select');
+    const lid  = parseInt(sel.value);
     const courseSelect = document.getElementById('course_select');
     const courseRow    = document.getElementById('course_row');
     const typeRow      = document.getElementById('payment_type_row');
@@ -264,6 +268,20 @@ function loadCourses() {
         opt.dataset.count = c.student_count;
         courseSelect.appendChild(opt);
     });
+
+    // Auto-apply lecturer's saved payment settings
+    const selectedOpt  = sel.options[sel.selectedIndex];
+    const savedMode    = selectedOpt.dataset.paymentMode || 'flat';
+    const savedRate    = selectedOpt.dataset.rate || '';
+
+    if (courses.length) {
+        typeRow.style.display = 'block';
+        const mode = savedMode === 'per_student' ? 'per_student' : 'flat';
+        setPaymentType(mode);
+        if (mode === 'per_student' && savedRate) {
+            document.getElementById('rate_per_student').value = savedRate;
+        }
+    }
 }
 
 function onCourseChange() {

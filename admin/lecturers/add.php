@@ -14,17 +14,23 @@ requireRole(ROLE_ADMIN);
 $errors  = [];
 $warning = '';
 $form = [
-    'name'           => '',
-    'email'          => '',
-    'phone'          => '',
-    'username'       => '',
-    'password'       => '',
-    'qualifications' => '',
-    'department'     => '',
-    'employee_id'    => '',
-    'joined_date'    => date('Y-m-d'),
-    'status'         => 'active',
+    'name'            => '',
+    'email'           => '',
+    'phone'           => '',
+    'username'        => '',
+    'password'        => '',
+    'qualifications'  => '',
+    'department'      => '',
+    'employee_id'     => '',
+    'joined_date'     => date('Y-m-d'),
+    'status'          => 'active',
+    'course_id'       => '',
+    'payment_mode'    => 'flat_monthly',
+    'per_student_rate'=> '',
 ];
+
+// Load active courses for assignment dropdown
+$availableCourses = $pdo->query("SELECT id, course_name, course_code, monthly_fee FROM courses WHERE status='active' ORDER BY course_name ASC")->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($form as $k => $_) $form[$k] = $_POST[$k] ?? '';
@@ -96,7 +102,35 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   z-index: 10;
 }
 .pwd-toggle-icon:hover { color: var(--primary); }
-</style>
+
+/* Payment Mode Cards */
+.payment-mode-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  margin: 0;
+}
+.payment-mode-option input[type="radio"] {
+  margin-top: 4px;
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.payment-mode-card {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  transition: all 0.2s;
+}
+.payment-mode-option:has(input:checked) .payment-mode-card {
+  border-color: var(--primary);
+  background: #f0fdf9;
+  box-shadow: 0 2px 8px rgba(30,77,77,0.08);
+}
 
 <div id="page-content">
   <div class="page-header">
@@ -302,6 +336,91 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       </div><!-- /col -->
     </div><!-- /row -->
 
+    <!-- Course Assignment -->
+    <div class="card-lms mb-20">
+      <div class="card-lms-header">
+        <div class="card-lms-title">
+          <i class="fas fa-graduation-cap" style="color:#059669;"></i> Course Assignment
+        </div>
+        <span class="section-badge" style="background:#d1fae5;color:#065f46;">Optional</span>
+      </div>
+      <div class="card-lms-body">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <div class="form-group-lms">
+              <label>Assign to Course</label>
+              <select name="course_id" class="form-control-lms select2-search" id="courseSelect">
+                <option value="">— No course assignment yet —</option>
+                <?php foreach ($availableCourses as $c): ?>
+                  <option value="<?= $c['id'] ?>" data-fee="<?= $c['monthly_fee'] ?>"
+                    <?= $form['course_id'] == $c['id'] ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($c['course_name']) ?> (<?= htmlspecialchars($c['course_code']) ?>) — Rs. <?= number_format($c['monthly_fee'], 2) ?>/mo
+                  </option>
+                <?php endforeach; ?>
+              </select>
+              <small class="text-muted" style="font-size:11px;">Lecturer will be assigned as the primary instructor for this course.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Settings -->
+    <div class="card-lms mb-20">
+      <div class="card-lms-header">
+        <div class="card-lms-title">
+          <i class="fas fa-hand-holding-dollar" style="color:#f59e0b;"></i> Payment Settings
+        </div>
+        <span class="section-badge" style="background:#fef3c7;color:#92400e;">Payroll Config</span>
+      </div>
+      <div class="card-lms-body">
+        <div class="row g-3 align-items-start">
+
+          <div class="col-md-5">
+            <label class="form-label fw-700" style="font-size:13px;color:#374151;margin-bottom:12px;">Payment Mode</label>
+            <div class="d-flex flex-column gap-3">
+
+              <label class="payment-mode-option" id="lbl-flat">
+                <input type="radio" name="payment_mode" value="flat_monthly"
+                  <?= $form['payment_mode'] === 'flat_monthly' ? 'checked' : '' ?>
+                  onchange="togglePaymentMode()">
+                <div class="payment-mode-card">
+                  <div style="font-weight:700;font-size:14px;"><i class="fas fa-calendar-check me-2" style="color:#5b4efa;"></i>Flat Monthly</div>
+                  <div style="font-size:12px;color:#64748b;margin-top:3px;">Fixed amount regardless of student count</div>
+                </div>
+              </label>
+
+              <label class="payment-mode-option" id="lbl-per">
+                <input type="radio" name="payment_mode" value="per_student"
+                  <?= $form['payment_mode'] === 'per_student' ? 'checked' : '' ?>
+                  onchange="togglePaymentMode()">
+                <div class="payment-mode-card">
+                  <div style="font-weight:700;font-size:14px;"><i class="fas fa-users me-2" style="color:#059669;"></i>Per Student</div>
+                  <div style="font-size:12px;color:#64748b;margin-top:3px;">Amount × number of enrolled students</div>
+                </div>
+              </label>
+
+            </div>
+          </div>
+
+          <div class="col-md-4" id="perStudentRateWrap" style="display:<?= $form['payment_mode']==='per_student' ? 'block' : 'none' ?>">
+            <div class="form-group-lms">
+              <label>Rate per Student (Rs.) <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-rupee-sign"></i>
+                <input type="number" name="per_student_rate" id="perStudentRate"
+                       class="form-control-lms with-icon" min="0" step="0.01"
+                       placeholder="e.g. 500.00"
+                       value="<?= htmlspecialchars($form['per_student_rate']) ?>">
+              </div>
+              <small class="text-muted" style="font-size:11px;">Amount paid per enrolled student per month</small>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <div class="form-actions">
       <button type="submit" class="btn-primary-grad" id="btn-save-lecturer">
         <i class="fas fa-floppy-disk"></i> Save Lecturer
@@ -423,6 +542,20 @@ function togglePwd(fieldId, icon) {
   } else {
     f.type = 'password';
     icon.className = 'fas fa-eye pwd-toggle-icon';
+  }
+}
+
+function togglePaymentMode() {
+  const mode = document.querySelector('input[name="payment_mode"]:checked')?.value;
+  const wrap = document.getElementById('perStudentRateWrap');
+  const input = document.getElementById('perStudentRate');
+  if (mode === 'per_student') {
+    wrap.style.display = 'block';
+    input.required = true;
+  } else {
+    wrap.style.display = 'none';
+    input.required = false;
+    input.value = '';
   }
 }
 </script>
