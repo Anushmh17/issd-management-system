@@ -15,7 +15,7 @@ if (!isset($role)) {
       <div class="modal-body p-0">
         <div class="row g-0">
           <!-- Sidebar Nav for Modal -->
-          <div class="col-md-3" style="background: #f8fafc; border-right: 1px solid #e2e8f0; padding: 30px 20px;">
+          <div class="col-md-3" style="background: #f8fafc; border-right: 1px solid #e2e8f0; padding: 30px 20px; height: 520px; overflow-y: auto;">
              <div class="text-center mb-4">
                 <div style="width:60px; height:60px; background:var(--primary); border-radius:15px; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px; box-shadow:0 10px 20px rgba(91, 78, 250, 0.2);">
                    <i class="fas fa-book-open"></i>
@@ -34,7 +34,7 @@ if (!isset($role)) {
           </div>
           
           <!-- Content Area -->
-          <div class="col-md-9" style="padding: 40px; position:relative;">
+          <div class="col-md-9" style="padding: 40px; padding-right: 28px; position:relative; height: 520px; overflow-y: auto;">
              <button type="button" class="btn-close" data-bs-dismiss="modal" style="position:absolute; top:25px; right:25px;"></button>
              
              <div class="tab-content" id="v-pills-tabContent">
