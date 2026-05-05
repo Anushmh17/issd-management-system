@@ -132,6 +132,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   box-shadow: 0 2px 8px rgba(30,77,77,0.08);
 }
 
+</style>
+
 <div id="page-content">
   <div class="page-header">
     <div class="page-header-left">
