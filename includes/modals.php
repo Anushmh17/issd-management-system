@@ -25,11 +25,11 @@ if (!isset($role)) {
              </div>
              
              <div class="nav flex-column nav-pills help-nav" id="v-pills-tab" role="tablist">
-                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-leads" type="button"><i class="fas fa-headset me-2"></i> Leads & Calls</button>
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-students" type="button"><i class="fas fa-user-graduate me-2"></i> Students & Docs</button>
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-courses" type="button"><i class="fas fa-graduation-cap me-2"></i> Courses & Staff</button>
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-payroll" type="button"><i class="fas fa-hand-holding-dollar me-2"></i> Lecturer Payroll</button>
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-finance" type="button"><i class="fas fa-wallet me-2"></i> Finance & Alerts</button>
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-leads" type="button"><i class="fas fa-headset me-2"></i> Leads</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-students" type="button"><i class="fas fa-user-graduate me-2"></i> Students</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-courses" type="button"><i class="fas fa-graduation-cap me-2"></i> Courses</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-payroll" type="button"><i class="fas fa-hand-holding-dollar me-2"></i> Lecturer Pays</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-finance" type="button"><i class="fas fa-wallet me-2"></i> Finance Hub</button>
              </div>
           </div>
           
