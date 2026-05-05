@@ -184,17 +184,32 @@ if (!isset($role)) {
    border: 1px solid transparent;
    transition: all 0.2s;
 }
+/* Explicit icon styling — bypasses Bootstrap's inheritance override */
+.help-nav .nav-link i {
+   flex-shrink: 0;
+   width: 18px;
+   text-align: center;
+   color: #94a3b8;
+   transition: color 0.2s;
+}
 .help-nav .nav-link:hover {
    background: #fff;
    color: var(--primary);
    border-color: #e2e8f0;
 }
+.help-nav .nav-link:hover i {
+   color: var(--primary);
+}
 .help-nav .nav-link.active {
    background: #fff !important;
    color: var(--primary) !important;
    border-color: var(--primary);
-   box-shadow: 0 4px 12px rgba(91, 78, 250, 0.08);
+   box-shadow: 0 4px 12px rgba(30, 77, 77, 0.1);
 }
+.help-nav .nav-link.active i {
+   color: var(--primary) !important;
+}
+
 .help-section {
    margin-bottom: 25px;
 }
