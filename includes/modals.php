@@ -21,13 +21,14 @@ if (!isset($role)) {
                    <i class="fas fa-book-open"></i>
                 </div>
                 <h5 class="fw-800" style="color:var(--text-main); font-size:16px; margin:0;">ISSD Admin Guide</h5>
-                <p class="text-muted" style="font-size:11px;">Version 1.0.2</p>
+                <p class="text-muted" style="font-size:11px;">Version 1.1.0</p>
              </div>
              
              <div class="nav flex-column nav-pills help-nav" id="v-pills-tab" role="tablist">
                 <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-leads" type="button"><i class="fas fa-bullhorn me-2"></i> Leads & Calls</button>
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-students" type="button"><i class="fas fa-user-graduate me-2"></i> Students & Docs</button>
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-courses" type="button"><i class="fas fa-graduation-cap me-2"></i> Courses & Staff</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-payroll" type="button"><i class="fas fa-hand-holding-dollar me-2"></i> Lecturer Payroll</button>
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-finance" type="button"><i class="fas fa-wallet me-2"></i> Finance & Alerts</button>
              </div>
           </div>
@@ -83,15 +84,50 @@ if (!isset($role)) {
                    <h4 class="fw-800 mb-4" style="color:var(--primary);">Courses & Academic Management</h4>
                    <div class="help-section">
                       <h6>1. Program Management</h6>
-                      <p>Define Course Names, Codes (e.g., FSD-2026), and Durations. Each course has a fixed <strong>Monthly Fee</strong> used for billing.</p>
+                      <p>Define Course Names, Codes (e.g., FSD-2026), and Durations. Each course has a fixed <strong>Monthly Fee</strong> used for student billing.</p>
                    </div>
                    <div class="help-section">
                       <h6>2. Staff Assignments</h6>
-                      <p>Assign Lecturers to courses. This allows lecturers to see their assigned students, upload materials, and manage assignments.</p>
+                      <p>Assign Lecturers to courses via <strong>Courses > Assign Lecturer</strong>. This allows lecturers to see their assigned students, manage assignments, and view submissions.</p>
                    </div>
                    <div class="help-section">
                       <h6>3. Batch Tracking</h6>
                       <p>Monitor student progress through courses. Mark students as <strong>Completed</strong> or <strong>Dropped Out</strong> to maintain accurate graduation reports.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>4. Certificates</h6>
+                      <p>Once a student completes a course, issue a certificate via <strong>Certificates > Issue Certificate</strong>. This automatically marks their enrollment as Completed.</p>
+                   </div>
+                </div>
+
+                <!-- PAYROLL SECTION (NEW) -->
+                <div class="tab-pane fade" id="help-payroll">
+                   <h4 class="fw-800 mb-4" style="color:var(--primary);">Lecturer Payroll</h4>
+                   <div class="help-section">
+                      <h6>1. Payroll Hub</h6>
+                      <p>Go to <strong>Lecturer Pays</strong> in the sidebar. The hub shows total payouts, active lecturers, and payroll completion status for the current month.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>2. Who Hasn't Been Paid?</h6>
+                      <p>Click the <strong>Payroll Status card</strong> to open a modal listing all unpaid lecturers. Each row has a <strong>Pay Now</strong> button that takes you straight to their payout form.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>3. Recording a Payout</h6>
+                      <p>The payout form works in 3 steps:</p>
+                      <ol style="font-size:14px; color:#64748b; line-height:2;">
+                         <li>Select the <strong>Lecturer</strong> → their courses load automatically</li>
+                         <li>Optionally select a <strong>Course</strong> (shows enrolled student count)</li>
+                         <li>Choose a <strong>Payment Mode:</strong>
+                            <ul>
+                               <li><strong>Flat Monthly</strong> — Fixed amount (pre-filled from course fee)</li>
+                               <li><strong>Per Student</strong> — Enter rate × student count, total auto-calculates</li>
+                            </ul>
+                         </li>
+                      </ol>
+                   </div>
+                   <div class="help-section">
+                      <h6>4. Automatic Payout Alerts</h6>
+                      <p>From the <strong>20th of each month</strong>, the system generates a notification for every unpaid active lecturer. These appear in the <strong>Payments</strong> tab of the notification bell and clear automatically once a payout is recorded.</p>
                    </div>
                 </div>
 
@@ -99,22 +135,26 @@ if (!isset($role)) {
                 <div class="tab-pane fade" id="help-finance">
                    <h4 class="fw-800 mb-4" style="color:var(--primary);">Finance & Notifications</h4>
                    <div class="help-section">
-                      <h6>1. Fee Collection</h6>
-                      <p>Navigate to <strong>Payments > Add Payment</strong>. The system will automatically calculate pending dues based on the student's enrollment date and course fee.</p>
+                      <h6>1. Student Fee Collection</h6>
+                      <p>Navigate to <strong>Student Payments > Add Payment</strong>. The system automatically calculates pending dues based on the student's enrollment date and course fee, including any carried-over balance.</p>
                    </div>
                    <div class="help-section">
-                      <h6>2. Notification Dropdown</h6>
-                      <p>The Bell icon in the header is divided into categories:
-                         <ul class="mt-2">
-                            <li><strong>All:</strong> Every system update.</li>
-                            <li><strong>Calls:</strong> Log of closed lead calls.</li>
-                            <li><strong>System:</strong> Technical alerts and registration logs.</li>
-                         </ul>
-                      </p>
+                      <h6>2. Finance Hub</h6>
+                      <p>The <strong>Finance Hub</strong> gives a consolidated view of monthly revenue (student payments) vs. expenses (lecturer payouts) and shows net income with a transaction feed.</p>
                    </div>
                    <div class="help-section">
-                      <h6>3. Arrears Management</h6>
-                      <p>Students with overdue payments are flagged in red. Use the <strong>"Payments Report"</strong> to generate a list of pending fees for the current month.</p>
+                      <h6>3. Notification Bell Categories</h6>
+                      <p>The 🔔 bell in the header refreshes every 5 seconds and is split into tabs:</p>
+                      <ul class="mt-2" style="font-size:14px; color:#64748b; line-height:2;">
+                         <li><strong>All:</strong> Every system update.</li>
+                         <li><strong>Calls:</strong> Overdue lead follow-up alerts.</li>
+                         <li><strong>Payments:</strong> Student overdue/due-soon alerts + lecturer payout due alerts.</li>
+                         <li><strong>System:</strong> Technical alerts and registration logs.</li>
+                      </ul>
+                   </div>
+                   <div class="help-section">
+                      <h6>4. Arrears Management</h6>
+                      <p>Students with overdue payments are automatically flagged. Check the <strong>Payment Alerts</strong> page for a categorized view: <span style="color:#ef4444;">Overdue</span>, <span style="color:#f59e0b;">Due Soon</span>, and <span style="color:#f97316;">High Balance</span>.</p>
                    </div>
                 </div>
              </div>
@@ -128,6 +168,7 @@ if (!isset($role)) {
     </div>
   </div>
 </div>
+
 
 <style>
 .help-nav .nav-link {
