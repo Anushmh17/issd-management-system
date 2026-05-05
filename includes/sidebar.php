@@ -18,7 +18,7 @@ $notifCount    = count($unreadNotifs);
 // Build nav based on role
 $adminNav = [
   ['icon'=>'fa-gauge',        'label'=>'Dashboard',   'href'=>BASE_URL.'/frontend/admin/dashboard.php'],
-  ['icon'=>'fa-bullseye',     'label'=>'Leads',       'href'=>BASE_URL.'/admin/leads/index.php'],
+  ['icon'=>'fa-headset',      'label'=>'Leads',       'href'=>BASE_URL.'/admin/leads/index.php'],
   ['icon'=>'fa-users',        'label'=>'Students',    'href'=>BASE_URL.'/admin/students/index.php'],
   ['icon'=>'fa-folder-open',  'label'=>'Documents',   'href'=>BASE_URL.'/admin/documents/index.php'],
   ['icon'=>'fa-award',        'label'=>'Certificates','href'=>BASE_URL.'/admin/certificates/index.php'],
