@@ -25,7 +25,7 @@ if (!isset($role)) {
              </div>
              
              <div class="nav flex-column nav-pills help-nav" id="v-pills-tab" role="tablist">
-                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-leads" type="button"><i class="fas fa-bullhorn me-2"></i> Leads & Calls</button>
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-leads" type="button"><i class="fas fa-headset me-2"></i> Leads & Calls</button>
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-students" type="button"><i class="fas fa-user-graduate me-2"></i> Students & Docs</button>
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-courses" type="button"><i class="fas fa-graduation-cap me-2"></i> Courses & Staff</button>
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-payroll" type="button"><i class="fas fa-hand-holding-dollar me-2"></i> Lecturer Payroll</button>
@@ -172,13 +172,15 @@ if (!isset($role)) {
 
 <style>
 .help-nav .nav-link {
+   display: flex;
+   align-items: center;
    text-align: left;
-   padding: 14px 20px;
+   padding: 12px 18px;
    border-radius: 12px;
    color: #64748b;
    font-weight: 600;
-   font-size: 14px;
-   margin-bottom: 8px;
+   font-size: 13.5px;
+   margin-bottom: 6px;
    border: 1px solid transparent;
    transition: all 0.2s;
 }
