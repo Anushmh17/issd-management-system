@@ -42,6 +42,20 @@ $stmtActivity = $pdo->query("
     (SELECT CONVERT('lead' USING utf8mb4) as type, CONVERT(name USING utf8mb4) as title, CONVERT('new lead added' USING utf8mb4) as action, created_at, id as target_id FROM leads)
     UNION ALL
     (SELECT CONVERT('lecturer' USING utf8mb4) as type, CONVERT(name USING utf8mb4) as title, CONVERT('joined team' USING utf8mb4) as action, created_at, id as target_id FROM lecturers)
+    UNION ALL
+    (SELECT 
+        CONVERT(CASE 
+            WHEN action LIKE 'student%' THEN 'student'
+            WHEN action LIKE 'lead%' THEN 'lead'
+            WHEN action LIKE 'payment%' OR action LIKE 'lecturer_payout' THEN 'payment'
+            WHEN action LIKE 'lecturer%' THEN 'lecturer'
+            ELSE 'system'
+        END USING utf8mb4) as type,
+        CONVERT(action USING utf8mb4) as title,
+        CONVERT(details USING utf8mb4) as action,
+        created_at,
+        id as target_id
+     FROM activity_log)
     ORDER BY created_at DESC
     LIMIT 10
 ");
@@ -59,13 +73,16 @@ $stmtLeads = $pdo->prepare("SELECT id, name, phone, next_followup_datetime as ti
 $stmtLeads->execute([$today]);
 while($row = $stmtLeads->fetch()) {
     $agenda[] = [
-        'type' => 'Lead Call',
-        'icon' => 'fa-phone-volume',
+        'id'    => $row['id'],
+        'type'  => 'Lead Call',
+        'icon'  => 'fa-phone-volume',
         'color' => '#f43f5e',
-        'time' => date('h:i A', strtotime($row['time'])),
+        'time'  => date('h:i A', strtotime($row['time'])),
         'title' => "Call " . $row['name'],
-        'desc' => $row['phone'] . ($row['notes'] ? " &bull; " . $row['notes'] : ""),
-        'link' => BASE_URL . "/admin/leads/index.php?highlight_id=" . $row['id']
+        'desc'  => $row['phone'] . ($row['notes'] ? " • " . $row['notes'] : ""),
+        'link'  => BASE_URL . "/admin/leads/index.php?highlight_id=" . $row['id'],
+        'phone' => $row['phone'],
+        'category' => 'lead'
     ];
 }
 
@@ -74,13 +91,16 @@ $stmtStudents = $pdo->prepare("SELECT id, full_name, phone_number, next_follow_u
 $stmtStudents->execute([$today]);
 while($row = $stmtStudents->fetch()) {
     $agenda[] = [
-        'type' => 'Student Follow-up',
-        'icon' => 'fa-headset',
+        'id'    => $row['id'],
+        'type'  => 'Student Follow-up',
+        'icon'  => 'fa-headset',
         'color' => '#6366f1',
-        'time' => 'Today',
+        'time'  => 'Today',
         'title' => "Follow up: " . $row['full_name'],
-        'desc' => $row['phone_number'] . ($row['follow_up_note'] ? " &bull; " . $row['follow_up_note'] : ""),
-        'link' => BASE_URL . "/admin/students/index.php?highlight_id=" . $row['id']
+        'desc'  => $row['phone_number'] . ($row['follow_up_note'] ? " • " . $row['follow_up_note'] : ""),
+        'link'  => BASE_URL . "/admin/students/index.php?highlight_id=" . $row['id'],
+        'phone' => $row['phone_number'],
+        'category' => 'student'
     ];
 }
 
@@ -96,13 +116,15 @@ $stmtPayments = $pdo->prepare("
 $stmtPayments->execute([$today]);
 while($row = $stmtPayments->fetch()) {
     $agenda[] = [
-        'type' => 'Payment Due',
-        'icon' => 'fa-hand-holding-dollar',
+        'id'    => $row['id'],
+        'type'  => 'Payment Due',
+        'icon'  => 'fa-hand-holding-dollar',
         'color' => '#10b981',
-        'time' => 'URGENT',
+        'time'  => 'URGENT',
         'title' => "Collection: " . $row['full_name'],
-        'desc' => $row['course_name'] . " &bull; Rs. " . number_format($row['total_due'], 0),
-        'link' => BASE_URL . "/admin/finance/index.php?highlight_id=" . $row['id']
+        'desc'  => $row['course_name'] . " • Rs. " . number_format($row['total_due'], 0),
+        'link'  => BASE_URL . "/admin/finance/index.php?highlight_id=" . $row['id'],
+        'category' => 'payment'
     ];
 }
 
@@ -114,13 +136,16 @@ usort($agenda, function($a, $b) {
 // Fallback if empty
 if (empty($agenda)) {
     $agenda[] = [
-        'type' => 'Notice',
-        'icon' => 'fa-calendar-check',
+        'id'    => 0,
+        'type'  => 'Notice',
+        'icon'  => 'fa-calendar-check',
         'color' => '#64748b',
-        'time' => '--:--',
-        'title' => 'No Urgent Tasks',
-        'desc' => 'Enjoy your day! All calls and payments are up to date.',
-        'link' => '#'
+        'time'  => '--:--',
+        'title' => "No Urgent Tasks",
+        'desc'  => "Enjoy your day! All calls and payments are up to date.",
+        'link'  => '#',
+        'phone' => '',
+        'category' => 'notice'
     ];
 }
 
@@ -562,16 +587,58 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .btn-course:hover  { border-bottom: 3px solid #f59e0b; }
   .btn-notice:hover  { border-bottom: 3px solid #f43f5e; }
 
-  /* --- Schedule List --- */
-  .bento-schedule { display: flex; flex-direction: column; gap: 16px; }
+  /* --- Schedule List (Redesigned for Cohesion) --- */
+  .bento-schedule { display: flex; flex-direction: column; gap: 12px; }
   .schedule-row {
-    display: flex; gap: 16px; padding: 12px; border-radius: 16px;
-    background: rgba(255,255,255,0.5); transition: 0.3s;
+    display: flex; 
+    align-items: center;
+    gap: 8px; 
+    padding: 16px 20px 16px 14px; 
+    border-radius: 20px;
+    background: rgba(255,255,255,0.4); 
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
   }
-  .schedule-row:hover { background: #fff; transform: translateX(4px); }
-  .s-time { font-size: 12px; font-weight: 800; color: var(--accent-indigo); width: 65px; }
-  .s-info h4 { font-size: 14px; font-weight: 700; margin: 0; color: #1e293b; }
-  .s-info p { font-size: 11px; margin: 2px 0 0; color: #64748b; }
+  .schedule-row:hover { 
+    background: #ffffff; 
+    border-color: var(--accent-indigo);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+  .s-time-col { 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 55px;
+    gap: 4px;
+  }
+  .s-time { 
+    font-size: 11px; 
+    font-weight: 800; 
+    color: #475569;
+    text-transform: uppercase;
+  }
+  .s-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .s-info { flex: 1; }
+  .s-info h4 { font-size: 15px; font-weight: 800; margin: 0; color: #0f172a; line-height: 1.3; }
+  .s-info p { font-size: 12px; margin: 4px 0 0; color: #64748b; font-weight: 500; }
+  .s-category-tag {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+    display: block;
+  }
 
   /* --- Table Custom --- */
   .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
@@ -734,11 +801,18 @@ foreach ($checkStudents as $cs) {
         $docRow = getOrCreateDocRecord($pdo, $cs['id']);
         $defs = getDocumentDefinitions();
         $mDocs = [];
-        foreach ($defs as $k => $d) { if ($d['required'] && empty($docRow[$k.'_status'])) $mDocs[] = $d['label']; }
+        $firstKey = '';
+        foreach ($defs as $k => $d) { 
+            if ($d['required'] && empty($docRow[$k.'_status'])) {
+                if (empty($mDocs)) $firstKey = $k;
+                $mDocs[] = $d['label']; 
+            }
+        }
         $missingStudents[] = [
-            'id'   => $cs['id'],
-            'name' => $cs['full_name'],
-            'docs' => implode(', ', array_slice($mDocs, 0, 2)) . (count($mDocs) > 2 ? '...' : '')
+            'id'    => $cs['id'],
+            'name'  => $cs['full_name'],
+            'docs'  => implode(', ', array_slice($mDocs, 0, 2)) . (count($mDocs) > 2 ? '...' : ''),
+            'first' => $firstKey
         ];
         if (count($missingStudents) >= 3) break;
     }
@@ -850,6 +924,214 @@ foreach ($checkStudents as $cs) {
     }
   </style>
 
+  <!-- TODAY'S AGENDA -->
+  <div class="bento-card span-4">
+    <div class="card-header-bento">
+      <h3><i class="fas fa-list-check text-success"></i> Today's Agenda</h3>
+      <div class="badge bg-success-subtle text-success border-0 rounded-pill px-3" style="font-size:11px;">
+        <?= count($agenda) ?> Tasks
+      </div>
+    </div>
+    <div class="bento-schedule">
+      <?php foreach($agenda as $item): ?>
+      <?php 
+        $isNotice = ($item['category'] === 'notice');
+        $tag = $isNotice ? 'div' : 'a';
+        $attr = $isNotice ? '' : 'href="'.$item['link'].'"';
+      ?>
+      <<?= $tag ?> <?= $attr ?> class="schedule-row text-decoration-none" <?= $isNotice ? 'style="cursor: default;"' : '' ?>>
+        <div class="s-time-col">
+            <div class="s-time"><?= $item['time'] ?></div>
+            <div class="s-icon-box" style="background: <?= $item['color'] ?>15; color: <?= $item['color'] ?>;">
+                <i class="fas <?= $item['icon'] ?>"></i>
+            </div>
+        </div>
+        <div class="s-info pe-2">
+            <div class="d-flex justify-content-between align-items-start">
+                <span class="s-category-tag" style="color: <?= $item['color'] ?>;"><?= $item['type'] ?></span>
+                <?php if(!$isNotice): ?>
+                    <i class="fas fa-chevron-right text-muted" style="font-size:10px; opacity: 0.5;"></i>
+                <?php endif; ?>
+            </div>
+            <h4><?= htmlspecialchars($item['title']) ?></h4>
+            <p><?= htmlspecialchars($item['desc']) ?></p>
+            
+            <div class="d-flex align-items-center gap-2 mt-3" style="margin-left: -4px;">
+                <?php if(!empty($item['phone'])): ?>
+                    <div onclick="showCallModal('<?= htmlspecialchars($item['title']) ?>', '<?= $item['phone'] ?>'); event.preventDefault(); event.stopPropagation();" 
+                         class="badge bg-primary rounded-pill text-decoration-none px-3 py-2 action-badge" 
+                         style="font-size:10px; cursor: pointer; white-space: nowrap;">
+                        <i class="fas fa-phone me-1"></i> Call Now
+                    </div>
+                <?php endif; ?>
+                
+                <?php if(isset($item['category']) && in_array($item['category'], ['lead', 'student'])): ?>
+                    <div class="badge bg-light text-dark rounded-pill border-0 px-3 py-2 action-badge snooze-btn" 
+                            data-id="<?= $item['id'] ?>" 
+                            data-category="<?= $item['category'] ?>"
+                            data-title="<?= htmlspecialchars($item['title']) ?>"
+                            style="font-size:10px; cursor: pointer; background: #f1f5f9 !important; white-space: nowrap;">
+                        <i class="fas fa-clock me-1 text-muted"></i> Snooze
+                    </div>
+                <?php endif; ?>
+
+                <?php if($item['category'] === 'payment'): ?>
+                    <div onclick="window.location.href='<?= $item['link'] ?>'; event.preventDefault(); event.stopPropagation();" class="badge bg-success rounded-pill text-decoration-none px-3 py-2 action-badge" style="font-size:10px; cursor: pointer; white-space: nowrap;">
+                        <i class="fas fa-receipt me-1"></i> Process
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+      </<?= $tag ?>>
+      <?php endforeach; ?>
+    </div>
+    <a href="<?= BASE_URL ?>/admin/calendar.php" class="btn btn-primary w-100 mt-4 rounded-pill fw-800 py-3 shadow-sm transition-all hover-scale" style="background: #2563eb;">
+        <i class="fas fa-calendar-alt me-2"></i> Open Full Calendar
+    </a>
+  </div>
+
+  <!-- CUSTOM MODAL: SNOOZE OPTIONS -->
+  <div class="modal fade" id="snoozeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);">
+        <div class="modal-body p-4 text-center">
+            <div class="stat-icon mx-auto mb-3" style="width:50px; height:50px; background: #f1f5f9; color: #64748b;">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h5 class="fw-800 mb-1" id="snoozeTargetName">Snooze Task</h5>
+            <p class="text-muted small mb-4">When should we remind you again?</p>
+            
+            <div class="d-flex flex-column gap-2">
+                <button class="btn btn-light rounded-4 py-3 fw-700 text-start d-flex justify-content-between align-items-center snooze-opt" data-time="+2 hours">
+                    <span><i class="fas fa-hourglass-start me-2 text-primary"></i> In 2 Hours</span>
+                    <i class="fas fa-chevron-right small opacity-50"></i>
+                </button>
+                <button class="btn btn-light rounded-4 py-3 fw-700 text-start d-flex justify-content-between align-items-center snooze-opt" data-time="tomorrow 09:00:00">
+                    <span><i class="fas fa-sun me-2 text-warning"></i> Tomorrow Morning</span>
+                    <i class="fas fa-chevron-right small opacity-50"></i>
+                </button>
+                <button class="btn btn-light rounded-4 py-3 fw-700 text-start d-flex justify-content-between align-items-center snooze-opt" data-time="+2 days">
+                    <span><i class="fas fa-calendar-plus me-2 text-info"></i> In 2 Days</span>
+                    <i class="fas fa-chevron-right small opacity-50"></i>
+                </button>
+            </div>
+            <button type="button" class="btn btn-link text-muted fw-700 text-decoration-none mt-3 small" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM MODAL: CALL ACTION -->
+  <div class="modal fade" id="callModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);">
+        <div class="modal-body p-4 text-center">
+            <div class="stat-icon mx-auto mb-3" style="width:50px; height:50px; background: #dcfce7; color: #16a34a;">
+                <i class="fas fa-phone"></i>
+            </div>
+            <h5 class="fw-800 mb-1" id="callTargetName">Contact Lead</h5>
+            <p class="fw-700 text-primary mb-4" id="callTargetPhone" style="font-size: 18px;">+94 000 000 000</p>
+            
+            <div class="d-flex flex-column gap-2">
+                <a href="#" id="callNowLink" class="btn btn-primary rounded-pill py-3 fw-800 shadow-sm">
+                    <i class="fas fa-phone-alt me-2"></i> Call Now
+                </a>
+                <button onclick="copyToClipboard();" class="btn btn-light rounded-pill py-3 fw-700">
+                    <i class="fas fa-copy me-2"></i> Copy Number
+                </button>
+            </div>
+            <button type="button" class="btn btn-link text-muted fw-700 text-decoration-none mt-3 small" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .action-badge {
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        display: inline-flex;
+        align-items: center;
+    }
+    .action-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        filter: brightness(1.05);
+    }
+    .snooze-opt { border: 1px solid transparent !important; transition: all 0.2s; }
+    .snooze-opt:hover { border-color: var(--accent-indigo) !important; background: #fff !important; transform: scale(1.02); }
+  </style>
+
+  <script>
+    let activeSnoozeId = null;
+    let activeSnoozeCategory = null;
+    let activeSnoozeBtn = null;
+
+    function showCallModal(name, phone) {
+        document.getElementById('callTargetName').innerText = name;
+        document.getElementById('callTargetPhone').innerText = phone;
+        document.getElementById('callNowLink').href = 'tel:' + phone;
+        new bootstrap.Modal(document.getElementById('callModal')).show();
+    }
+
+    function copyToClipboard() {
+        const phone = document.getElementById('callTargetPhone').innerText;
+        navigator.clipboard.writeText(phone).then(() => {
+            const btn = document.querySelector('#callModal .btn-light');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check me-2"></i> Copied!';
+            setTimeout(() => btn.innerHTML = originalText, 2000);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Snooze Modal Trigger
+        document.querySelectorAll('.snooze-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                activeSnoozeId = this.dataset.id;
+                activeSnoozeCategory = this.dataset.category;
+                activeSnoozeBtn = this;
+                
+                document.getElementById('snoozeTargetName').innerText = this.dataset.title;
+                new bootstrap.Modal(document.getElementById('snoozeModal')).show();
+            });
+        });
+
+        // Snooze Option Selection
+        document.querySelectorAll('.snooze-opt').forEach(opt => {
+            opt.addEventListener('click', function() {
+                const time = this.dataset.time;
+                const modal = bootstrap.Modal.getInstance(document.getElementById('snoozeModal'));
+                
+                activeSnoozeBtn.disabled = true;
+                activeSnoozeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                modal.hide();
+
+                fetch('<?= BASE_URL ?>/api/agenda_action.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=snooze&id=${activeSnoozeId}&category=${activeSnoozeCategory}&time=${time}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        activeSnoozeBtn.closest('.schedule-row').style.opacity = '0.4';
+                        activeSnoozeBtn.closest('.schedule-row').style.pointerEvents = 'none';
+                        activeSnoozeBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    } else {
+                        alert(data.error || 'Snooze failed');
+                        activeSnoozeBtn.disabled = false;
+                        activeSnoozeBtn.innerHTML = '<i class="fas fa-clock"></i> Snooze';
+                    }
+                });
+            });
+        });
+    });
+  </script>
+
   <!-- SECTION: MISSING DOCUMENTS TRACKER -->
   <div class="bento-card span-4">
     <div class="card-header-bento">
@@ -861,56 +1143,13 @@ foreach ($checkStudents as $cs) {
          <div class="text-center py-4 text-muted small">No students with missing documents.</div>
        <?php else: ?>
          <?php foreach($missingStudents as $d): ?>
-         <a href="<?= BASE_URL ?>/admin/documents/manage.php?student_id=<?= $d['id'] ?>" class="p-3 rounded-4 bg-danger-subtle border-0 text-decoration-none transition-all hover-scale d-block">
+         <a href="<?= BASE_URL ?>/admin/documents/manage.php?student_id=<?= $d['id'] ?>&highlight=<?= $d['first'] ?>" class="p-3 rounded-4 bg-danger-subtle border-0 text-decoration-none transition-all hover-scale d-block">
             <div class="fw-800 text-main small mb-1"><?= htmlspecialchars($d['name']) ?></div>
             <div class="text-danger fw-700" style="font-size:11px;"><i class="fas fa-times-circle me-1"></i> Missing: <?= htmlspecialchars($d['docs']) ?></div>
          </a>
          <?php endforeach; ?>
        <?php endif; ?>
     </div>
-  </div>
-  <!-- TODAY'S AGENDA -->
-  <div class="bento-card span-4">
-    <div class="card-header-bento">
-      <h3><i class="fas fa-list-check text-success"></i> Today's Agenda</h3>
-      <div class="badge bg-success-subtle text-success border-0 rounded-pill px-3" style="font-size:11px;">
-        <?= count($agenda) ?> Tasks
-      </div>
-    </div>
-    <div class="bento-schedule">
-      <?php foreach($agenda as $item): ?>
-      <a href="<?= $item['link'] ?>" class="schedule-row text-decoration-none d-block">
-        <div class="d-flex gap-16">
-            <div class="s-time d-flex flex-column align-items-center">
-                <div style="font-size:11px;"><?= $item['time'] ?></div>
-                <div class="stat-icon mt-2" style="width:32px; height:32px; font-size:14px; background: <?= $item['color'] ?>15; color: <?= $item['color'] ?>;">
-                    <i class="fas <?= $item['icon'] ?>"></i>
-                </div>
-            </div>
-            <div class="s-info flex-grow-1">
-                <div class="d-flex justify-content-between align-items-start">
-                    <span class="text-uppercase fw-800" style="font-size:9px; color: <?= $item['color'] ?>; letter-spacing:0.5px;"><?= $item['type'] ?></span>
-                    <i class="fas fa-chevron-right text-muted" style="font-size:10px;"></i>
-                </div>
-                <h4 class="mt-1"><?= htmlspecialchars($item['title']) ?></h4>
-                <p><?= htmlspecialchars($item['desc']) ?></p>
-                
-                <div class="d-flex gap-2 mt-2">
-                    <?php if(strpos($item['type'], 'Call') !== false): ?>
-                        <span class="badge bg-primary rounded-pill" style="font-size:9px;"><i class="fas fa-phone"></i> Call Now</span>
-                    <?php elseif(strpos($item['type'], 'Payment') !== false): ?>
-                        <span class="badge bg-success rounded-pill" style="font-size:9px;"><i class="fas fa-receipt"></i> Process</span>
-                    <?php endif; ?>
-                    <span class="badge bg-light text-dark rounded-pill" style="font-size:9px;"><i class="fas fa-clock"></i> Snooze</span>
-                </div>
-            </div>
-        </div>
-      </a>
-      <?php endforeach; ?>
-    </div>
-    <a href="<?= BASE_URL ?>/admin/calendar.php" class="btn btn-primary w-100 mt-4 rounded-pill fw-800 py-2 shadow-sm">
-        <i class="fas fa-calendar-alt me-2"></i> Open Full Calendar
-    </a>
   </div>
 
 </div>

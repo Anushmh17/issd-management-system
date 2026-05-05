@@ -27,8 +27,10 @@ $form = [
     'qualifications' => $lecturer['qualifications'] ?? '',
     'department'     => $lecturer['department'] ?? '',
     'employee_id'    => $lecturer['employee_id'] ?? '',
-    'joined_date'    => $lecturer['joined_date'] ?? '',
-    'status'         => $lecturer['status'],
+    'joined_date'     => $lecturer['joined_date'] ?? '',
+    'status'          => $lecturer['status'],
+    'payment_mode'    => $lecturer['payment_mode'] ?? 'flat_monthly',
+    'per_student_rate'=> $lecturer['per_student_rate'] ?? '',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -56,50 +58,58 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 <style>
 /* Cropping Modal */
 .crop-modal {
-  display: none;
-  position: fixed;
-  z-index: 10000;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(5px);
-  align-items: center;
-  justify-content: center;
+  display: none; position: fixed; z-index: 10000;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15,23,42,0.9); backdrop-filter: blur(5px);
+  align-items: center; justify-content: center;
 }
 .crop-modal-content {
-  background: #fff;
-  width: 90%;
-  max-width: 500px;
-  border-radius: 20px;
-  padding: 24px;
+  background: #fff; width: 90%; max-width: 500px;
+  border-radius: 20px; padding: 24px;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
 }
-.crop-container {
-  width: 100%;
-  height: 400px;
-  background: #f1f5f9;
-  margin: 15px 0;
-  border-radius: 12px;
-  overflow: hidden;
-}
-.crop-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-}
+.crop-container { width:100%; height:400px; background:#f1f5f9; margin:15px 0; border-radius:12px; overflow:hidden; }
+.crop-actions { display:flex; gap:12px; justify-content:flex-end; }
 
-/* Eye Icon Fix */
-.pwd-toggle-icon {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #94a3b8;
-  transition: 0.2s;
-  z-index: 10;
+/* Eye Icon */
+.pwd-toggle-icon { position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8; transition:0.2s; z-index:10; }
+.pwd-toggle-icon:hover { color:var(--primary); }
+
+/* Profile Banner inside card */
+.profile-banner { text-align:center; padding-bottom:20px; }
+.profile-banner-bg {
+  height:120px;
+  background: linear-gradient(135deg, var(--primary) 0%, #2d8f6f 100%);
+  border-radius:20px 20px 0 0; position:relative; overflow:hidden;
 }
-.pwd-toggle-icon:hover { color: var(--primary); }
+.profile-banner-bg::after {
+  content:''; position:absolute; inset:0;
+  background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='20' cy='20' r='10'/%3E%3C/g%3E%3C/svg%3E");
+}
+.profile-photo-center { margin-top:-55px; position:relative; z-index:2; }
+.photo-upload-ring {
+  width:110px; height:110px; border-radius:50%;
+  border:4px solid #fff; overflow:hidden;
+  margin:0 auto 8px; position:relative; cursor:pointer;
+  box-shadow:0 8px 25px rgba(30,77,77,0.25); transition:transform 0.2s;
+}
+.photo-upload-ring:hover { transform:scale(1.04); }
+.photo-upload-ring:hover .photo-upload-overlay { opacity:1; }
+.photo-ring-img { width:100%; height:100%; object-fit:cover; display:block; }
+.photo-upload-overlay {
+  position:absolute; inset:0;
+  background:rgba(20,60,50,0.72);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:#fff; font-size:11px; font-weight:700; opacity:0; transition:opacity 0.2s; gap:3px;
+}
+.photo-upload-overlay i { font-size:18px; }
+.photo-hint { font-size:11px; color:#94a3b8; margin:4px 0 0; }
+
+/* Payment Mode Cards */
+.payment-mode-option { display:flex; align-items:flex-start; gap:12px; cursor:pointer; margin:0; }
+.payment-mode-option input[type="radio"] { margin-top:4px; accent-color:var(--primary); width:16px; height:16px; flex-shrink:0; }
+.payment-mode-card { flex:1; padding:12px 16px; border:1.5px solid #e2e8f0; border-radius:12px; background:#f8fafc; transition:all 0.2s; }
+.payment-mode-option:has(input:checked) .payment-mode-card { border-color:var(--primary); background:#f0fdf9; box-shadow:0 2px 8px rgba(30,77,77,0.08); }
 </style>
 
 <div id="page-content">
@@ -126,238 +136,292 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <form method="POST" action="edit.php?id=<?= $id ?>" enctype="multipart/form-data" id="editLecturerForm">
 
-    <div class="row g-3">
+    <!-- Card 1: Personal Information with integrated photo banner -->
+    <div class="card-lms mb-20">
 
-      <!-- Left: Photo + Assigned Courses -->
-      <div class="col-lg-3">
-
-        <!-- Photo Card -->
-        <div class="card-lms mb-20">
-          <div class="card-lms-header">
-            <div class="card-lms-title"><i class="fas fa-image" style="color:#5b4efa;"></i> Photo</div>
-          </div>
-          <div class="card-lms-body" style="text-align:center;padding:24px;">
-            <div class="lect-photo-preview-wrap" id="photoPreviewWrap">
-              <img id="photoPreview" src="<?= htmlspecialchars($photoUrl) ?>"
-                   alt="<?= htmlspecialchars($lecturer['name']) ?>"
-                   class="lect-photo-preview"
-                   onerror="this.src='<?= BASE_URL ?>/assets/images/avatar-default.png'">
+      <!-- Profile Banner -->
+      <div class="profile-banner">
+        <div class="profile-banner-bg"></div>
+        <div class="profile-photo-center">
+          <div class="photo-upload-ring" onclick="document.getElementById('photoInput').click()" title="Click to upload photo">
+            <img id="photoPreview" src="<?= htmlspecialchars($photoUrl) ?>" alt="<?= htmlspecialchars($lecturer['name']) ?>" 
+                 class="photo-ring-img" onerror="this.src='<?= BASE_URL ?>/assets/images/avatar-default.png'">
+            <div class="photo-upload-overlay">
+              <i class="fas fa-camera"></i>
+              <span>Change</span>
             </div>
-            <label class="lect-upload-btn" for="photoInput">
-              <i class="fas fa-camera"></i> Change Photo
-            </label>
-            <input type="file" id="photoInput" name="photo" accept="image/*"
-                   class="d-none" onchange="previewPhoto(this)">
-            <p class="text-muted" style="font-size:11px;margin-top:8px;">
-              JPG, PNG, WebP Â· Max 5 MB
-            </p>
           </div>
+          <input type="file" id="photoInput" name="photo" accept="image/*" class="d-none" onchange="previewPhoto(this)">
+          <p class="photo-hint">JPG, PNG, WebP · Max 5 MB</p>
         </div>
-
-        <!-- Assigned Courses Card -->
-        <div class="card-lms premium-border">
-          <div class="card-lms-header" style="background: var(--primary-light);">
-            <div class="card-lms-title">
-              <i class="fas fa-book-open" style="color: var(--primary);"></i> Assigned Courses
-            </div>
-            <div class="premium-badge-count"><?= $lecturer['course_count'] ?></div>
-          </div>
-          <div class="card-lms-body" style="padding:0;max-height:380px;overflow-y:auto;">
-            <?php if (empty($lecturer['courses'])): ?>
-              <div class="empty-state" style="padding:40px 20px;">
-                <div class="avatar-initials mb-3" style="background: var(--border-light); color: var(--text-muted); width:60px; height:60px;">
-                  <i class="fas fa-book-slash" style="font-size:24px;"></i>
-                </div>
-                <h4 class="fw-700" style="font-size:15px; color: var(--text-main);">No Courses Yet</h4>
-                <p style="font-size:12px; color: var(--text-muted); margin-bottom:15px;">This lecturer hasn't been assigned to any courses.</p>
-                <a href="<?= BASE_URL ?>/admin/courses/assign_lecturer.php?lecturer_id=<?= $id ?>"
-                   class="btn-primary-grad btn-sm" style="font-size:11px;">
-                  <i class="fas fa-link"></i> Assign First Course
-                </a>
-              </div>
-            <?php else: ?>
-              <div class="course-list-wrap">
-                <?php foreach ($lecturer['courses'] as $c): ?>
-                <div class="course-student-item">
-                  <div class="course-icon-box" style="width:34px; height:34px; font-size:13px;">
-                    <i class="fas fa-graduation-cap"></i>
-                  </div>
-                  <div style="flex:1;min-width:0;">
-                    <div class="fw-700" style="font-size:13px; color: var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                      <?= htmlspecialchars($c['course_name']) ?>
-                    </div>
-                    <div class="d-flex align-center gap-2 mt-1">
-                        <span class="course-code-badge" style="font-size:9px; padding:2px 6px;"><?= htmlspecialchars($c['course_code']) ?></span>
-                        <?php if ($c['status'] === 'active'): ?>
-                          <span class="badge-lms success" style="font-size:8px; padding:2px 6px; border-radius:4px;">Active</span>
-                        <?php endif; ?>
-                    </div>
-                  </div>
-                  <a href="<?= BASE_URL ?>/admin/courses/edit.php?id=<?= $c['id'] ?>" class="text-muted hover-primary" style="font-size:14px;" title="View Course">
-                    <i class="fas fa-chevron-right"></i>
-                  </a>
-                </div>
-                <?php endforeach; ?>
-              </div>
-              <div style="padding:16px; background: #fff;">
-                <a href="<?= BASE_URL ?>/admin/courses/assign_lecturer.php?lecturer_id=<?= $id ?>"
-                   class="btn-primary-grad btn-sm w-100" style="font-size:11px; justify-content:center; border-radius:10px; padding:12px;">
-                  <i class="fas fa-plus-circle"></i> Assign Another Course
-                </a>
-              </div>
-            <?php endif; ?>
-          </div>
-        </div>
-
       </div>
 
-      <!-- Right: Edit Fields -->
-      <div class="col-lg-9">
-
-        <!-- Personal Info -->
-        <div class="card-lms mb-20">
-          <div class="card-lms-header">
-            <div class="card-lms-title">
-              <i class="fas fa-user" style="color:#5b4efa;"></i> Personal Information
-            </div>
-            <span class="section-badge">Required fields marked *</span>
-          </div>
-          <div class="card-lms-body">
-            <div class="row g-3">
-
-              <div class="col-md-6">
-                <div class="form-group-lms">
-                  <label>Full Name <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-user"></i>
-                    <input type="text" name="name" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['name']) ?>" required>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group-lms">
-                  <label>Email Address <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" name="email" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['email']) ?>" required>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Phone Number</label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-phone"></i>
-                    <input type="text" name="phone" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['phone']) ?>" placeholder="07X XXX XXXX">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Employee ID</label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-id-badge"></i>
-                    <input type="text" name="employee_id" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['employee_id']) ?>">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Department</label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-building"></i>
-                    <input type="text" name="department" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['department']) ?>">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Joined Date</label>
-                  <input type="date" name="joined_date" class="form-control-lms"
-                         value="<?= htmlspecialchars($form['joined_date']) ?>">
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group-lms">
-                  <label>Status</label>
-                  <select name="status" class="form-control-lms">
-                    <option value="active"   <?= $form['status']==='active'   ? 'selected' : '' ?>>Active</option>
-                    <option value="inactive" <?= $form['status']==='inactive' ? 'selected' : '' ?>>Inactive</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="col-12">
-                <div class="form-group-lms">
-                  <label>Qualifications</label>
-                  <textarea name="qualifications" class="form-control-lms" rows="2"><?= htmlspecialchars($form['qualifications']) ?></textarea>
-                </div>
-              </div>
-
-            </div>
-          </div>
+      <div class="card-lms-header" style="border-top:1px solid #f1f5f9;">
+        <div class="card-lms-title">
+          <i class="fas fa-user" style="color:#5b4efa;"></i> Personal Information
         </div>
+        <span class="section-badge">Required fields marked *</span>
+      </div>
+      <div class="card-lms-body">
+        <div class="row g-3">
 
-        <!-- Login Credentials -->
-        <div class="card-lms mb-20">
-          <div class="card-lms-header">
-            <div class="card-lms-title">
-              <i class="fas fa-lock" style="color:#ef4444;"></i> Login Credentials
-            </div>
-            <span class="section-badge" style="background:#fee2e2;color:#dc2626;">Leave password blank to keep unchanged</span>
-          </div>
-          <div class="card-lms-body">
-            <div class="row g-3">
-
-              <div class="col-md-5">
-                <div class="form-group-lms">
-                  <label>Username <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-at"></i>
-                    <input type="text" name="username" class="form-control-lms with-icon"
-                           value="<?= htmlspecialchars($form['username']) ?>" required
-                           oninput="this.value=this.value.toLowerCase().replace(/\s/g,'_')">
-                  </div>
-                </div>
+          <div class="col-md-6">
+            <div class="form-group-lms">
+              <label>Full Name <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-user"></i>
+                <input type="text" name="name" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['name']) ?>" required>
               </div>
-
-              <div class="col-md-7">
-                <div class="form-group-lms">
-                  <label>New Password <span style="font-size:11px;color:#94a3b8;">(optional)</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-key"></i>
-                    <input type="password" id="lect_new_password" name="new_password"
-                           class="form-control-lms with-icon"
-                           placeholder="Leave blank to keep current password">
-                    <i class="fas fa-eye pwd-toggle-icon" onclick="togglePwd('lect_new_password', this)"></i>
-                  </div>
-                </div>
-              </div>
-
             </div>
           </div>
-        </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn-primary-grad" id="btn-update-lecturer">
-            <i class="fas fa-floppy-disk"></i> Update Lecturer
-          </button>
-          <a href="index.php" class="btn-lms btn-outline"><i class="fas fa-xmark"></i> Cancel</a>
-        </div>
+          <div class="col-md-6">
+            <div class="form-group-lms">
+              <label>Email Address <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['email']) ?>" required>
+              </div>
+            </div>
+          </div>
 
-      </div><!-- /col -->
-    </div><!-- /row -->
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Phone Number</label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-phone"></i>
+                <input type="text" name="phone" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['phone']) ?>" placeholder="07X XXX XXXX">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Employee ID</label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-id-badge"></i>
+                <input type="text" name="employee_id" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['employee_id']) ?>">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Department</label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-building"></i>
+                <input type="text" name="department" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['department']) ?>">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Joined Date</label>
+              <input type="date" name="joined_date" class="form-control-lms"
+                     value="<?= htmlspecialchars($form['joined_date']) ?>">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group-lms">
+              <label>Status</label>
+              <select name="status" class="form-control-lms">
+                <option value="active"   <?= $form['status']==='active'   ? 'selected' : '' ?>>Active</option>
+                <option value="inactive" <?= $form['status']==='inactive' ? 'selected' : '' ?>>Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-group-lms">
+              <label>Qualifications</label>
+              <textarea name="qualifications" class="form-control-lms" rows="2"><?= htmlspecialchars($form['qualifications']) ?></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Login Credentials -->
+    <div class="card-lms mb-20">
+      <div class="card-lms-header">
+        <div class="card-lms-title">
+          <i class="fas fa-lock" style="color:#ef4444;"></i> Login Credentials
+        </div>
+        <span class="section-badge" style="background:#fee2e2;color:#dc2626;">Leave password blank to keep unchanged</span>
+      </div>
+      <div class="card-lms-body">
+        <div class="row g-3">
+
+          <div class="col-md-5">
+            <div class="form-group-lms">
+              <label>Username <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-at"></i>
+                <input type="text" name="username" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['username']) ?>" required
+                       oninput="this.value=this.value.toLowerCase().replace(/\s/g,'_')">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-7">
+            <div class="form-group-lms">
+              <label>New Password <span style="font-size:11px;color:#94a3b8;">(optional)</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-key"></i>
+                <input type="password" id="lect_new_password" name="new_password"
+                       class="form-control-lms with-icon"
+                       placeholder="Leave blank to keep current password">
+                <i class="fas fa-eye pwd-toggle-icon" onclick="togglePwd('lect_new_password', this)"></i>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Payment Settings -->
+    <div class="card-lms mb-20">
+      <div class="card-lms-header">
+        <div class="card-lms-title">
+          <i class="fas fa-hand-holding-dollar" style="color:#f59e0b;"></i> Payment Settings
+        </div>
+        <span class="section-badge" style="background:#fef3c7;color:#92400e;">Payroll Config</span>
+      </div>
+      <div class="card-lms-body">
+        <div class="row g-3 align-items-start">
+
+          <div class="col-md-5">
+            <label class="form-label fw-700" style="font-size:13px;color:#374151;margin-bottom:12px;">Payment Mode</label>
+            <div class="d-flex flex-column gap-3">
+
+              <label class="payment-mode-option" id="lbl-flat">
+                <input type="radio" name="payment_mode" value="flat_monthly"
+                  <?= $form['payment_mode'] === 'flat_monthly' ? 'checked' : '' ?>
+                  onchange="togglePaymentMode()">
+                <div class="payment-mode-card">
+                  <div style="font-weight:700;font-size:14px;"><i class="fas fa-calendar-check me-2" style="color:#5b4efa;"></i>Flat Monthly</div>
+                  <div style="font-size:12px;color:#64748b;margin-top:3px;">Fixed amount regardless of student count</div>
+                </div>
+              </label>
+
+              <label class="payment-mode-option" id="lbl-per">
+                <input type="radio" name="payment_mode" value="per_student"
+                  <?= $form['payment_mode'] === 'per_student' ? 'checked' : '' ?>
+                  onchange="togglePaymentMode()">
+                <div class="payment-mode-card">
+                  <div style="font-weight:700;font-size:14px;"><i class="fas fa-users me-2" style="color:#059669;"></i>Per Student</div>
+                  <div style="font-size:12px;color:#64748b;margin-top:3px;">Amount × number of enrolled students</div>
+                </div>
+              </label>
+
+            </div>
+          </div>
+
+          <div class="col-md-4" id="perStudentRateWrap" style="display:<?= $form['payment_mode']==='per_student' ? 'block' : 'none' ?>">
+            <div class="form-group-lms">
+              <label>Rate per Student (Rs.) <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fas fa-rupee-sign"></i>
+                <input type="number" name="per_student_rate" id="perStudentRate"
+                       class="form-control-lms with-icon" min="0" step="0.01"
+                       placeholder="e.g. 500.00"
+                       value="<?= htmlspecialchars($form['per_student_rate']) ?>">
+              </div>
+              <small class="text-muted" style="font-size:11px;">Amount paid per enrolled student per month</small>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Assigned Courses -->
+    <div class="card-lms mb-20">
+      <div class="card-lms-header">
+        <div class="card-lms-title">
+          <i class="fas fa-book-open" style="color: var(--primary);"></i> Assigned Courses
+        </div>
+        <div class="premium-badge-count"><?= $lecturer['course_count'] ?></div>
+      </div>
+      <div class="card-lms-body" style="padding:0;">
+        <?php if (empty($lecturer['courses'])): ?>
+          <div class="empty-state" style="padding:40px 20px; text-align:center;">
+            <div class="avatar-initials mb-3" style="background: var(--border-light); color: var(--text-muted); width:60px; height:60px; margin: 0 auto;">
+              <i class="fas fa-book-slash" style="font-size:24px;"></i>
+            </div>
+            <h4 class="fw-700" style="font-size:15px; color: var(--text-main);">No Courses Yet</h4>
+            <p style="font-size:12px; color: var(--text-muted); margin-bottom:15px;">This lecturer hasn't been assigned to any courses.</p>
+            <a href="<?= BASE_URL ?>/admin/courses/assign_lecturer.php?lecturer_id=<?= $id ?>"
+               class="btn-primary-grad btn-sm" style="font-size:11px;">
+              <i class="fas fa-link"></i> Assign First Course
+            </a>
+          </div>
+        <?php else: ?>
+          <div class="row g-0">
+            <?php foreach ($lecturer['courses'] as $c): ?>
+            <div class="col-md-6 border-bottom border-end">
+              <div class="course-student-item" style="border:none;">
+                <div class="course-icon-box" style="width:40px; height:40px; font-size:15px;">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="fw-700" style="font-size:14px; color: var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <?= htmlspecialchars($c['course_name']) ?>
+                  </div>
+                  <div class="d-flex align-center gap-2 mt-1">
+                      <span class="course-code-badge" style="font-size:10px; padding:2px 8px;"><?= htmlspecialchars($c['course_code']) ?></span>
+                      <?php if ($c['status'] === 'active'): ?>
+                        <span class="badge-lms success" style="font-size:9px; padding:2px 8px; border-radius:4px;">Active</span>
+                      <?php endif; ?>
+                  </div>
+                </div>
+                <div class="d-flex gap-2">
+                  <a href="<?= BASE_URL ?>/admin/courses/edit.php?id=<?= $c['id'] ?>" class="text-muted hover-primary" style="font-size:16px;" title="View Course">
+                    <i class="fas fa-chevron-right"></i>
+                  </a>
+                  <form method="POST" action="<?= BASE_URL ?>/admin/courses/assign_lecturer.php" style="display:inline;">
+                    <input type="hidden" name="act" value="remove">
+                    <input type="hidden" name="course_id" value="<?= $c['id'] ?>">
+                    <!-- Use data-confirm to trigger our custom premium modal -->
+                    <button type="submit" class="btn-lms btn-danger btn-sm" 
+                            style="padding: 4px 8px; font-size: 11px;"
+                            data-confirm="Remove lecturer from '<?= htmlspecialchars($c['course_name']) ?>'?"
+                            data-confirm-type="danger"
+                            title="Unassign Course">
+                      <i class="fas fa-unlink"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <?php endforeach; ?>
+          </div>
+          <div style="padding:20px; text-align:center;">
+            <a href="<?= BASE_URL ?>/admin/courses/assign_lecturer.php?lecturer_id=<?= $id ?>"
+               class="btn-lms btn-outline" style="font-size:12px; border-radius:10px; padding:10px 24px;">
+              <i class="fas fa-plus-circle"></i> Assign Another Course
+            </a>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary-grad" id="btn-update-lecturer">
+        <i class="fas fa-floppy-disk"></i> Update Lecturer
+      </button>
+      <a href="index.php" class="btn-lms btn-outline"><i class="fas fa-xmark"></i> Cancel</a>
+    </div>
 
   </form>
 </div>
@@ -406,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
 let cropper = null;
 let originalFileName = "";
 
-function handlePhotoSelect(input) {
+function previewPhoto(input) {
   if (input.files && input.files[0]) {
     originalFileName = input.files[0].name;
     const reader = new FileReader();
@@ -459,6 +523,20 @@ function applyCrop() {
     document.getElementById('cropModal').style.display = 'none';
     if (cropper) cropper.destroy();
   }, 'image/jpeg');
+}
+
+function togglePaymentMode() {
+  const mode = document.querySelector('input[name="payment_mode"]:checked').value;
+  const wrap = document.getElementById('perStudentRateWrap');
+  const rateInput = document.getElementById('perStudentRate');
+  
+  if (mode === 'per_student') {
+    wrap.style.display = 'block';
+    rateInput.required = true;
+  } else {
+    wrap.style.display = 'none';
+    rateInput.required = false;
+  }
 }
 
 function togglePwd(fieldId, icon) {

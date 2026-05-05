@@ -85,7 +85,7 @@ function showToast(type, message, title = '') {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Custom JS -->
 <script>const BASE_URL = "<?= BASE_URL ?>";</script>
-<script src="<?= BASE_URL ?>/assets/js/main.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/main.js?v=<?= time() ?>"></script>
 <script src="<?= BASE_URL ?>/assets/js/notifications.js"></script>
 
 <?php if (isset($extraJS)) echo $extraJS; ?>

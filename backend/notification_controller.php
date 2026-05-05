@@ -8,7 +8,7 @@ require_once __DIR__ . '/db.php';
 /**
  * Add a persistent notification
  */
-function addNotification(PDO $pdo, $userId, $type, $title, $message, $link = null) {
+function addNotification(PDO $pdo, ?int $userId, string $type, string $title, string $message, ?string $link = null) {
     $stmt = $pdo->prepare("
         INSERT INTO notifications (user_id, type, title, message, link)
         VALUES (?, ?, ?, ?, ?)
@@ -19,7 +19,7 @@ function addNotification(PDO $pdo, $userId, $type, $title, $message, $link = nul
 /**
  * Mark notification as read
  */
-function markAsRead(PDO $pdo, $id) {
+function markAsRead(PDO $pdo, int $id) {
     $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE id = ?");
     return $stmt->execute([$id]);
 }
@@ -27,7 +27,7 @@ function markAsRead(PDO $pdo, $id) {
 /**
  * Mark all notifications as read for a user
  */
-function markAllAsRead(PDO $pdo, $userId) {
+function markAllAsRead(PDO $pdo, ?int $userId) {
     $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE (user_id = ? OR user_id IS NULL) AND status = 'unread'");
     return $stmt->execute([$userId]);
 }
@@ -35,7 +35,7 @@ function markAllAsRead(PDO $pdo, $userId) {
 /**
  * Get notifications for a user with categorization
  */
-function getRecentNotifications(PDO $pdo, $userId, $role, $category = 'all', $limit = 15, $onlyUnread = false, $includeCleared = false) {
+function getRecentNotifications(PDO $pdo, ?int $userId, string $role, string $category = 'all', int $limit = 15, bool $onlyUnread = false, bool $includeCleared = false) {
     $sql = "SELECT * FROM notifications WHERE (user_id = ? OR user_id IS NULL)";
     $params = [$userId];
 
@@ -124,7 +124,7 @@ function getUrgentAlerts(PDO $pdo) {
 /**
  * Mark all read notifications as cleared (hidden from dropdown)
  */
-function clearReadNotifications(PDO $pdo, $userId) {
+function clearReadNotifications(PDO $pdo, ?int $userId) {
     // Clear notifications for this specific user OR global ones (user_id IS NULL) that are marked as read
     $stmt = $pdo->prepare("UPDATE notifications SET is_cleared = 1 WHERE (user_id = ? OR user_id IS NULL) AND status = 'read'");
     return $stmt->execute([$userId]);

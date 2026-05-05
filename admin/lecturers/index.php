@@ -338,7 +338,8 @@ tr:hover .lect-avatar-wrap {
                           class="btn-lms btn-danger btn-sm"
                           title="Delete"
                           id="btn-delete-<?= $l['id'] ?>"
-                          data-confirm="Delete lecturer '<?= htmlspecialchars($l['name']) ?>'? This will also remove their course assignments.">
+                          data-confirm="Delete lecturer '<?= htmlspecialchars($l['name']) ?>'? This will also remove their course assignments."
+                          data-confirm-type="danger">
                     <i class="fas fa-trash-can"></i>
                   </button>
                 </form>

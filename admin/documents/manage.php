@@ -126,6 +126,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // =====================================================
+    // Handle Profile Picture Update
+    // =====================================================
+    if (isset($_POST['update_profile_pic'])) {
+        if (!empty($_FILES['profile_pic']['name'])) {
+            $upload = uploadDocumentFile($_FILES['profile_pic'], 'profile', $studentId);
+            if (!$upload['success']) {
+                $errors[] = $upload['error'];
+            } else {
+                // Delete old if exists
+                if (!empty($student['profile_picture'])) {
+                    deleteDocFile($student['profile_picture']);
+                }
+                $stmt = $pdo->prepare("UPDATE students SET profile_picture = ? WHERE id = ?");
+                $stmt->execute([$upload['path'], $studentId]);
+                setFlash('success', 'Profile picture updated.');
+                header("Location: manage.php?student_id=$studentId"); exit;
+            }
+        }
+    }
+
+    // =====================================================
     // Handle Standard Checklist Doc Save (from manage.php)
     // =====================================================
     if (isset($_POST['doc_key']) && !isset($_POST['quick_upload'])) {
@@ -232,6 +253,26 @@ $extraCSS = <<<'CSS'
     font-size: 28px; font-weight: 800; color: #fff;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     flex-shrink: 0;
+    position: relative;
+    cursor: pointer;
+}
+.dsb-avatar-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px;
+    opacity: 0; transition: 0.3s;
+}
+.dsb-avatar:hover .dsb-avatar-overlay { opacity: 1; }
+
+.highlight-row {
+    animation: blinkHighlight 2s ease-in-out 3;
+}
+@keyframes blinkHighlight {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(37, 99, 235, 0.1); }
 }
 .dsb-info { flex: 1; }
 .dsb-name { font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; font-family: 'Poppins', sans-serif; }
@@ -343,17 +384,24 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <!-- Student Info Banner -->
   <div class="doc-student-banner mb-20">
-    <?php if (!empty($student['profile_picture'])): ?>
-      <div class="dsb-avatar" style="background: none; padding: 0; overflow: hidden; border: 2px solid var(--primary-light);">
-        <img src="<?= BASE_URL ?>/assets/documents/<?= htmlspecialchars($student['profile_picture']) ?>" 
-             style="width: 100%; height: 100%; object-fit: cover;" 
-             alt="<?= htmlspecialchars($student['full_name']) ?>">
-      </div>
-    <?php else: ?>
-      <div class="dsb-avatar" style="background:<?= studentAvatarColor($student['full_name']) ?>">
-        <?= strtoupper(substr($student['full_name'], 0, 1)) ?>
-      </div>
-    <?php endif; ?>
+    <div class="dsb-avatar" onclick="document.getElementById('profilePicInput').click();">
+        <?php if (!empty($student['profile_picture'])): ?>
+            <img src="<?= BASE_URL ?>/assets/documents/<?= htmlspecialchars($student['profile_picture']) ?>" 
+                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;" 
+                 alt="<?= htmlspecialchars($student['full_name']) ?>">
+        <?php else: ?>
+            <div style="width:100%; height:100%; border-radius:20px; display:flex; align-items:center; justify-content:center; background:<?= studentAvatarColor($student['full_name']) ?>">
+                <?= strtoupper(substr($student['full_name'], 0, 1)) ?>
+            </div>
+        <?php endif; ?>
+        <div class="dsb-avatar-overlay">
+            <i class="fas fa-camera"></i>
+        </div>
+        <form id="profilePicForm" method="POST" enctype="multipart/form-data" style="display:none;">
+            <input type="hidden" name="update_profile_pic" value="1">
+            <input type="file" name="profile_pic" id="profilePicInput" onchange="document.getElementById('profilePicForm').submit();">
+        </form>
+    </div>
     <div class="dsb-info">
       <div class="dsb-name"><?= htmlspecialchars($student['full_name']) ?></div>
       <div class="dsb-meta">
@@ -621,6 +669,19 @@ function handleFileChange(docKey) {
     if (cb) { cb.checked = true; syncHiddenStatus(docKey); }
   }
 }
+
+// Highlight logic
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const highlight = urlParams.get('highlight');
+    if (highlight) {
+        const row = document.getElementById('doc-row-' + highlight);
+        if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            row.classList.add('highlight-row');
+        }
+    }
+});
 </script>
 JS;
 

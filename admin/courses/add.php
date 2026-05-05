@@ -60,18 +60,28 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <?php endif; ?>
 
   <form method="POST" action="add.php" id="addCourseForm">
-    <div class="card-lms mb-20">
-      <div class="card-lms-header">
-        <div class="card-lms-title"><i class="fas fa-book-open" style="color:#5b4efa;"></i> Course Details</div>
-        <span class="section-badge">Required fields marked *</span>
+    <div class="card-lms mb-20 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+      <div class="card-lms-header" style="background: #ffffff; padding: 25px 30px; border-bottom: 1px solid #f1f5f9;">
+        <div class="card-lms-title">
+          <div class="d-flex align-items-center gap-3">
+            <div style="background: var(--primary-light); color: var(--primary); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: var(--text-main);">Course Details</div>
+              <div style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Fill in the essential information for the new academic program</div>
+            </div>
+          </div>
+        </div>
+        <span class="badge-lms primary" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; display: none;">Required fields marked *</span>
       </div>
-      <div class="card-lms-body">
+      <div class="card-lms-body" style="padding: 30px; background: #fafbff;">
         <div class="row g-4">
 
           <div class="col-md-8">
             <div class="form-group-lms">
-              <label for="course_name" class="premium-label">
-                <i class="fas fa-book-bookmark"></i> Course Name <span class="req">*</span>
+              <label for="course_name" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+                Course Name <span class="req">*</span>
               </label>
               <div class="input-icon-wrap">
                 <i class="fas fa-heading"></i>
@@ -84,8 +94,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="course_code" class="premium-label">
-                <i class="fas fa-barcode"></i> Course Code <span class="req">*</span>
+              <label for="course_code" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+                Course Code <span class="req">*</span>
               </label>
               <div class="input-icon-wrap">
                 <i class="fas fa-hashtag"></i>
@@ -100,21 +110,23 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="duration" class="premium-label">
-                <i class="fas fa-hourglass-half"></i> Duration
+              <label for="duration" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+                Duration (Months) <span class="req">*</span>
               </label>
               <div class="input-icon-wrap">
                 <i class="fas fa-calendar-day"></i>
-                <input type="text" id="duration" name="duration" class="form-control-lms with-icon"
-                       value="<?= htmlspecialchars($form['duration']) ?>" placeholder="e.g. 3 Months">
+                <input type="number" id="duration" name="duration" class="form-control-lms with-icon"
+                       value="<?= htmlspecialchars($form['duration']) ?>" placeholder="e.g. 3"
+                       oninput="if(this.value.length > 2) this.value = this.value.slice(0, 2);"
+                       required>
               </div>
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="monthly_fee" class="premium-label">
-                <i class="fas fa-coins"></i> Monthly Fee (Rs.) <span class="req">*</span>
+              <label for="monthly_fee" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+                Monthly Fee (Rs.) <span class="req">*</span>
               </label>
               <div class="input-icon-wrap">
                 <i class="fas fa-money-bill-wave"></i>
@@ -129,8 +141,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="status" class="premium-label">
-                <i class="fas fa-toggle-on"></i> Status
+              <label for="status" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+                Status
               </label>
               <div class="input-icon-wrap">
                 <i class="fas fa-shield-halved"></i>
@@ -144,8 +156,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
           <div class="col-12">
             <div class="form-group-lms">
-              <label for="description" class="premium-label">
-                <i class="fas fa-align-left"></i> Course Description
+              <label for="description" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+                Course Description
               </label>
               <textarea id="description" name="description" class="form-control-lms" rows="4"
                         placeholder="Briefly describe what students will learn in this course..."><?= htmlspecialchars($form['description']) ?></textarea>
@@ -156,11 +168,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       </div>
     </div>
 
-    <div class="form-actions">
-      <button type="submit" class="btn-primary-grad" id="btn-save-course">
-        <i class="fas fa-floppy-disk"></i> Save Course
+    <div class="form-actions" style="display: flex; gap: 15px; margin-top: 30px; padding: 0 5px;">
+      <button type="submit" class="btn-primary-grad" id="btn-save-course" style="padding: 14px 35px; border-radius: 14px; font-weight: 700; box-shadow: 0 10px 20px -5px var(--primary-shadow);">
+        <i class="fas fa-floppy-disk me-2"></i> Save Course
       </button>
-      <a href="index.php" class="btn-lms btn-outline"><i class="fas fa-xmark"></i> Cancel</a>
+      <a href="index.php" class="btn-lms btn-outline" style="padding: 14px 25px; border-radius: 14px; font-weight: 700;">
+        <i class="fas fa-xmark me-2"></i> Cancel
+      </a>
     </div>
   </form>
 </div>

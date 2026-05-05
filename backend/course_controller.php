@@ -14,6 +14,16 @@ function validateCourseFields(array $d): array {
     $errors = [];
     if (empty(trim($d['course_name'] ?? '')))    $errors[] = 'Course name is required.';
     if (empty(trim($d['course_code'] ?? '')))    $errors[] = 'Course code is required.';
+    
+    $duration = trim($d['duration'] ?? '');
+    if (empty($duration)) {
+        $errors[] = 'Duration is required.';
+    } elseif (!is_numeric($duration)) {
+        $errors[] = 'Duration must be a numeric value (months).';
+    } elseif (strlen($duration) > 2) {
+        $errors[] = 'Duration cannot exceed 2 digits (max 99 months).';
+    }
+
     if (!is_numeric($d['monthly_fee'] ?? ''))    $errors[] = 'Monthly fee must be a numeric value.';
     if ((float)($d['monthly_fee'] ?? 0) < 0)    $errors[] = 'Monthly fee cannot be negative.';
     return $errors;

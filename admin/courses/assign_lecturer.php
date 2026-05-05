@@ -168,61 +168,64 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <p>No lecturer assignments yet.</p>
             </div>
           <?php else: ?>
-          <table class="table-lms">
-            <thead>
-              <tr>
-                <th>Course</th>
-                <th>Lecturer</th>
-                <th>Assigned Date</th>
-                <th style="text-align:center;">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($assignments as $a): ?>
-              <tr>
-                <td>
-                  <div class="fw-600" style="font-size:13px;"><?= htmlspecialchars($a['course_name']) ?></div>
-                  <span class="course-code-badge" style="font-size:10px;"><?= htmlspecialchars($a['course_code']) ?></span>
-                </td>
-                <td>
-                  <div class="d-flex align-center gap-6">
-                    <div class="avatar-initials" style="width:28px;height:28px;font-size:11px;background:#5b4efa;">
-                      <?= strtoupper(substr($a['lecturer_name'], 0, 1)) ?>
-                    </div>
-                    <div>
-                      <div class="fw-600" style="font-size:13px;"><?= htmlspecialchars($a['lecturer_name']) ?></div>
-                      <?php if ($a['department']): ?>
-                        <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars($a['department']) ?></div>
-                      <?php endif; ?>
-                    </div>
+          <div class="assignment-list">
+            <?php foreach ($assignments as $a): ?>
+            <div class="assignment-item">
+              
+              <!-- Course Info -->
+              <div class="assignment-course-info">
+                <div class="fw-700" style="font-size:14px; color:var(--text-main); margin-bottom:4px;">
+                  <?= htmlspecialchars($a['course_name']) ?>
+                </div>
+                <div class="d-flex align-center gap-2">
+                  <span class="course-code-badge" style="font-size:10px; padding:2px 8px;"><?= htmlspecialchars($a['course_code']) ?></span>
+                  <div class="assignment-date-tag">
+                    <i class="far fa-calendar-check"></i>
+                    <?= $a['assigned_date'] ? date('d M Y', strtotime($a['assigned_date'])) : 'No date' ?>
                   </div>
-                </td>
-                <td style="font-size:13px;color:#64748b;">
-                  <?= $a['assigned_date'] ? date('d M Y', strtotime($a['assigned_date'])) : '""' ?>
-                </td>
-                <td style="text-align:center;">
-                  <div class="d-flex gap-2 justify-content-center">
-                    <button type="button" class="btn-lms btn-primary btn-sm"
-                            title="Edit Assignment"
-                            onclick="editAssignment(<?= $a['course_id'] ?>, <?= $a['lecturer_id'] ?>, '<?= $a['assigned_date'] ?>')">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <form method="POST" action="assign_lecturer.php" style="display:inline;">
-                      <input type="hidden" name="act"       value="remove">
-                      <input type="hidden" name="course_id" value="<?= $a['course_id'] ?>">
-                      <button type="submit"
-                              class="btn-lms btn-danger btn-sm"
-                              title="Remove Assignment"
-                              data-confirm="Remove lecturer from '<?= htmlspecialchars($a['course_name']) ?>'?">
-                        <i class="fas fa-unlink"></i>
-                      </button>
-                    </form>
+                </div>
+              </div>
+
+              <!-- Lecturer Info -->
+              <div class="assignment-lecturer-info">
+                <div class="avatar-initials" style="width:36px; height:36px; font-size:14px; background:linear-gradient(135deg, #5b4efa, #8b5cf6); flex-shrink:0;">
+                  <?= strtoupper(substr($a['lecturer_name'], 0, 1)) ?>
+                </div>
+                <div style="min-width:0;">
+                  <div class="fw-700" style="font-size:14px; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <?= htmlspecialchars($a['lecturer_name']) ?>
                   </div>
-                </td>
-              </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
+                  <?php if ($a['department']): ?>
+                    <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars($a['department']) ?></div>
+                  <?php endif; ?>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="assignment-actions">
+                <button type="button" class="btn-lms btn-outline btn-sm"
+                        style="width:36px; height:36px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center;"
+                        title="Edit Assignment"
+                        onclick="editAssignment(<?= $a['course_id'] ?>, <?= $a['lecturer_id'] ?>, '<?= $a['assigned_date'] ?>')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <form method="POST" action="assign_lecturer.php" style="display:inline;">
+                  <input type="hidden" name="act" value="remove">
+                  <input type="hidden" name="course_id" value="<?= $a['course_id'] ?>">
+                  <button type="submit"
+                          class="btn-lms btn-danger btn-sm"
+                          style="width:36px; height:36px; padding:0; border-radius:10px; display:flex; align-items:center; justify-content:center;"
+                          title="Remove Assignment"
+                          data-confirm="Remove lecturer from '<?= htmlspecialchars($a['course_name']) ?>'?"
+                          data-confirm-type="danger">
+                    <i class="fas fa-unlink"></i>
+                  </button>
+                </form>
+              </div>
+
+            </div>
+            <?php endforeach; ?>
+          </div>
           <?php endif; ?>
         </div>
       </div>

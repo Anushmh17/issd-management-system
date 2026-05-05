@@ -30,6 +30,7 @@ define('ROLE_LECTURER', 'lecturer');
 define('ROLE_STUDENT', 'student');
 
 // Timezone
+date_default_timezone_set('Asia/Colombo');
 
 /**
  * Standardize Sri Lankan phone numbers to +94 format

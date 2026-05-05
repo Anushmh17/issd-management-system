@@ -99,18 +99,26 @@ function ensureDocUploadDir(): void {
 // Get or create the document row for a student
 // -------------------------------------------------------
 function getOrCreateDocRecord(PDO $pdo, int $studentId): array {
-    $stmt = $pdo->prepare("SELECT * FROM student_documents WHERE student_id = ?");
-    $stmt->execute([$studentId]);
-    $row = $stmt->fetch();
+    try {
+        $pdo->beginTransaction();
+        $stmt = $pdo->prepare("SELECT * FROM student_documents WHERE student_id = ?");
+        $stmt->execute([$studentId]);
+        $row = $stmt->fetch();
 
-    if (!$row) {
-        $pdo->prepare("INSERT INTO student_documents (student_id) VALUES (?)")
-            ->execute([$studentId]);
-        $row = $pdo->prepare("SELECT * FROM student_documents WHERE student_id = ?");
-        $row->execute([$studentId]);
-        $row = $row->fetch();
+        if (!$row) {
+            $pdo->prepare("INSERT INTO student_documents (student_id) VALUES (?)")
+                ->execute([$studentId]);
+            $stmt = $pdo->prepare("SELECT * FROM student_documents WHERE student_id = ?");
+            $stmt->execute([$studentId]);
+            $row = $stmt->fetch();
+        }
+        $pdo->commit();
+        return $row;
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        error_log('getOrCreateDocRecord error: ' . $e->getMessage());
+        return [];
     }
-    return $row;
 }
 
 // -------------------------------------------------------
@@ -141,7 +149,6 @@ function uploadDocumentFile(array $file, string $docKey, int $studentId): array 
     // MIME check
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime  = finfo_file($finfo, $file['tmp_name']);
-    finfo_close($finfo);
     if (!in_array($mime, DOC_ALLOWED_TYPES, true)) {
         return ['success' => false, 'path' => null, 'error' => 'Invalid MIME type detected.'];
     }
@@ -193,9 +200,12 @@ function saveDocTracking(PDO $pdo, int $studentId, string $docKey, array $data):
     $sql = "UPDATE student_documents SET " . implode(', ', $sets) . " WHERE student_id = ?";
 
     try {
+        $pdo->beginTransaction();
         $pdo->prepare($sql)->execute($params);
+        $pdo->commit();
         return true;
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         error_log('saveDocTracking error: ' . $e->getMessage());
         return false;
     }
@@ -278,6 +288,7 @@ function getOtherStudentDocs(PDO $pdo, int $studentId): array {
 function saveOtherDoc(PDO $pdo, array $data): bool {
     $sql = "INSERT INTO student_other_documents (student_id, label, file_path, collected_by, collected_date) VALUES (?, ?, ?, ?, ?)";
     try {
+        $pdo->beginTransaction();
         $pdo->prepare($sql)->execute([
             $data['student_id'],
             $data['label'],
@@ -285,8 +296,10 @@ function saveOtherDoc(PDO $pdo, array $data): bool {
             $data['collected_by'],
             $data['collected_date']
         ]);
+        $pdo->commit();
         return true;
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         error_log('saveOtherDoc error: ' . $e->getMessage());
         return false;
     }

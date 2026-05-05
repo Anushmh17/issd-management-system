@@ -36,9 +36,31 @@ function validateStudentFields(array $data): array {
     if (empty(trim($data['nic_number'] ?? '')))   $errors[] = 'NIC number is required.';
     if (empty(trim($data['batch_number'] ?? ''))) $errors[] = 'Batch number is required.';
     if (empty(trim($data['join_date'] ?? '')))    $errors[] = 'Join date is required.';
-    if (empty(trim($data['phone_number'] ?? ''))) $errors[] = 'Phone number is required.';
+    
+    // Student Phone Validation
+    $phone = trim($data['phone_number'] ?? '');
+    if (empty($phone)) {
+        $errors[] = 'Phone number is required.';
+    } else {
+        $cleanPhone = preg_replace('/[^0-9+]/', '', $phone);
+        if (!preg_match('/^(\+94|94|0)(7[0-9]{8})$/', $cleanPhone)) {
+            $errors[] = 'Invalid student phone number. Use 07XXXXXXXX format.';
+        }
+    }
+
     if (empty(trim($data['guardian_name'] ?? ''))) $errors[] = 'Guardian name is required.';
-    if (empty(trim($data['guardian_phone'] ?? ''))) $errors[] = 'Guardian phone is required.';
+    
+    // Guardian Phone Validation
+    $gPhone = trim($data['guardian_phone'] ?? '');
+    if (empty($gPhone)) {
+        $errors[] = 'Guardian phone is required.';
+    } else {
+        $cleanGPhone = preg_replace('/[^0-9+]/', '', $gPhone);
+        if (!preg_match('/^(\+94|94|0)(7[0-9]{8})$/', $cleanGPhone)) {
+            $errors[] = 'Invalid guardian phone number.';
+        }
+    }
+
     if (empty(trim($data['house_address'] ?? ''))) $errors[] = 'House address is required.';
     
     if (!empty($data['office_email']) && !filter_var($data['office_email'], FILTER_VALIDATE_EMAIL)) {
@@ -61,6 +83,8 @@ function addStudent(PDO $pdo, array $data): array {
     $studentId = generateStudentId($pdo);
 
     try {
+        $pdo->beginTransaction();
+
         $stmt = $pdo->prepare("
             INSERT INTO students
               (student_id, full_name, profile_picture, nic_number, batch_number, join_date,
@@ -102,8 +126,14 @@ function addStudent(PDO $pdo, array $data): array {
             addNotification($pdo, null, 'call', $notifTitle, $notifMsg, $hLink);
         }
 
+        // --- Activity Log ---
+        require_once dirname(__DIR__) . '/includes/auth.php';
+        logActivity($_SESSION['user_id'] ?? null, 'student_registered', "New student: " . trim($data['full_name']));
+
+        $pdo->commit();
         return ['success' => true, 'id' => $studentDbId, 'student_id' => $studentId];
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         if ($e->getCode() == 23000) {
             return ['success' => false, 'errors' => ['NIC number or Student ID already exists.']];
         }
@@ -120,6 +150,7 @@ function updateStudent(PDO $pdo, int $id, array $data): array {
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     try {
+        $pdo->beginTransaction();
         $stmt = $pdo->prepare("
             UPDATE students SET
               full_name             = ?,
@@ -159,8 +190,14 @@ function updateStudent(PDO $pdo, int $id, array $data): array {
             $data['status'] ?? 'new_joined',
             $id,
         ]);
+        // --- Activity Log ---
+        require_once dirname(__DIR__) . '/includes/auth.php';
+        logActivity($_SESSION['user_id'] ?? null, 'student_updated', "Student info updated: " . trim($data['full_name']));
+
+        $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         error_log('updateStudent error: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to update student. Please try again.']];
     }

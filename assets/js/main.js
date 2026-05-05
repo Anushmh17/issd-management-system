@@ -2,6 +2,122 @@
 // ISSD Management - Main JavaScript
 // =====================================================
 
+/**
+ * GLOBAL HELPERS (Available project-wide)
+ */
+
+/**
+ * Global Custom Confirmation Modal
+ * Returns a Promise that resolves to true (confirm) or false (cancel)
+ */
+function lmsConfirm(message, options = {}) {
+  return new Promise((resolve) => {
+    const opts = {
+      title: options.title || 'Are you sure?',
+      confirmText: options.confirmText || 'Confirm',
+      cancelText: options.cancelText || 'Cancel',
+      type: options.type || 'confirm', // 'confirm' or 'danger'
+      icon: options.icon || (options.type === 'danger' ? 'fa-triangle-exclamation' : 'fa-question-circle')
+    };
+
+    // Create Modal HTML
+    const overlay = document.createElement('div');
+    overlay.className = 'lms-modal-overlay';
+    overlay.innerHTML = `
+      <div class="lms-modal-box">
+        <div class="lms-modal-header">
+          <div class="lms-modal-icon" style="${opts.type === 'danger' ? 'background:#fef2f2;color:#ef4444;' : ''}">
+            <i class="fas ${opts.icon}"></i>
+          </div>
+          <h3 class="lms-modal-title">${opts.title}</h3>
+        </div>
+        <div class="lms-modal-body">
+          <p class="lms-modal-text">${message}</p>
+        </div>
+        <div class="lms-modal-footer">
+          <button class="lms-modal-btn lms-modal-btn-cancel">${opts.cancelText}</button>
+          <button class="lms-modal-btn lms-modal-btn-${opts.type === 'danger' ? 'danger' : 'confirm'}">${opts.confirmText}</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Trigger Animation
+    setTimeout(() => overlay.classList.add('active'), 10);
+
+    // Cleanup function
+    const close = (result) => {
+      overlay.classList.remove('active');
+      setTimeout(() => overlay.remove(), 300);
+      resolve(result);
+    };
+
+    // Listeners
+    overlay.querySelector('.lms-modal-btn-cancel').onclick = (e) => { e.stopPropagation(); close(false); };
+    overlay.querySelector('.lms-modal-btn-confirm, .lms-modal-btn-danger').onclick = (e) => { e.stopPropagation(); close(true); };
+    overlay.onclick = (e) => { if (e.target === overlay) close(false); };
+  });
+}
+
+/**
+ * Show toast notification
+ */
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container') || createToastContainer();
+  const toast = document.createElement('div');
+  toast.className = `lms-toast lms-toast-${type}`;
+  const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
+  toast.innerHTML = `<i class="fas ${icons[type] || 'fa-info-circle'}"></i> <span>${message}</span>`;
+  toast.style.cssText = `
+    display:flex;align-items:center;gap:10px;
+    padding:12px 18px;border-radius:10px;margin-bottom:10px;
+    font-size:13.5px;font-weight:500;
+    box-shadow:0 4px 20px rgba(0,0,0,0.15);
+    animation:slideInRight 0.3s ease;
+    background:${type === 'success' ? '#e0faf4' : type === 'error' ? '#ffe8e8' : type === 'warning' ? '#fff3e3' : '#e6f6ff'};
+    color:${type === 'success' ? '#006b58' : type === 'error' ? '#b03030' : type === 'warning' ? '#8a5900' : '#0e6fa5'};
+    border-left:4px solid ${type === 'success' ? '#00C9A7' : type === 'error' ? '#FF6B6B' : type === 'warning' ? '#FF9F43' : '#4CC9F0'};
+  `;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.4s';
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+
+function createToastContainer() {
+  const c = document.createElement('div');
+  c.id = 'toast-container';
+  c.style.cssText = 'position:fixed;top:80px;right:20px;z-index:9999;width:300px;';
+  document.body.appendChild(c);
+  return c;
+}
+
+/**
+ * Animate number counters
+ */
+function animateCounters() {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target   = parseInt(el.dataset.count, 10);
+    const duration = 900;
+    const step     = target / (duration / 16);
+    let current    = 0;
+    const timer    = setInterval(() => {
+      current += step;
+      if (current >= target) {
+        current = target;
+        clearInterval(timer);
+      }
+      el.textContent = Math.floor(current).toLocaleString();
+    }, 16);
+  });
+}
+
+/**
+ * MAIN INITIALIZATION
+ */
 document.addEventListener('DOMContentLoaded', function () {
 
   // --- Sidebar Toggle ---
@@ -38,13 +154,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const linkUrl = new URL(link.href);
       const linkPath = linkUrl.pathname.toLowerCase();
       
-      // Exact match
       if (currentPath === linkPath) {
         link.classList.add('active');
         return;
       }
-      
-      // Special case: "Sticky" match for modules using a directory structure (ending in index.php)
       if (linkPath.endsWith('index.php')) {
         const linkDir = linkPath.substring(0, linkPath.lastIndexOf('/'));
         if (linkDir && linkDir.length > 5 && currentPath.startsWith(linkDir)) {
@@ -54,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch(e) {}
   });
 
-  // --- Auto-dismiss alerts after 5s ---
+  // --- Auto-dismiss alerts ---
   const alerts = document.querySelectorAll('.alert-lms.auto-dismiss');
   alerts.forEach(alert => {
     setTimeout(() => {
@@ -64,61 +177,65 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 5000);
   });
 
-  // --- Sidebar Scroll Persistence ---
-  const sidebarNav = document.querySelector('.sidebar-nav');
-  if (sidebarNav) {
-    // Restore scroll position
-    const savedPos = sessionStorage.getItem('sidebarScroll');
-    if (savedPos) {
-      sidebarNav.scrollTop = savedPos;
+  /**
+   * Universal Confirmation System
+   * Intercepts clicks on any element with data-confirm
+   */
+  document.addEventListener('click', function (e) {
+    const el = e.target.closest('[data-confirm]');
+    if (!el) return;
+
+    // If already confirmed by our system, let the original action proceed
+    if (el.dataset.confirmed === "true") {
+      return;
     }
-    // Save scroll position on scroll (debounced)
-    let scrollTimeout;
-    sidebarNav.addEventListener('scroll', () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        sessionStorage.setItem('sidebarScroll', sidebarNav.scrollTop);
-      }, 100);
-    });
-    // Ensure it's saved on click too
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        sessionStorage.setItem('sidebarScroll', sidebarNav.scrollTop);
-      });
-    });
-  }
 
-  // --- Confirm delete dialogs ---
-  document.querySelectorAll('[data-confirm]').forEach(el => {
-    el.addEventListener('click', function (e) {
-      const msg = this.dataset.confirm || 'Are you sure?';
-      if (!confirm(msg)) e.preventDefault();
-    });
-  });
+    e.preventDefault();
+    e.stopImmediatePropagation();
 
-  // --- Tooltip init (Bootstrap) ---
+    const msg = el.dataset.confirm || 'Are you sure?';
+    const type = el.dataset.confirmType || 'confirm';
+    const href = el.getAttribute('href');
+    const form = el.closest('form');
+
+    lmsConfirm(msg, {
+      title: 'Confirmation',
+      confirmText: 'Yes, Proceed',
+      type: type
+    }).then(confirmed => {
+      if (confirmed) {
+        // Mark as confirmed and re-trigger
+        el.dataset.confirmed = "true";
+        
+        if (href && href !== '#' && href !== 'javascript:void(0)') {
+          window.location.href = href;
+        } else if (form) {
+          // If it's a submit button, we should trigger the form submission
+          // but specifically ensure hidden inputs for name/value are preserved
+          if (el.name && el.value) {
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = el.name;
+            hidden.value = el.value;
+            form.appendChild(hidden);
+          }
+          
+          // Re-trigger the click on the element itself so any other listeners run
+          el.click(); 
+        } else {
+          el.click();
+        }
+      }
+    });
+  }, true); // Use capture phase to intercept early
+
+  // --- Tooltip init ---
   if (typeof bootstrap !== 'undefined') {
     const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     tooltips.forEach(el => new bootstrap.Tooltip(el));
   }
 
-  // --- Search filter for tables ---
-  const tableSearch = document.getElementById('tableSearch');
-  if (tableSearch) {
-    tableSearch.addEventListener('input', function () {
-      const query = this.value.toLowerCase();
-      const rows  = document.querySelectorAll('.searchable-table tbody tr');
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(query) ? '' : 'none';
-      });
-    });
-  }
-
-  // --- Animate stat cards on load ---
-  animateCounters();
-
-  // --- Password toggle visibility ---
+  // --- Password visibility toggle ---
   document.querySelectorAll('.toggle-password').forEach(btn => {
     btn.addEventListener('click', function () {
       const input = document.querySelector(this.dataset.target);
@@ -133,59 +250,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // --- AJAX Live Search for Tables ---
-  const filterForm = document.querySelector('.students-filters');
-  const resultsContainer = document.querySelector('.card-lms-body');
-  
-  if (filterForm && resultsContainer) {
-    let debounceTimer;
-    const updateResults = () => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-          const url = new URL(window.location.href);
-          const formData = new FormData(filterForm);
-          for(let [k,v] of formData.entries()) {
-              url.searchParams.set(k, v);
-          }
-          url.searchParams.set('page', 1); // Reset to page 1 on new filter
-          url.searchParams.set('ajax', 1);
-
-          // Update URL history without reload
-          window.history.pushState({}, '', url.toString().replace('&ajax=1','').replace('?ajax=1',''));
-
-          // Add loading state
-          resultsContainer.style.opacity = '0.5';
-          resultsContainer.style.pointerEvents = 'none';
-
-          fetch(url)
-              .then(r => r.text())
-              .then(html => {
-                  const parser = new DOMParser();
-                  const doc = parser.parseFromString(html, 'text/html');
-                  const newBody = doc.querySelector('.card-lms-body');
-                  if (newBody) {
-                      resultsContainer.innerHTML = newBody.innerHTML;
-                  }
-                  resultsContainer.style.opacity = '1';
-                  resultsContainer.style.pointerEvents = 'all';
-              })
-              .catch(() => {
-                  resultsContainer.style.opacity = '1';
-                  resultsContainer.style.pointerEvents = 'all';
-              });
-      }, 400); // 400ms debounce
-    };
-
-    filterForm.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('input', updateResults);
-        el.addEventListener('change', updateResults);
-    });
-    
-    filterForm.addEventListener('submit', e => {
-        e.preventDefault();
-        updateResults();
-    });
-  }
+  // --- Stats counters ---
+  animateCounters();
 
   // --- Notice Viewer ---
   document.addEventListener('click', function(e) {
@@ -195,134 +261,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('viewNoticeModal');
     if (!modal) return;
 
-    // Populate Modal
     document.getElementById('notice-modal-title').textContent = card.dataset.title;
     document.getElementById('notice-modal-content').textContent = card.dataset.content;
     document.getElementById('notice-modal-author').textContent = card.dataset.author;
     document.getElementById('notice-modal-date').textContent = card.dataset.date;
-    
-    // Set Avatar Initial
     document.getElementById('notice-modal-avatar').textContent = card.dataset.author.substring(0, 1).toUpperCase();
 
-    // Show Modal
     const bsModal = new bootstrap.Modal(modal);
     bsModal.show();
-
-    // Mark as Read (Client-side UI update + Persistence)
-    const readBtn = modal.querySelector('.btn-lms.btn-primary');
-    if (readBtn && !readBtn.getAttribute('data-listener')) {
-        readBtn.setAttribute('data-listener', 'true');
-        readBtn.addEventListener('click', function() {
-            const noticeId = card.dataset.realId;
-            
-            // 1. Perspective: Only reduce count IF it's not already read
-            // (We check if it has a 'Read' badge or opacity, but easier to just check realId)
-            if (noticeId) {
-                fetch(window.location.origin + '/Webbuilders Projects/issd_management/backend/notice_read.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ notice_id: noticeId })
-                });
-            }
-
-            const badge = document.querySelector('#notifDropdown .badge');
-            if (badge) {
-                let count = parseInt(badge.textContent);
-                if (count > 0) {
-                    count--;
-                    if (count === 0) {
-                        badge.remove();
-                    } else {
-                        badge.textContent = count;
-                        const headerBadge = document.querySelector('.dropdown-menu .bg-primary .badge');
-                        if (headerBadge) headerBadge.textContent = count + ' New';
-                    }
-                }
-            }
-        });
-    }
   });
 
 });
-
-// -------------------------------------------------------
-// Animate number counters
-// -------------------------------------------------------
-function animateCounters() {
-  document.querySelectorAll('[data-count]').forEach(el => {
-    const target   = parseInt(el.dataset.count, 10);
-    const duration = 900;
-    const step     = target / (duration / 16);
-    let current    = 0;
-    const timer    = setInterval(() => {
-      current += step;
-      if (current >= target) {
-        current = target;
-        clearInterval(timer);
-      }
-      el.textContent = Math.floor(current).toLocaleString();
-    }, 16);
-  });
-}
-
-// -------------------------------------------------------
-// Show toast notification
-// -------------------------------------------------------
-function showToast(message, type = 'success') {
-  const container = document.getElementById('toast-container') || createToastContainer();
-  const toast = document.createElement('div');
-  toast.className = `lms-toast lms-toast-${type}`;
-  const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
-  toast.innerHTML = `<i class="fas ${icons[type] || 'fa-info-circle'}"></i> <span>${message}</span>`;
-  toast.style.cssText = `
-    display:flex;align-items:center;gap:10px;
-    padding:12px 18px;border-radius:10px;margin-bottom:10px;
-    font-size:13.5px;font-weight:500;
-    box-shadow:0 4px 20px rgba(0,0,0,0.15);
-    animation:slideInRight 0.3s ease;
-    background:${type === 'success' ? '#e0faf4' : type === 'error' ? '#ffe8e8' : type === 'warning' ? '#fff3e3' : '#e6f6ff'};
-    color:${type === 'success' ? '#006b58' : type === 'error' ? '#b03030' : type === 'warning' ? '#8a5900' : '#0e6fa5'};
-    border-left:4px solid ${type === 'success' ? '#00C9A7' : type === 'error' ? '#FF6B6B' : type === 'warning' ? '#FF9F43' : '#4CC9F0'};
-  `;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.4s';
-    setTimeout(() => toast.remove(), 400);
-  }, 4000);
-}
-
-function createToastContainer() {
-  const c = document.createElement('div');
-  c.id = 'toast-container';
-  c.style.cssText = 'position:fixed;top:80px;right:20px;z-index:9999;width:300px;';
-  document.body.appendChild(c);
-  return c;
-}
-
-// -------------------------------------------------------
-// AJAX form helper
-// -------------------------------------------------------
-function submitForm(formId, successCb) {
-  const form = document.getElementById(formId);
-  if (!form) return;
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const btn  = form.querySelector('[type="submit"]');
-    const orig = btn ? btn.innerHTML : '';
-    if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'; btn.disabled = true; }
-    const data = new FormData(form);
-    fetch(form.action, { method: 'POST', body: data })
-      .then(r => r.json())
-      .then(res => {
-        if (btn) { btn.innerHTML = orig; btn.disabled = false; }
-        showToast(res.message, res.success ? 'success' : 'error');
-        if (res.success && typeof successCb === 'function') successCb(res);
-      })
-      .catch(() => {
-        if (btn) { btn.innerHTML = orig; btn.disabled = false; }
-        showToast('Something went wrong. Please try again.', 'error');
-      });
-  });
-}
-

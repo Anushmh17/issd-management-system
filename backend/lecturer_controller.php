@@ -34,6 +34,15 @@ function validateLecturerFields(array $d, bool $isAdd = true, ?int $editId = nul
     if (empty(trim($d['username'] ?? ''))) $errors[] = 'Username is required.';
     if ($isAdd && empty(trim($d['password'] ?? ''))) $errors[] = 'Password is required.';
 
+    // Phone Validation
+    $phone = trim($d['phone'] ?? '');
+    if (!empty($phone)) {
+        $cleanPhone = preg_replace('/[^0-9+]/', '', $phone);
+        if (!preg_match('/^(\+94|94|0)(7[0-9]{8})$/', $cleanPhone)) {
+            $errors[] = 'Invalid phone number. Use 07XXXXXXXX format.';
+        }
+    }
+
     // Unique email check
     if (!empty($d['email'])) {
         $q = $editId
@@ -91,7 +100,6 @@ function uploadLecturerPhoto(array $file, int $lecturerId): array {
 
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime  = finfo_file($finfo, $file['tmp_name']);
-    finfo_close($finfo);
     if (!in_array($mime, LECT_PHOTO_TYPES, true)) {
         return ['success' => false, 'path' => null, 'error' => 'Invalid MIME type.'];
     }
@@ -118,6 +126,8 @@ function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
     $courseId       = !empty($d['course_id']) ? (int)$d['course_id'] : null;
 
     try {
+        $pdo->beginTransaction();
+
         $pdo->prepare("
             INSERT INTO lecturers
               (name, email, phone, qualifications, username, password,
@@ -141,31 +151,34 @@ function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
 
         // Assign course if selected
         if ($courseId) {
-            try {
-                $pdo->prepare("
-                    INSERT INTO course_assignments (course_id, lecturer_id, assigned_date)
-                    VALUES (?, ?, CURDATE())
-                    ON DUPLICATE KEY UPDATE lecturer_id = VALUES(lecturer_id), assigned_date = CURDATE()
-                ")->execute([$courseId, $newId]);
-            } catch (PDOException $ce) {
-                error_log('addLecturer course_assignment: ' . $ce->getMessage());
-            }
+            $pdo->prepare("
+                INSERT INTO course_assignments (course_id, lecturer_id, assigned_date)
+                VALUES (?, ?, CURDATE())
+                ON DUPLICATE KEY UPDATE lecturer_id = VALUES(lecturer_id), assigned_date = CURDATE()
+            ")->execute([$courseId, $newId]);
         }
 
         // Handle photo upload
+        $warning = '';
         if ($photoFile && !empty($photoFile['name'])) {
             $up = uploadLecturerPhoto($photoFile, $newId);
             if ($up['success']) {
                 $pdo->prepare("UPDATE lecturers SET photo = ? WHERE id = ?")
                     ->execute([$up['path'], $newId]);
             } elseif ($up['error']) {
-                // Non-fatal: lecturer saved, photo failed
-                return ['success' => true, 'id' => $newId, 'warning' => $up['error']];
+                // Non-fatal warning
+                $warning = $up['error'];
             }
         }
 
-        return ['success' => true, 'id' => $newId];
+        // --- Activity Log ---
+        require_once dirname(__DIR__) . '/includes/auth.php';
+        logActivity($_SESSION['user_id'] ?? null, 'lecturer_joined', "New lecturer: " . trim($d['name']));
+
+        $pdo->commit();
+        return ['success' => true, 'id' => $newId, 'warning' => $warning];
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         error_log('addLecturer: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to add lecturer. Please try again.']];
     }
@@ -179,9 +192,16 @@ function updateLecturer(PDO $pdo, int $id, array $d, ?array $photoFile = null): 
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     try {
-        // Build SET clause "" password only if provided
+        $pdo->beginTransaction();
+
+        // Build SET clause — password only if provided
         $sets   = ['name=?','email=?','phone=?','qualifications=?',
-                   'username=?','department=?','employee_id=?','joined_date=?','status=?'];
+                   'username=?','department=?','employee_id=?','joined_date=?','status=?','payment_mode=?','per_student_rate=?'];
+
+        $paymentMode    = in_array($d['payment_mode'] ?? '', ['flat_monthly','per_student']) ? $d['payment_mode'] : 'flat_monthly';
+        $perStudentRate = ($paymentMode === 'per_student' && isset($d['per_student_rate']) && is_numeric($d['per_student_rate']))
+                          ? round((float)$d['per_student_rate'], 2) : null;
+
         $params = [
             trim($d['name']),
             trim($d['email']),
@@ -192,6 +212,8 @@ function updateLecturer(PDO $pdo, int $id, array $d, ?array $photoFile = null): 
             trim($d['employee_id'] ?? '') ?: null,
             !empty($d['joined_date']) ? $d['joined_date'] : null,
             $d['status'] ?? 'active',
+            $paymentMode,
+            $perStudentRate,
         ];
 
         if (!empty(trim($d['new_password'] ?? ''))) {
@@ -213,6 +235,7 @@ function updateLecturer(PDO $pdo, int $id, array $d, ?array $photoFile = null): 
                 $sets[]   = 'photo=?';
                 $params[] = $up['path'];
             } elseif ($up['error']) {
+                if ($pdo->inTransaction()) $pdo->rollBack();
                 return ['success' => false, 'errors' => [$up['error']]];
             }
         }
@@ -222,11 +245,18 @@ function updateLecturer(PDO $pdo, int $id, array $d, ?array $photoFile = null): 
         $success = $stmt->execute($params);
 
         if (!$success) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
             return ['success' => false, 'errors' => ['Database update failed.']];
         }
 
+        // --- Activity Log ---
+        require_once dirname(__DIR__) . '/includes/auth.php';
+        logActivity($_SESSION['user_id'] ?? null, 'lecturer_updated', "Lecturer info updated: " . trim($d['name']));
+
+        $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         error_log('updateLecturer: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to update lecturer.']];
     }

@@ -34,22 +34,22 @@ function syncOverduePayments(PDO $pdo) {
             $adminMsg = "A payment of Rs. " . number_format($o['balance'], 2) . " was due on " . $o['next_due_date'] . ".";
             $adminLink = BASE_URL . "/admin/payments/index.php?highlight_id=" . $o['id'];
             
+            require_once __DIR__ . '/notification_controller.php';
             $checkAdmin = $pdo->prepare("SELECT id FROM notifications WHERE user_id IS NULL AND title = ? AND status = 'unread' LIMIT 1");
             $checkAdmin->execute([$adminTitle]);
             if (!$checkAdmin->fetch()) {
-                $stmt = $pdo->prepare("INSERT INTO notifications (type, title, message, link, status) VALUES ('payment', ?, ?, ?, 'unread')");
-                $stmt->execute([$adminTitle, $adminMsg, $adminLink]);
+                addNotification($pdo, null, 'payment', $adminTitle, $adminMsg, $adminLink);
             }
 
             // B. Student Notification
             $studentTitle = "Payment Overdue Notice";
             $studentMsg = "Your payment of Rs. " . number_format($o['balance'], 2) . " was due on " . $o['next_due_date'] . ". Please clear it as soon as possible.";
             
+            require_once __DIR__ . '/notification_controller.php';
             $checkStudent = $pdo->prepare("SELECT id FROM notifications WHERE user_id = ? AND title = ? AND status = 'unread' LIMIT 1");
             $checkStudent->execute([$o['user_id'], $studentTitle]);
             if (!$checkStudent->fetch()) {
-                $stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, status) VALUES (?, 'payment', ?, ?, 'unread')");
-                $stmt->execute([$o['user_id'], $studentTitle, $studentMsg]);
+                addNotification($pdo, (int)$o['user_id'], 'payment', $studentTitle, $studentMsg);
             }
         }
     } catch (PDOException $e) {
@@ -83,8 +83,8 @@ function syncUpcomingPayments(PDO $pdo) {
             $check->execute([$u['user_id'], $title]);
             
             if (!$check->fetch()) {
-                $stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, status) VALUES (?, 'payment', ?, ?, 'unread')");
-                $stmt->execute([$u['user_id'], $title, $msg]);
+                require_once __DIR__ . '/notification_controller.php';
+                addNotification($pdo, (int)$u['user_id'], 'payment', $title, $msg);
             }
         }
     } catch (PDOException $e) {
@@ -163,6 +163,7 @@ function addPayment(PDO $pdo, array $d): array {
     $nextDueDate = !empty($d['next_due_date']) ? $d['next_due_date'] : date('Y-m-d', strtotime('+1 month'));
 
     try {
+        $pdo->beginTransaction();
         $pdo->prepare("
             INSERT INTO student_payments 
             (student_id, course_id, month, monthly_fee, previous_balance, total_due, amount_paid, balance, status, payment_date, next_due_date, method, reference)
@@ -181,10 +182,18 @@ function addPayment(PDO $pdo, array $d): array {
             $method,
             $reference
         ]);
-        return ['success' => true, 'id' => $pdo->lastInsertId()];
+        $id = $pdo->lastInsertId();
+
+        // --- Activity Log ---
+        require_once dirname(__DIR__) . '/includes/auth.php';
+        logActivity($_SESSION['user_id'] ?? null, 'payment_received', "Payment of Rs. " . number_format($amountPaid, 0) . " from Student ID: " . $studentId);
+
+        $pdo->commit();
+        return ['success' => true, 'id' => $id];
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         error_log('addPayment: ' . $e->getMessage());
-        return ['success' => false, 'errors' => ['Failed to process payment. Please ensure database schema is updated with method/reference columns.']];
+        return ['success' => false, 'errors' => ['Failed to process payment.']];
     }
 }
 
@@ -271,12 +280,19 @@ function addLecturerPayment(PDO $pdo, array $d): array {
     }
 
     try {
+        $pdo->beginTransaction();
         $pdo->prepare("
             INSERT INTO lecturer_payments (lecturer_id, amount, payment_month, payment_date, status, notes)
             VALUES (?, ?, ?, NOW(), 'paid', ?)
         ")->execute([$lecturerId, $amount, $paymentMonth, $notes]);
+        // --- Activity Log ---
+        require_once dirname(__DIR__) . '/includes/auth.php';
+        logActivity($_SESSION['user_id'] ?? null, 'lecturer_payout', "Payout of Rs. " . number_format($amount, 0) . " to Lecturer ID: " . $lecturerId);
+
+        $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         return ['success' => false, 'errors' => [$e->getMessage()]];
     }
 }
@@ -319,10 +335,8 @@ function syncLecturerPaymentAlerts(PDO $pdo): void {
             $check->execute([$title]);
 
             if (!$check->fetch()) {
-                $pdo->prepare("
-                    INSERT INTO notifications (type, title, message, link, status)
-                    VALUES ('payment', ?, ?, ?, 'unread')
-                ")->execute([$title, $msg, $link]);
+                require_once __DIR__ . '/notification_controller.php';
+                addNotification($pdo, null, 'payment', $title, $msg, $link);
             }
         }
     } catch (PDOException $e) {
@@ -337,9 +351,9 @@ function getLecturerPaymentsList(PDO $pdo, int $page = 1): array {
     $offset = ($page - 1) * $perPage;
 
     $stmt = $pdo->prepare("
-        SELECT lp.*, u.name as lecturer_name 
+        SELECT lp.*, l.name as lecturer_name 
         FROM lecturer_payments lp
-        JOIN users u ON lp.lecturer_id = u.id
+        JOIN lecturers l ON lp.lecturer_id = l.id
         ORDER BY lp.payment_date DESC
         LIMIT ? OFFSET ?
     ");
@@ -353,8 +367,14 @@ function getLecturerPaymentsList(PDO $pdo, int $page = 1): array {
 function getFinancialStats(PDO $pdo): array {
     $thisMonth = date('Y-m');
     
-    $income = (float)$pdo->query("SELECT SUM(amount_paid) FROM student_payments WHERE month = '$thisMonth'")->fetchColumn();
-    $expense = (float)$pdo->query("SELECT SUM(amount) FROM lecturer_payments WHERE payment_month = '$thisMonth'")->fetchColumn();
+    $stmt1 = $pdo->prepare("SELECT SUM(amount_paid) FROM student_payments WHERE month = ?");
+    $stmt1->execute([$thisMonth]);
+    $income = (float)$stmt1->fetchColumn();
+
+    $stmt2 = $pdo->prepare("SELECT SUM(amount) FROM lecturer_payments WHERE payment_month = ?");
+    $stmt2->execute([$thisMonth]);
+    $expense = (float)$stmt2->fetchColumn();
+
     $pending = (float)$pdo->query("SELECT SUM(balance) FROM student_payments WHERE status != 'paid'")->fetchColumn();
 
     return [
@@ -379,9 +399,9 @@ function getRecentStudentPayments(PDO $pdo, int $limit = 5): array {
 
 function getRecentLecturerPayments(PDO $pdo, int $limit = 5): array {
     $stmt = $pdo->prepare("
-        SELECT lp.*, u.name as lecturer_name 
+        SELECT lp.*, l.name as lecturer_name 
         FROM lecturer_payments lp
-        JOIN users u ON lp.lecturer_id = u.id
+        JOIN lecturers l ON lp.lecturer_id = l.id
         ORDER BY lp.payment_date DESC
         LIMIT ?
     ");

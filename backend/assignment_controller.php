@@ -56,6 +56,7 @@ function addAssignment(PDO $pdo, int $lecturerId, array $d, ?array $file = null)
     }
 
     try {
+        $pdo->beginTransaction();
         $pdo->prepare("
             INSERT INTO assignments (course_id, lecturer_id, title, description, file, deadline)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -63,8 +64,10 @@ function addAssignment(PDO $pdo, int $lecturerId, array $d, ?array $file = null)
             $d['course_id'], $lecturerId, trim($d['title']), trim($d['description'] ?? ''),
             $filePath, $d['deadline']
         ]);
+        $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         error_log('addAssignment: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to create assignment.']];
     }
@@ -139,13 +142,13 @@ function gradeSubmission(PDO $pdo, int $submissionId, array $d): array {
 function getStudentAssignments(PDO $pdo, int $studentId): array {
     $stmt = $pdo->prepare("
         SELECT a.*, c.course_name, c.course_code,
-               s.id as submission_id, s.submitted_at, s.marks, s.remarks as feedback
+               s.id as submission_id, s.submitted_at, s.marks, s.feedback
         FROM assignments a
         JOIN student_courses sc ON a.course_id = sc.course_id
         JOIN courses c ON a.course_id = c.id
-        LEFT JOIN submissions s ON a.id = s.assignment_id AND s.student_id = ?
+        LEFT JOIN assignment_submissions s ON a.id = s.assignment_id AND s.student_id = ?
         WHERE sc.student_id = ? AND sc.status IN ('ongoing', 'completed')
-        ORDER BY a.due_date ASC
+        ORDER BY a.deadline ASC
     ");
     $stmt->execute([$studentId, $studentId]);
     return $stmt->fetchAll();
@@ -175,13 +178,16 @@ function submitAssignment(PDO $pdo, int $studentId, int $assignmentId, array $fi
     if (!$up['success']) return ['success' => false, 'errors' => [$up['error']]];
 
     try {
+        $pdo->beginTransaction();
         $pdo->prepare("
             INSERT INTO assignment_submissions (assignment_id, student_id, submission_file)
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE submission_file = VALUES(submission_file), submitted_at = CURRENT_TIMESTAMP
         ")->execute([$assignmentId, $studentId, $up['path']]);
+        $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
         error_log('submitAssignment: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to submit assignment.']];
     }
