@@ -25,6 +25,7 @@ $userId = $user['id'];
 if (hasRole(ROLE_ADMIN)) {
     syncOverduePayments($pdo);
     syncUpcomingPayments($pdo);
+    syncLecturerPaymentAlerts($pdo);
 }
 
 $action = $_GET['action'] ?? 'list';

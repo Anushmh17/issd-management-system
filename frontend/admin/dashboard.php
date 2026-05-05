@@ -712,14 +712,15 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     <div class="stat-label">Pending Payments</div>
   </a>
 
-  <div class="bento-card span-3">
+  <a href="<?= BASE_URL ?>/admin/finance/index.php" class="bento-card span-3 text-decoration-none">
     <div class="stat-header">
       <div class="stat-icon" style="background:#fce7f3; color:var(--accent-rose);"><i class="fas fa-wallet"></i></div>
       <div class="stat-trend trend-up">+18%</div>
     </div>
     <div class="stat-value">Rs. <?= number_format($monthly_revenue/1000, 0) ?>k</div>
     <div class="stat-label">Monthly Revenue</div>
-  </div>
+  </a>
+
 
 <?php
 // 6. Missing Documents Tracker (Real-time scan) - RESTORED

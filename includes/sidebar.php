@@ -168,9 +168,7 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
         </div>
       </div>
 
-      <!-- Real-time Notifications Script -->
-      <script>const BASE_URL = '<?= BASE_URL ?>';</script>
-      <script src="<?= BASE_URL ?>/assets/js/notifications.js"></script>
+      <!-- Real-time Notifications Script: loaded from footer.php -->
       <!-- Help -->
       <button class="navbar-icon-btn" title="Help" data-bs-toggle="modal" data-bs-target="#helpGuideModal">
         <i class="fas fa-circle-question"></i>

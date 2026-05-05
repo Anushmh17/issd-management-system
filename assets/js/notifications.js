@@ -239,4 +239,7 @@ class NotificationManager {
         setTimeout(() => toast.remove(), 5000);
     }
 }
-window.notificationManager = new NotificationManager();
+document.addEventListener('DOMContentLoaded', function() {
+    window.notificationManager = new NotificationManager();
+});
+

@@ -281,6 +281,55 @@ function addLecturerPayment(PDO $pdo, array $d): array {
     }
 }
 
+// -------------------------------------------------------
+// Sync Lecturer Payout Alerts (fires from day 20 onward)
+// Creates admin notification for each unpaid lecturer
+// -------------------------------------------------------
+function syncLecturerPaymentAlerts(PDO $pdo): void {
+    if ((int)date('d') < 20) return; // Only alert in last ~10 days of month
+
+    $currentMonth = date('Y-m');
+    $monthName    = date('F Y');
+
+    try {
+        $unpaid = $pdo->query("
+            SELECT l.id, l.name
+            FROM lecturers l
+            WHERE l.status = 'active'
+              AND l.id NOT IN (
+                  SELECT DISTINCT lecturer_id
+                  FROM lecturer_payments
+                  WHERE payment_month = '{$currentMonth}'
+              )
+        ")->fetchAll();
+
+        foreach ($unpaid as $l) {
+            $title = "Lecturer Payout Due: {$l['name']}";
+            $msg   = "{$l['name']} has not received their payout for {$monthName}. Please record it before month-end.";
+            $link  = BASE_URL . "/admin/lecturer_payments/index.php";
+
+            // Only insert once per month — deduplicate by title + this month
+            $check = $pdo->prepare("
+                SELECT id FROM notifications
+                WHERE title = ?
+                  AND status = 'unread'
+                  AND created_at >= DATE_FORMAT(NOW(), '%Y-%m-01')
+                LIMIT 1
+            ");
+            $check->execute([$title]);
+
+            if (!$check->fetch()) {
+                $pdo->prepare("
+                    INSERT INTO notifications (type, title, message, link, status)
+                    VALUES ('payment', ?, ?, ?, 'unread')
+                ")->execute([$title, $msg, $link]);
+            }
+        }
+    } catch (PDOException $e) {
+        error_log('syncLecturerPaymentAlerts: ' . $e->getMessage());
+    }
+}
+
 function getLecturerPaymentsList(PDO $pdo, int $page = 1): array {
     $perPage = 15;
     $total = (int)$pdo->query("SELECT COUNT(*) FROM lecturer_payments")->fetchColumn();

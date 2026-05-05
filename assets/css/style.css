@@ -3610,6 +3610,9 @@ img {
     letter-spacing: 1.2px !important;
     font-weight: 800 !important;
     padding: 14px !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    pointer-events: auto !important;
 }
 .notif-tab.active {
     background: var(--primary) !important;
@@ -3643,3 +3646,83 @@ img {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
 }
+
+/* =====================================================
+   PAGE HEADING — consistent with Finance Hub style
+   ===================================================== */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0;
+    margin-bottom: 30px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.page-header::before,
+.page-header::after {
+    display: none;
+}
+
+.page-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+/* Title — matches Finance Hub h2.fw-800.text-dark */
+.page-header-left h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+    margin: 0 0 1px 0;
+}
+
+.page-header-left h1::before,
+.page-header-left h1::after {
+    display: none;
+}
+
+/* Right-side action buttons */
+.page-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* =====================================================
+   BREADCRUMB — hidden completely
+   ===================================================== */
+.breadcrumb-custom {
+    display: none !important;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .page-header-left h1 {
+        font-size: 20px;
+    }
+
+    .page-header-right {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+}
+
