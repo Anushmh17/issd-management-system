@@ -481,8 +481,10 @@ img {
    ===================================================== */
 #top-navbar {
   height: var(--navbar-h);
-  background: var(--glass);
-  backdrop-filter: var(--glass-blur);
+  background: var(--sidebar-bg);
+  background-image: url('../images/sidebar-texture.jpg');
+  background-size: cover;
+  background-position: center;
   box-shadow: var(--navbar-shadow);
   display: flex;
   align-items: center;
@@ -495,6 +497,15 @@ img {
   z-index: 900;
   border-bottom: 1px solid rgba(13, 58, 67, 0.06);
   transition: var(--transition);
+}
+
+#top-navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .navbar-left {

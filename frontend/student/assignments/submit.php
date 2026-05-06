@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = $result['errors'];
 }
 
-$dlTime = strtotime($assignment['deadline']);
+$dlTime = strtotime($assignment['due_date']);
 $isOverdue = time() > $dlTime;
 $hasSubmitted = !empty($assignment['submission_id']);
 

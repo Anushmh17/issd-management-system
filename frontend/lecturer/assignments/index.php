@@ -72,7 +72,7 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
               </td>
               <td>
                 <div style="font-size:13px;color:#dc2626;font-weight:600;">
-                  <i class="fas fa-clock"></i> <?= date('d M Y, h:i A', strtotime($a['deadline'])) ?>
+                  <i class="fas fa-clock"></i> <?= date('d M Y, h:i A', strtotime($a['due_date'])) ?>
                 </div>
               </td>
               <td>

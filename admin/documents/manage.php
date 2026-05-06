@@ -204,8 +204,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-renderPage:
-
 // Compute overall completion
 $reqKeys   = array_keys(array_filter($defs, fn($d) => $d['required']));
 $reqTotal  = count($reqKeys);
@@ -356,6 +354,22 @@ $extraCSS = <<<'CSS'
     background: var(--primary-light); color: var(--primary);
     padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
 }
+
+/* Dark Mode Overrides */
+body.lms-dark-mode .doc-student-banner {
+    background: rgba(30, 41, 59, 0.4);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+body.lms-dark-mode .dsb-name { color: #fff; }
+body.lms-dark-mode .dsb-meta { color: #94a3b8; }
+body.lms-dark-mode .ring-pct { color: #fff; }
+body.lms-dark-mode .doc-checklist-table thead th { border-bottom-color: rgba(255, 255, 255, 0.05); }
+body.lms-dark-mode .doc-checklist-table tbody td { border-bottom-color: rgba(255, 255, 255, 0.02); }
+body.lms-dark-mode .doc-checklist-table tbody tr:hover { background: rgba(255, 255, 255, 0.02) !important; }
+body.lms-dark-mode .doc-upload-label { background: rgba(15, 23, 42, 0.4); border-color: rgba(255, 255, 255, 0.1); }
+body.lms-dark-mode .dsb-status-box { border-left-color: rgba(255, 255, 255, 0.05); }
+body.lms-dark-mode .doc-del-file { background: rgba(225, 29, 72, 0.1); }
+body.lms-dark-mode .doc-del-file:hover { background: #e11d48; }
 </style>
 CSS;
 
@@ -584,7 +598,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <span class="badge-lms info"><?= count($otherDocs) ?> Items</span>
     </div>
     <div class="card-lms-body">
-      <form method="POST" enctype="multipart/form-data" class="mb-20 p-4" style="background:#f8fafc; border-radius:16px; border:1.5px dashed #cbd5e1;">
+      <form method="POST" enctype="multipart/form-data" class="mb-20 p-4" style="border-radius:16px; border:1.5px dashed #cbd5e1;">
         <div class="row g-3 align-items-end">
           <div class="col-md-5">
             <div class="form-group-lms mb-0">

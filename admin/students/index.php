@@ -92,8 +92,8 @@ $extraCSS = <<<CSS
     border-left: 4px solid var(--primary) !important;
 }
 
-.id-badge-lms { background: #f1f5f9; color: #475569; font-weight: 700; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
-.batch-badge-lms { background: #e0f2fe; color: #0369a1; font-weight: 600; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+.id-badge-lms { color: #475569; font-weight: 700; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+.batch-badge-lms { color: #0369a1; font-weight: 600; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
 
 /* Legend Styles */
 .list-legend { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
@@ -102,7 +102,7 @@ $extraCSS = <<<CSS
 .count-badge { background: var(--primary-light); color: var(--primary); padding: 2px 10px; border-radius: 30px; font-size: 13px; font-weight: 800; }
 
 .students-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.filter-select { font-size: 13px !important; height: 38px !important; border-radius: 10px !important; padding: 0 12px !important; background-color: #f8fafc !important; }
+.filter-select { font-size: 13px !important; height: 38px !important; border-radius: 10px !important; padding: 0 12px !important; }
 </style>
 CSS;
 
@@ -189,7 +189,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
       <!-- Filters Row -->
       <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
-        <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+        <div class="search-bar" style="flex: 1; min-width: 300px; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
           <input type="text" name="search" id="searchInput" placeholder="Search Name, ID or NIC..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
@@ -198,7 +198,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
         <div class="d-flex gap-2">
           <select name="batch" class="form-control-lms filter-select" id="batchFilter"
-                  style="min-width: 140px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  style="min-width: 140px; border-radius: 12px; font-weight: 600; padding: 10px 15px;"
                   onchange="document.getElementById('filterForm').submit()">
             <option value="">All Batches</option>
             <?php foreach ($batches as $b): ?>
@@ -209,7 +209,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </select>
 
           <select name="status" class="form-control-lms filter-select" id="statusFilter"
-                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  style="min-width: 160px; border-radius: 12px; font-weight: 600; padding: 10px 15px;"
                   onchange="document.getElementById('filterForm').submit()">
             <option value="">All Status</option>
             <option value="new_joined"  <?= $status === 'new_joined'  ? 'selected' : '' ?>>New Joined</option>

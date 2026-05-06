@@ -653,6 +653,30 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
   }
   .card-header-bento h3 { font-size: 18px; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 10px; }
+
+  /* --- DARK MODE OVERRIDES --- */
+  body.lms-dark-mode {
+    --bento-bg: rgba(30, 41, 59, 0.4);
+    --bento-border: rgba(255, 255, 255, 0.05);
+  }
+  body.lms-dark-mode .stat-value { color: #fff; }
+  body.lms-dark-mode .stat-label { color: #94a3b8; }
+  body.lms-dark-mode .action-btn {
+    background: rgba(15, 23, 42, 0.5);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+  }
+  body.lms-dark-mode .action-btn:hover { background: rgba(30, 41, 59, 0.8); }
+  body.lms-dark-mode .action-btn span.action-sub { color: #94a3b8; }
+  body.lms-dark-mode .schedule-row { background: rgba(15, 23, 42, 0.4); }
+  body.lms-dark-mode .schedule-row:hover { background: rgba(30, 41, 59, 0.6); }
+  body.lms-dark-mode .s-info h4 { color: #fff; }
+  body.lms-dark-mode .s-info p { color: #94a3b8; }
+  body.lms-dark-mode .s-time { color: #94a3b8; }
+  body.lms-dark-mode .modern-table tr { background: rgba(15, 23, 42, 0.4); }
+  body.lms-dark-mode .modern-table tr:hover { background: rgba(30, 41, 59, 0.6); }
+  body.lms-dark-mode .modern-table td { color: #e2e8f0; }
+  body.lms-dark-mode .hero-clock { background: rgba(15, 23, 42, 0.8); color: #fff; border-color: rgba(255,255,255,0.1); }
 </style>
 
 

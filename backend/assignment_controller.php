@@ -44,7 +44,7 @@ function addAssignment(PDO $pdo, int $lecturerId, array $d, ?array $file = null)
     $errors = [];
     if (empty(trim($d['course_id'] ?? ''))) $errors[] = 'Course is required.';
     if (empty(trim($d['title'] ?? '')))     $errors[] = 'Title is required.';
-    if (empty(trim($d['deadline'] ?? '')))  $errors[] = 'Deadline is required.';
+    if (empty(trim($d['due_date'] ?? '')))  $errors[] = 'Due date is required.';
 
     if ($errors) return ['success' => false, 'errors' => $errors];
 
@@ -58,11 +58,11 @@ function addAssignment(PDO $pdo, int $lecturerId, array $d, ?array $file = null)
     try {
         $pdo->beginTransaction();
         $pdo->prepare("
-            INSERT INTO assignments (course_id, lecturer_id, title, description, file, deadline)
+            INSERT INTO assignments (course_id, lecturer_id, title, description, file, due_date)
             VALUES (?, ?, ?, ?, ?, ?)
         ")->execute([
             $d['course_id'], $lecturerId, trim($d['title']), trim($d['description'] ?? ''),
-            $filePath, $d['deadline']
+            $filePath, $d['due_date']
         ]);
         $pdo->commit();
         return ['success' => true];
@@ -139,32 +139,34 @@ function gradeSubmission(PDO $pdo, int $submissionId, array $d): array {
 // -------------------------------------------------------
 // Student: Get Assignments
 // -------------------------------------------------------
-function getStudentAssignments(PDO $pdo, int $studentId): array {
+function getStudentAssignments(PDO $pdo, int $userId): array {
     $stmt = $pdo->prepare("
         SELECT a.*, c.course_name, c.course_code,
                s.id as submission_id, s.submitted_at, s.marks, s.feedback
         FROM assignments a
         JOIN student_courses sc ON a.course_id = sc.course_id
+        JOIN students st ON sc.student_id = st.id
         JOIN courses c ON a.course_id = c.id
         LEFT JOIN assignment_submissions s ON a.id = s.assignment_id AND s.student_id = ?
-        WHERE sc.student_id = ? AND sc.status IN ('ongoing', 'completed')
-        ORDER BY a.deadline ASC
+        WHERE st.user_id = ? AND sc.status IN ('ongoing', 'completed')
+        ORDER BY a.due_date ASC
     ");
-    $stmt->execute([$studentId, $studentId]);
+    $stmt->execute([$userId, $userId]);
     return $stmt->fetchAll();
 }
 
-function getAssignmentForStudent(PDO $pdo, int $assignmentId, int $studentId): ?array {
+function getAssignmentForStudent(PDO $pdo, int $assignmentId, int $userId): ?array {
     $stmt = $pdo->prepare("
         SELECT a.*, c.course_name,
                s.id as submission_id, s.submitted_at, s.submission_file, s.marks, s.feedback
         FROM assignments a
         JOIN student_courses sc ON a.course_id = sc.course_id
+        JOIN students st ON sc.student_id = st.id
         JOIN courses c ON a.course_id = c.id
         LEFT JOIN assignment_submissions s ON a.id = s.assignment_id AND s.student_id = ?
-        WHERE a.id = ? AND sc.student_id = ? AND sc.status IN ('ongoing', 'completed')
+        WHERE a.id = ? AND st.user_id = ? AND sc.status IN ('ongoing', 'completed')
     ");
-    $stmt->execute([$studentId, $assignmentId, $studentId]);
+    $stmt->execute([$userId, $assignmentId, $userId]);
     return $stmt->fetch() ?: null;
 }
 

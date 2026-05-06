@@ -120,7 +120,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <div style="font-size:11px;color:#64748b;"><?= htmlspecialchars($c['student_reg']) ?></div>
               </td>
               <td>
-                <span class="badge-lms" style="background:#f1f5f9;color:#334155;font-family:monospace;letter-spacing:0.5px;">
+                <span class="badge-lms" style="font-family:monospace;letter-spacing:0.5px;">
                   <?= htmlspecialchars($c['certificate_number']) ?>
                 </span>
               </td>

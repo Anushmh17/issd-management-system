@@ -237,7 +237,7 @@ if (!isset($role)) {
             <h3 id="notice-modal-title" class="fw-800 m-0" style="font-size:24px; line-height:1.2;">Notice Title</h3>
         </div>
         <div class="modal-body p-4 pt-4">
-            <div class="d-flex align-items-center gap-15 mb-4 p-3" style="background:#f8fafc; border-radius:12px; border:1px solid #f1f5f9;">
+            <div class="d-flex align-items-center gap-3 mb-4 p-3 author-box" style="background:#f8fafc; border-radius:12px; border:1px solid #f1f5f9;">
                 <div id="notice-modal-avatar" style="width:45px; height:45px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px;">A</div>
                 <div>
                    <div id="notice-modal-author" class="fw-700" style="color:var(--text-main); font-size:14px;">Super Admin</div>
@@ -249,7 +249,7 @@ if (!isset($role)) {
             </div>
         </div>
         <div class="modal-footer border-0 p-4 pt-0">
-            <button type="button" class="btn-lms btn-primary w-100" data-bs-dismiss="modal"><?= ($role === 'admin') ? 'Close Preview' : "I've Read This" ?></button>
+            <button type="button" id="btn-mark-notice-read" class="btn-lms btn-primary w-100" data-bs-dismiss="modal"><?= ($role === 'admin') ? 'Close Preview' : "I've Read This" ?></button>
         </div>
     </div>
   </div>

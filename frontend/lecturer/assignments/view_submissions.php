@@ -73,7 +73,7 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
           <tbody>
             <?php foreach ($submissions as $s): 
               $subTime = strtotime($s['submitted_at']);
-              $dlTime = strtotime($assignment['deadline']);
+              $dlTime = strtotime($assignment['due_date']);
               $isLate = $subTime > $dlTime;
             ?>
             <tr>

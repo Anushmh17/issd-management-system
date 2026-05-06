@@ -261,6 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('viewNoticeModal');
     if (!modal) return;
 
+    modal.dataset.noticeId = card.dataset.realId; // Store for the "Read" button
     document.getElementById('notice-modal-title').textContent = card.dataset.title;
     document.getElementById('notice-modal-content').textContent = card.dataset.content;
     document.getElementById('notice-modal-author').textContent = card.dataset.author;
@@ -270,5 +271,44 @@ document.addEventListener('DOMContentLoaded', function () {
     const bsModal = new bootstrap.Modal(modal);
     bsModal.show();
   });
+
+  // Handle "I've Read This" Button
+  const markReadBtn = document.getElementById('btn-mark-notice-read');
+  if (markReadBtn) {
+    markReadBtn.addEventListener('click', function() {
+      const modal = document.getElementById('viewNoticeModal');
+      const noticeId = modal.dataset.noticeId;
+
+      if (!noticeId) return;
+
+      fetch(BASE_URL + '/backend/notice_read.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notice_id: noticeId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Success! Optionally update UI (like removing a 'new' tag)
+          const card = document.querySelector(`.notice-card-clickable[data-real-id="${noticeId}"]`);
+          if (card) {
+            card.classList.add('is-read');
+            card.style.opacity = '0.7';
+            // Dynamically add the READ badge if it doesn't exist
+            const header = card.querySelector('div:first-child');
+            if (header && !header.querySelector('.db-green')) {
+                const badge = document.createElement('span');
+                badge.className = 'dark-badge db-green';
+                badge.style.background = 'rgba(34,197,94,0.1)';
+                badge.style.color = '#4ade80';
+                badge.innerHTML = '<i class="fas fa-check-circle"></i> READ';
+                header.insertBefore(badge, header.children[1]);
+            }
+          }
+        }
+      })
+      .catch(err => console.error('Error marking notice as read:', err));
+    });
+  }
 
 });

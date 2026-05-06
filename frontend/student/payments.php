@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// ISSD Management - Student: Payments History
+// ISSD Management - Student: Payments History (Premium UI)
 // frontend/student/payments.php
 // =====================================================
 define('PAGE_TITLE', 'Payment History');
@@ -35,57 +35,59 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
-<div id="page-content">
-  <div class="page-header">
-    <div class="page-header-left">
+<div id="page-content" style="background: transparent; box-shadow: none;">
+  <div class="dark-layout-wrapper">
+    
+    <div class="welcome-header">
       <h1>My Payments</h1>
-      <div class="breadcrumb-custom"><i class="fas fa-home"></i> Student &rsaquo; <span>Payments</span></div>
+      <p>Your transaction ledger and outstanding balances.</p>
     </div>
-  </div>
 
-  <div class="card-lms">
-    <div class="card-lms-header">
-      <div class="card-lms-title"><i class="fas fa-receipt" style="color:#059669;"></i> Transaction Ledger</div>
-    </div>
-    <div class="card-lms-body" style="padding:0;overflow-x:auto;">
+    <div class="glass-card" style="padding:0; padding-top:30px; overflow-x:auto;">
         <?php if(empty($payments)): ?>
-            <div class="empty-state"><i class="fas fa-wallet"></i><p>No payment records found.</p></div>
+          <div style="padding:40px; text-align:center;">
+            <div style="width:64px; height:64px; border-radius:16px; background:rgba(255,255,255,0.05); color:#94a3b8; margin:0 auto 16px; font-size:24px; display:flex; align-items:center; justify-content:center;">
+              <i class="fas fa-wallet"></i>
+            </div>
+            <h3 style="font-weight:700; font-size:18px; color:inherit; margin-bottom:8px;">No payment records found</h3>
+            <p style="color:#94a3b8; font-size:14px; margin:0;">You haven't made any payments yet.</p>
+          </div>
         <?php else: ?>
-        <table class="table-lms">
+        <table style="width:100%; border-collapse:collapse; text-align:left;">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Month</th>
-                    <th>Course</th>
-                    <th>Monthly Fee</th>
-                    <th>Amount Paid</th>
-                    <th>Balance Due</th>
-                    <th>Next Due Date</th>
-                    <th>Status</th>
+                    <th style="padding: 0 20px 20px 20px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">Date</th>
+                    <th style="padding: 0 20px 20px 20px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">Month</th>
+                    <th style="padding: 0 20px 20px 20px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">Course</th>
+                    <th style="padding: 0 20px 20px 20px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">Monthly Fee</th>
+                    <th style="padding: 0 20px 20px 20px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">Amount Paid</th>
+                    <th style="padding: 0 20px 20px 20px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">Balance Due</th>
+                    <th style="padding: 0 20px 20px 20px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">Next Due Date</th>
+                    <th style="padding: 0 20px 20px 20px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05);">Status</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($payments as $p): ?>
                 <tr>
-                    <td style="font-size:12px;color:#64748b;"><?= date('d M Y', strtotime($p['payment_date'])) ?></td>
-                    <td class="fw-600"><?= date('M Y', strtotime($p['month'] . '-01')) ?></td>
-                    <td>
-                        <div class="fw-600" style="font-size:12px;"><?= htmlspecialchars($p['course_code']) ?></div>
-                        <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars($p['course_name']) ?></div>
+                    <td style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size:12px; color:#94a3b8;"><?= date('d M Y', strtotime($p['payment_date'])) ?></td>
+                    <td style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight:600; font-size:13px; color:inherit;"><?= date('M Y', strtotime($p['month'] . '-01')) ?></td>
+                    <td style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <div style="font-weight:600; font-size:13px; color:inherit;"><span class="dark-badge db-blue"><?= htmlspecialchars($p['course_code']) ?></span></div>
+                        <div style="font-size:11px; color:#94a3b8; margin-top:4px;"><?= htmlspecialchars($p['course_name']) ?></div>
                     </td>
-                    <td>Rs. <?= number_format($p['monthly_fee'], 2) ?></td>
-                    <td class="fw-700" style="color:#059669;">Rs. <?= number_format($p['amount_paid'], 2) ?></td>
-                    <td class="fw-700" style="color:#dc2626;">Rs. <?= number_format($p['balance'], 2) ?></td>
-                    <td style="font-size:12px;color:#d97706;font-weight:600;"><i class="fas fa-clock"></i> <?= date('d M Y', strtotime($p['next_due_date'])) ?></td>
-                    <td>
+                    <td style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size:13px; color:inherit;">Rs. <?= number_format($p['monthly_fee'], 2) ?></td>
+                    <td style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight:700; font-size:13px; color:#4ade80;">Rs. <?= number_format($p['amount_paid'], 2) ?></td>
+                    <td style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight:700; font-size:13px; color:#f87171;">Rs. <?= number_format($p['balance'], 2) ?></td>
+                    <td style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size:12px; font-weight:600; color:#fbbf24;"><i class="fas fa-clock"></i> <?= date('d M Y', strtotime($p['next_due_date'])) ?></td>
+                    <td style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
                         <?php if ($p['status'] === 'paid'): ?>
-                            <span class="badge-lms" style="background:#d1fae5;color:#059669;">Paid</span>
+                            <span class="dark-badge db-green">Paid</span>
                         <?php elseif ($p['status'] === 'partial'): ?>
-                            <span class="badge-lms" style="background:#fef3c7;color:#d97706;">Partial</span>
+                            <span class="dark-badge db-blue">Partial</span>
                         <?php elseif ($p['status'] === 'overdue'): ?>
-                            <span class="badge-lms" style="background:#fee2e2;color:#dc2626;">Overdue</span>
+                            <span class="dark-badge db-red">Overdue</span>
                         <?php else: ?>
-                            <span class="badge-lms" style="background:#f1f5f9;color:#64748b;">Pending</span>
+                            <span class="dark-badge db-gray">Pending</span>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -98,4 +100,3 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
-

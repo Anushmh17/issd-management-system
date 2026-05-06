@@ -13,174 +13,157 @@ requireRole(ROLE_STUDENT);
 $user = currentUser();
 $userId = (int)$user['id'];
 
-// Get Student core details
+// Get more details
 $stmt = $pdo->prepare("
-    SELECT s.id as student_id, s.full_name, s.student_id as student_reg, s.status, u.avatar
+    SELECT s.*, u.email, u.avatar
     FROM students s
     JOIN users u ON s.user_id = u.id
     WHERE s.user_id = ?
 ");
 $stmt->execute([$userId]);
 $student = $stmt->fetch();
+$studentId = (int)$student['id'];
 
-if (!$student) {
-    die("Student profile not found.");
-}
-$studentId = $student['student_id'];
-
-// Handle Qualification Upload
-$uploadDir = BASE_PATH . '/assets/qualifications/';
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'upload_qual') {
-    $type = $_POST['type'] ?? '';
-    if (in_array($type, ['OL', 'AL', 'NVQ', 'Other']) && !empty($_FILES['file']['name'])) {
-        $file = $_FILES['file'];
-        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        if ($ext === 'pdf' && $file['size'] <= 5 * 1024 * 1024) {
-            $filename = 'Q_' . $studentId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.pdf';
-            if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
-                $pdo->prepare("INSERT INTO student_qualifications (student_id, type, file_path) VALUES (?, ?, ?)")
-                    ->execute([$studentId, $type, $filename]);
-                setFlash('success', 'Qualification uploaded successfully.');
-            } else {
-                setFlash('danger', 'Failed to save uploaded file.');
-            }
-        } else {
-            setFlash('danger', 'Invalid file. Please upload a PDF under 5MB.');
-        }
-    } else {
-        setFlash('danger', 'Invalid form data.');
-    }
-    header('Location: profile.php');
-    exit;
-}
-
-// Fetch existing qualifications
-$stmt = $pdo->prepare("SELECT * FROM student_qualifications WHERE student_id = ? ORDER BY uploaded_at DESC");
+// Fetch enrollments for progress
+$stmt = $pdo->prepare("
+    SELECT c.course_name, e.status, e.enrolled_at
+    FROM enrollments e
+    JOIN courses c ON e.course_id = c.id
+    WHERE e.student_id = ?
+");
 $stmt->execute([$studentId]);
-$quals = $stmt->fetchAll();
+$enrollments = $stmt->fetchAll();
 
 require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
 <div id="page-content">
-  <div class="page-header">
-    <div class="page-header-left">
-      <h1>My Profile</h1>
-      <div class="breadcrumb-custom">
-        <i class="fas fa-home"></i> Student &rsaquo; <span>Profile</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="row g-4">
+  <div class="dark-layout-wrapper">
     
-    <!-- Left Column: Basic Info -->
-    <div class="col-lg-4">
-      <div class="card-lms" style="text-align:center;">
-        <div class="card-lms-body" style="padding:40px 20px;">
-          <div style="position:relative;display:inline-block;margin-bottom:20px;">
+    <div class="welcome-header">
+      <h1>Student Profile</h1>
+      <p>View your personal records and academic enrollment status.</p>
+    </div>
+
+    <div class="dark-grid-2">
+      
+      <!-- Left Column: Basic Info -->
+      <div style="display:flex; flex-direction:column; gap:24px;">
+        <div class="glass-card" style="text-align:center; padding:50px 24px;">
+          <div style="position:relative; display:inline-block; margin-bottom:24px;">
             <?php if ($student['avatar']): ?>
-              <img src="<?= BASE_URL ?>/assets/uploads/<?= htmlspecialchars($student['avatar']) ?>" 
-                   style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 10px 25px rgba(0,0,0,0.1);">
+              <div style="width:140px; height:140px; border-radius:50%; padding:4px; background:linear-gradient(135deg, #22d3ee, #c084fc); margin:0 auto;">
+                <img src="<?= BASE_URL ?>/assets/uploads/<?= htmlspecialchars($student['avatar']) ?>" 
+                     style="width:100%; height:100%; border-radius:50%; object-fit:cover; border:4px solid transparent; background-clip:padding-box; background:rgba(255,255,255,0.1);">
+              </div>
             <?php else: ?>
-              <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700;margin:0 auto;box-shadow:0 10px 25px rgba(91,78,250,0.3);">
+              <div style="width:130px; height:130px; border-radius:50%; background:linear-gradient(135deg, #22d3ee, #c084fc); color:#fff; display:flex; align-items:center; justify-content:center; font-size:48px; font-weight:800; margin:0 auto; box-shadow:0 15px 35px rgba(34,211,238,0.2);">
                 <?= strtoupper(substr($student['full_name'], 0, 1)) ?>
               </div>
             <?php endif; ?>
           </div>
           
-          <h3 class="fw-700" style="font-size:20px;margin-bottom:4px;"><?= htmlspecialchars($student['full_name']) ?></h3>
-          <div style="font-size:14px;color:#64748b;margin-bottom:16px;">System ID: <?= htmlspecialchars($student['student_reg']) ?></div>
+          <h2 style="font-size:24px; font-weight:800; margin-bottom:6px; color:inherit;"><?= htmlspecialchars($student['full_name']) ?></h2>
+          <div style="font-size:14px; opacity:0.6; margin-bottom:24px; font-weight:600;">System ID: <span style="color:#22d3ee;"><?= htmlspecialchars($student['student_id']) ?></span></div>
           
-          <?php 
-            $statusStr = strtolower($student['status'] ?? 'new');
-            $stBadge = 'info';
-            if ($statusStr === 'active') $stBadge = 'success';
-            if ($statusStr === 'dropout') $stBadge = 'danger';
-            if ($statusStr === 'completed') $stBadge = 'primary';
-            if ($statusStr === 'new') $stBadge = 'warning';
-          ?>
-          <div style="display:inline-block;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;" class="badge-lms <?= $stBadge ?>">
-            Status: <?= htmlspecialchars($statusStr) ?>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Column: Qualifications Upload -->
-    <div class="col-lg-8">
-      <div class="card-lms mb-20">
-        <div class="card-lms-header">
-          <div class="card-lms-title">
-            <i class="fas fa-file-pdf" style="color:#ef4444;"></i> Educational Qualifications (PDF Only)
-          </div>
-        </div>
-        <div class="card-lms-body">
-          <form method="POST" action="profile.php" enctype="multipart/form-data">
-            <input type="hidden" name="action" value="upload_qual">
-            <div class="row g-3" style="align-items:flex-end;">
-              <div class="col-md-4">
-                <label style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:6px;display:block;">Document Type</label>
-                <select name="type" class="form-control-lms" required>
-                  <option value="">-- Select --</option>
-                  <option value="OL">O/L Certificate</option>
-                  <option value="AL">A/L Certificate</option>
-                  <option value="NVQ">NVQ Level</option>
-                  <option value="Other">Other Certificate</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:6px;display:block;">Select PDF File (Max 5MB)</label>
-                <input type="file" name="file" class="form-control-lms" accept=".pdf" required>
-              </div>
-              <div class="col-md-2">
-                <button type="submit" class="btn-primary-grad" style="width:100%;height:42px;"><i class="fas fa-upload"></i></button>
-              </div>
+          <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+            <div style="font-size:12px; font-weight:700; color:#c084fc; text-transform:uppercase; letter-spacing:1px; background:rgba(192, 132, 252, 0.1); padding:6px 20px; border-radius:100px;">
+              <?= htmlspecialchars($student['batch_number'] ?? 'No Batch') ?> Intake
             </div>
-          </form>
+            <div style="font-size:11px; opacity:0.5; font-weight:600;">Joined On: <?= date('M d, Y', strtotime($student['join_date'])) ?></div>
+          </div>
+
+          <div style="margin-top:40px; padding-top:30px; border-top:1px solid rgba(255,255,255,0.05);">
+            <a href="settings.php" class="btn-primary-grad" style="display:inline-flex; align-items:center; gap:8px; padding:10px 24px; border-radius:10px; text-decoration:none; font-size:13px; font-weight:700;">
+              <i class="fas fa-user-edit"></i> Edit Account
+            </a>
+          </div>
         </div>
       </div>
 
-      <div class="card-lms">
-        <div class="card-lms-header" style="border:none;padding-bottom:0;">
-          <div style="font-size:14px;font-weight:700;color:#334155;">Uploaded Documents</div>
+      <!-- Right Column: Details -->
+      <div style="display:flex; flex-direction:column; gap:24px;">
+        
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <span><i class="fas fa-info-circle" style="color:#22d3ee;"></i> Personal & Contact Information</span>
+          </div>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+            <div>
+              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.5; margin-bottom:6px;">Personal Email</div>
+              <div style="font-size:15px; font-weight:700;"><?= htmlspecialchars($student['personal_email'] ?? $student['email']) ?></div>
+            </div>
+            <div>
+              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.5; margin-bottom:6px;">Phone Number</div>
+              <div style="font-size:15px; font-weight:700;"><?= htmlspecialchars($student['phone_number'] ?? 'N/A') ?></div>
+            </div>
+            <div>
+              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.5; margin-bottom:6px;">National ID / NIC</div>
+              <div style="font-size:15px; font-weight:700;"><?= htmlspecialchars($student['nic_number'] ?? 'N/A') ?></div>
+            </div>
+            <div>
+              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.5; margin-bottom:6px;">Office Email</div>
+              <div style="font-size:14px; font-weight:700; color:#22d3ee;"><?= htmlspecialchars($student['office_email'] ?? 'Not Assigned') ?></div>
+            </div>
+          </div>
+          
+          <div style="margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05); display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+            <div>
+              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.5; margin-bottom:6px;">Guardian Name</div>
+              <div style="font-size:15px; font-weight:700;"><?= htmlspecialchars($student['guardian_name'] ?? 'N/A') ?></div>
+            </div>
+            <div>
+              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.5; margin-bottom:6px;">Guardian Phone</div>
+              <div style="font-size:15px; font-weight:700;"><?= htmlspecialchars($student['guardian_phone'] ?? 'N/A') ?></div>
+            </div>
+          </div>
+
+          <div style="margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+            <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.5; margin-bottom:6px;">Mailing Address</div>
+            <div style="font-size:14px; font-weight:600; line-height:1.6;"><?= htmlspecialchars($student['house_address'] ?? 'No address on file.') ?></div>
+          </div>
         </div>
-        <div class="card-lms-body">
-          <?php if (empty($quals)): ?>
-            <div class="empty-state">
-              <i class="fas fa-folder-open"></i>
-              <p>No qualifications uploaded yet.</p>
+
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <span><i class="fas fa-graduation-cap" style="color:#c084fc;"></i> Academic Summary</span>
+          </div>
+          
+          <?php if (empty($enrollments)): ?>
+            <div class="empty-box-lms">
+              <i class="fas fa-university" style="font-size:24px; color:#475569; margin-bottom:12px;"></i>
+              <div class="title" style="font-size:14px; font-weight:600;">No enrollments found.</div>
+              <div style="font-size:12px; opacity:0.6; margin-top:4px;">You are not currently enrolled in any courses.</div>
             </div>
           <?php else: ?>
-            <div style="display:flex;flex-direction:column;gap:12px;">
-              <?php foreach ($quals as $q): ?>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <div style="width:40px;height:40px;border-radius:8px;background:#fee2e2;color:#ef4444;display:flex;align-items:center;justify-content:center;font-size:18px;">
-                    <i class="fas fa-file-pdf"></i>
-                  </div>
+            <ul class="dark-list">
+              <?php foreach ($enrollments as $e): ?>
+              <li class="dark-list-item">
+                <div class="item-left">
+                  <div class="item-icon" style="background:rgba(192, 132, 252, 0.1); color:#c084fc;"><i class="fas fa-bookmark"></i></div>
                   <div>
-                    <div class="fw-700" style="color:#334155;font-size:14px;"><?= htmlspecialchars($q['type']) ?> Certificate</div>
-                    <div style="font-size:11px;color:#94a3b8;"><?= date('d M Y, h:i A', strtotime($q['uploaded_at'])) ?></div>
+                    <div class="item-title"><?= htmlspecialchars($e['course_name']) ?></div>
+                    <div class="item-sub" style="font-size:11px;">Enrolled on <?= date('M d, Y', strtotime($e['enrolled_at'])) ?></div>
                   </div>
                 </div>
-                <a href="<?= BASE_URL ?>/assets/qualifications/<?= htmlspecialchars($q['file_path']) ?>" target="_blank" class="btn-lms btn-outline btn-sm">
-                  <i class="fas fa-eye"></i> View
-                </a>
-              </div>
+                <div class="item-right">
+                  <span class="dark-badge <?= $e['status']==='active'?'db-green':'db-blue' ?>" style="font-size:9px;">
+                    <?= strtoupper($e['status']) ?>
+                  </span>
+                </div>
+              </li>
               <?php endforeach; ?>
-            </div>
+            </ul>
           <?php endif; ?>
         </div>
-      </div>
-    </div>
 
-  </div> <!-- row -->
+      </div>
+
+    </div>
+  </div>
+</div>
 
 </div>
 

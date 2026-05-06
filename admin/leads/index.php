@@ -69,7 +69,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
       <!-- Filters Row -->
       <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
-        <div class="search-bar" style="flex: 1; min-width: 280px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+        <div class="search-bar" style="flex: 1; min-width: 280px; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
           <input type="text" name="search" placeholder="Search Name or Phone..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
@@ -78,7 +78,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
         <div class="d-flex gap-2">
           <select name="status" class="form-control-lms filter-select"
-                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  style="min-width: 160px; border-radius: 12px; font-weight: 600; padding: 10px 15px;"
                   onchange="this.form.submit()">
             <option value="">Status: All</option>
             <option value="new" <?= $status==='new' ? 'selected' : '' ?>>New</option>
@@ -88,7 +88,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </select>
 
           <select name="source" class="form-control-lms filter-select"
-                  style="min-width: 140px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  style="min-width: 140px; border-radius: 12px; font-weight: 600; padding: 10px 15px;"
                   onchange="this.form.submit()">
             <option value="">Source: All</option>
             <option value="Facebook" <?= $source==='Facebook' ? 'selected' : '' ?>>Facebook</option>
@@ -154,13 +154,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <td style="font-size:13px;"><?= htmlspecialchars($l['source']) ?></td>
             <td>
               <?php if ($l['status'] === 'new'): ?>
-                <span class="badge-lms" style="background:#dbeafe;color:#2563eb;">New</span>
+                <span class="badge-lms info">New</span>
               <?php elseif ($l['status'] === 'talking'): ?>
-                <span class="badge-lms" style="background:#fef3c7;color:#d97706;">Talking</span>
+                <span class="badge-lms warning">Talking</span>
               <?php elseif ($l['status'] === 'converted'): ?>
-                <span class="badge-lms" style="background:#d1fae5;color:#059669;">Converted</span>
+                <span class="badge-lms success">Converted</span>
               <?php elseif ($l['status'] === 'not_interested'): ?>
-                <span class="badge-lms" style="background:#fee2e2;color:#dc2626;">Not Interested</span>
+                <span class="badge-lms danger">Not Interested</span>
               <?php endif; ?>
             </td>
             <td style="font-size:13px; <?= $isOverdue ? 'color:#dc2626;font-weight:700;' : 'color:#64748b;' ?>">

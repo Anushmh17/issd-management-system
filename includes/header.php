@@ -35,5 +35,17 @@ if (!defined('BASE_URL'))   define('BASE_URL', '/Webbuilders%20Projects/issd_man
   <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= time() ?>">
 
   <?php if (isset($extraCSS)) echo $extraCSS; ?>
+  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/student-dark.css?v=<?= time() ?>">
+
+  <script>
+    const BASE_URL = '<?= BASE_URL ?>';
+  </script>
 </head>
-<body>
+<?php
+  $bodyClass = '';
+  // Check for global theme preference
+  if (isset($_COOKIE['lms_theme']) && $_COOKIE['lms_theme'] === 'dark') {
+      $bodyClass = 'lms-dark-mode';
+  }
+?>
+<body class="<?= $bodyClass ?>">

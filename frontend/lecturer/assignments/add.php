@@ -19,7 +19,7 @@ $form = [
     'course_id'   => '',
     'title'       => '',
     'description' => '',
-    'deadline'    => '',
+    'due_date'    => '',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -96,9 +96,9 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
 
           <div class="col-md-6">
             <div class="form-group-lms">
-              <label>Deadline (Date & Time) <span class="req">*</span></label>
-              <input type="datetime-local" name="deadline" class="form-control-lms"
-                     value="<?= htmlspecialchars($form['deadline']) ?>" required>
+              <label>Due Date (Date & Time) <span class="req">*</span></label>
+              <input type="datetime-local" name="due_date" class="form-control-lms"
+                     value="<?= htmlspecialchars($form['due_date']) ?>" required>
             </div>
           </div>
 
