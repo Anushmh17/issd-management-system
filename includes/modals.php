@@ -15,27 +15,29 @@ if (!isset($role)) {
       <div class="modal-body p-0">
         <div class="row g-0">
           <!-- Sidebar Nav for Modal -->
-          <div class="col-md-3" style="background: #f8fafc; border-right: 1px solid #e2e8f0; padding: 30px 20px; height: 520px; overflow-y: auto;">
-             <div class="text-center mb-4">
-                <div style="width:60px; height:60px; background:var(--primary); border-radius:15px; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px; box-shadow:0 10px 20px rgba(91, 78, 250, 0.2);">
-                   <i class="fas fa-book-open"></i>
+          <div class="col-md-3" style="background: #0f172a; border-right: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; height: 560px; overflow-y: auto;">
+             <div class="text-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <div style="width:64px; height:64px; background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-radius:20px; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:28px; box-shadow:0 10px 25px rgba(16, 185, 129, 0.3);">
+                   <i class="fas fa-book"></i>
                 </div>
-                <h5 class="fw-800" style="color:var(--text-main); font-size:16px; margin:0;">ISSD Admin Guide</h5>
-                <p class="text-muted" style="font-size:11px;">Version 1.1.0</p>
+                <h5 class="fw-800" style="color:#fff; font-size:17px; margin:0;">Admin Guide</h5>
+                <p class="text-muted" style="font-size:11px; opacity:0.6;">Version 1.1.0</p>
              </div>
              
              <div class="nav flex-column nav-pills help-nav" id="v-pills-tab" role="tablist">
-                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-leads" type="button"><i class="fas fa-headset me-2"></i> Leads</button>
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-students" type="button"><i class="fas fa-user-graduate me-2"></i> Students</button>
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-courses" type="button"><i class="fas fa-graduation-cap me-2"></i> Courses</button>
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-payroll" type="button"><i class="fas fa-hand-holding-dollar me-2"></i> Lecturer Pays</button>
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-finance" type="button"><i class="fas fa-wallet me-2"></i> Finance Hub</button>
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-leads" type="button"><i class="fas fa-headset"></i> Leads</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-students" type="button"><i class="fas fa-user-graduate"></i> Students</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-courses" type="button"><i class="fas fa-graduation-cap"></i> Courses</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-payroll" type="button"><i class="fas fa-hand-holding-dollar"></i> Lecturer Pays</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-finance" type="button"><i class="fas fa-wallet"></i> Finance Hub</button>
              </div>
           </div>
+
           
           <!-- Content Area -->
-          <div class="col-md-9" style="padding: 40px; padding-right: 28px; position:relative; height: 520px; overflow-y: auto;">
-             <button type="button" class="btn-close" data-bs-dismiss="modal" style="position:absolute; top:25px; right:25px;"></button>
+          <div class="col-md-9 help-content-area" style="padding: 45px 50px; position:relative; height: 560px; overflow-y: auto; background: #fff;">
+             <button type="button" class="btn-close" data-bs-dismiss="modal" style="position:absolute; top:25px; right:25px; opacity: 0.5; transition: 0.3s;"></button>
+
              
              <div class="tab-content" id="v-pills-tabContent">
                 <!-- LEADS SECTION -->
@@ -175,40 +177,45 @@ if (!isset($role)) {
    display: flex;
    align-items: center;
    text-align: left;
-   padding: 12px 18px;
-   border-radius: 50px;
-   color: #64748b;
-   font-weight: 600;
-   font-size: 13.5px;
-   margin-bottom: 6px;
-   border: none;
-   transition: all 0.2s;
-   background: transparent;
-}
-/* Explicit icon styling — bypasses Bootstrap's inheritance override */
-.help-nav .nav-link i {
-   flex-shrink: 0;
-   width: 18px;
-   text-align: center;
+   padding: 14px 20px;
+   border-radius: 14px;
    color: #94a3b8;
-   transition: color 0.2s;
+   font-weight: 700;
+   font-size: 13px;
+   margin-bottom: 8px;
+   border: none;
+   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   background: transparent;
+   gap: 12px;
+}
+.help-nav .nav-link i {
+   font-size: 16px;
+   opacity: 0.5;
+   transition: 0.3s;
 }
 .help-nav .nav-link:hover {
-   background: rgba(30, 77, 77, 0.07);
-   color: var(--primary);
+   background: rgba(255, 255, 255, 0.05);
+   color: #fff;
 }
 .help-nav .nav-link:hover i {
-   color: var(--primary);
+   opacity: 1;
+   transform: translateX(3px);
 }
 .help-nav .nav-link.active {
-   background: var(--primary) !important;
+   background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
    color: #fff !important;
-   border: none;
-   box-shadow: 0 4px 14px rgba(30, 77, 77, 0.25);
+   box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
 }
 .help-nav .nav-link.active i {
+   opacity: 1 !important;
    color: #fff !important;
 }
+
+body.lms-dark-mode .help-content-area { background: #1e293b !important; }
+body.lms-dark-mode .help-section h6 { color: #fff !important; }
+body.lms-dark-mode .help-section p { color: #94a3b8 !important; }
+body.lms-dark-mode .help-content-area .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+
 
 
 .help-section {

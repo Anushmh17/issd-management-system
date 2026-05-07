@@ -102,14 +102,11 @@ function renderStatusBadge(string $status): string {
 $extraCSS = <<<'CSS'
 <style>
 .edit-student-banner {
-    background: #fff;
     border-radius: var(--radius-lg);
-    border: 1.5px solid var(--border-color);
     padding: 24px;
     display: flex;
     align-items: center;
     gap: 24px;
-    box-shadow: var(--shadow-sm);
     position: relative;
     overflow: hidden;
     margin-bottom: 25px;
@@ -128,7 +125,7 @@ $extraCSS = <<<'CSS'
     flex-shrink: 0;
 }
 .esb-info { flex-grow: 1; }
-.esb-name { font-size: 22px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
+.esb-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
 .esb-meta { display: flex; gap: 20px; flex-wrap: wrap; }
 .esb-meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); font-weight: 500; }
 .esb-meta-item i { color: var(--primary); font-size: 14px; }
@@ -151,7 +148,6 @@ $extraCSS = <<<'CSS'
     text-align: center;
     transition: var(--transition);
     cursor: pointer;
-    background: #f8fafc;
 }
 .profile-upload-zone:hover {
     border-color: var(--primary);
@@ -164,7 +160,6 @@ $extraCSS = <<<'CSS'
 }
 
 .form-actions-sticky {
-    background: #fff;
     padding: 20px 30px;
     border-top: 1px solid var(--border-color);
     display: flex;
@@ -475,7 +470,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   </div>
                 </div>
                 <div class="mt-15">
-                  <label class="d-flex align-items-center gap-2 cursor-pointer" style="font-weight: 600; color: #475569;">
+                  <label class="d-flex align-items-center gap-2 cursor-pointer" style="font-weight: 600;">
                     <input type="checkbox" name="guardian_verified" value="1" <?= $form['guardian_verified'] == '1' ? 'checked' : '' ?> style="width:18px; height:18px;">
                     Verified by Admin
                   </label>

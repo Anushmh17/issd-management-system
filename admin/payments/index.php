@@ -137,17 +137,17 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
 
         <form method="GET" class="d-flex gap-2 flex-grow-1" style="max-width: 600px;">
-            <div class="search-bar flex-grow-1" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:0 15px; display:flex; align-items:center;">
+            <div class="search-bar flex-grow-1" style="border-radius:12px; padding:0 15px; display:flex; align-items:center;">
                 <i class="fas fa-search text-muted me-2"></i>
                 <input type="text" name="search" placeholder="Search Student name or course..." class="border-0 bg-transparent py-2 w-100" value="<?= htmlspecialchars($search) ?>">
             </div>
-            <select name="status" class="form-select border-0 bg-light" style="width:140px; border-radius:12px;" onchange="this.form.submit()">
+            <select name="status" class="form-select border-0" style="width:140px; border-radius:12px;" onchange="this.form.submit()">
                 <option value="">All Status</option>
                 <option value="paid"    <?= $status==='paid'?'selected':'' ?>>Paid</option>
                 <option value="partial" <?= $status==='partial'?'selected':'' ?>>Partial</option>
                 <option value="overdue" <?= $status==='overdue'?'selected':'' ?>>Overdue</option>
             </select>
-            <button type="submit" class="btn btn-primary rounded-3 px-3"><i class="fas fa-filter"></i></button>
+            <button type="submit" class="btn-primary-grad btn-sm px-3" style="height: 42px;"><i class="fas fa-filter"></i></button>
         </form>
     </div>
 
@@ -201,7 +201,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                         </td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="receipt.php?id=<?= $p['id'] ?>" class="btn-lms btn-sm" style="background: #f1f5f9;" title="Print Receipt"><i class="fas fa-print"></i></a>
+                                <a href="receipt.php?id=<?= $p['id'] ?>" class="btn-lms btn-sm" title="Print Receipt"><i class="fas fa-print"></i></a>
                                 <a href="details.php?student_id=<?= $p['student_id'] ?>" class="btn-lms btn-sm btn-outline" title="View Student History"><i class="fas fa-eye"></i></a>
                             </div>
                         </td>
@@ -213,7 +213,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
 
     <?php if ($pages > 1): ?>
-    <div class="card-footer bg-white p-3">
+    <div class="card-footer p-3">
         <div class="pagination-lms justify-content-center">
             <?php for ($i=1; $i<=$pages; $i++): ?>
                 <a href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&status=<?= $status ?>" class="page-btn <?= $i===$page?'active':'' ?>"><?= $i ?></a>

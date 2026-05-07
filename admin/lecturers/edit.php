@@ -64,7 +64,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   align-items: center; justify-content: center;
 }
 .crop-modal-content {
-  background: #fff; width: 90%; max-width: 500px;
+  width: 90%; max-width: 500px;
   border-radius: 20px; padding: 24px;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
 }
@@ -108,8 +108,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 /* Payment Mode Cards */
 .payment-mode-option { display:flex; align-items:flex-start; gap:12px; cursor:pointer; margin:0; }
 .payment-mode-option input[type="radio"] { margin-top:4px; accent-color:var(--primary); width:16px; height:16px; flex-shrink:0; }
-.payment-mode-card { flex:1; padding:12px 16px; border:1.5px solid #e2e8f0; border-radius:12px; background:#f8fafc; transition:all 0.2s; }
-.payment-mode-option:has(input:checked) .payment-mode-card { border-color:var(--primary); background:#f0fdf9; box-shadow:0 2px 8px rgba(30,77,77,0.08); }
+.payment-mode-card { flex:1; padding:12px 16px; border-radius:12px; transition:all 0.2s; }
+.payment-mode-option:has(input:checked) .payment-mode-card { border-color:var(--primary); box-shadow:0 2px 8px rgba(30,77,77,0.08); }
 </style>
 
 <div id="page-content">
@@ -156,7 +156,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
       </div>
 
-      <div class="card-lms-header" style="border-top:1px solid #f1f5f9;">
+      <div class="card-lms-header">
         <div class="card-lms-title">
           <i class="fas fa-user" style="color:#5b4efa;"></i> Personal Information
         </div>
@@ -255,7 +255,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms-title">
           <i class="fas fa-lock" style="color:#ef4444;"></i> Login Credentials
         </div>
-        <span class="section-badge" style="background:#fee2e2;color:#dc2626;">Leave password blank to keep unchanged</span>
+        <span class="section-badge badge-secure">Leave password blank to keep unchanged</span>
       </div>
       <div class="card-lms-body">
         <div class="row g-3">
@@ -295,7 +295,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms-title">
           <i class="fas fa-hand-holding-dollar" style="color:#f59e0b;"></i> Payment Settings
         </div>
-        <span class="section-badge" style="background:#fef3c7;color:#92400e;">Payroll Config</span>
+        <span class="section-badge badge-payroll">Payroll Config</span>
       </div>
       <div class="card-lms-body">
         <div class="row g-3 align-items-start">

@@ -48,8 +48,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <i class="fas fa-home"></i> Admin &rsaquo; <span>Leads</span>
       </div>
     </div>
-    <a href="add.php" class="btn-primary-grad" id="btn-add-lead">
-      <i class="fas fa-user-plus"></i> Add Lead
+    <a href="add.php" class="btn-lms btn-primary-grad shadow-lg" id="btn-add-lead">
+      <i class="fas fa-plus-circle me-1"></i> Add New Lead
     </a>
   </div>
 
@@ -147,8 +147,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <div class="fw-600" style="font-size:14px;"><?= htmlspecialchars($l['name']) ?></div>
             </td>
             <td style="font-size:13px;">
-              <a href="tel:<?= htmlspecialchars($l['phone']) ?>" style="text-decoration:none;color:#3b82f6;">
-                <i class="fas fa-phone fa-sm"></i> <?= htmlspecialchars($l['phone']) ?>
+              <a href="tel:<?= htmlspecialchars($l['phone']) ?>" style="text-decoration:none;color:#38bdf8;font-weight:700;">
+                <i class="fas fa-phone-alt fa-sm me-1"></i> <?= htmlspecialchars($l['phone']) ?>
               </a>
             </td>
             <td style="font-size:13px;"><?= htmlspecialchars($l['source']) ?></td>
@@ -165,10 +165,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </td>
             <td style="font-size:13px; <?= $isOverdue ? 'color:#dc2626;font-weight:700;' : 'color:#64748b;' ?>">
               <?php if ($l['next_followup_datetime']): ?>
-                <i class="fas <?= $isOverdue ? 'fa-exclamation-circle' : 'fa-clock' ?>"></i>
+                <i class="far <?= $isOverdue ? 'fa-calendar-exclamation' : 'fa-calendar-alt' ?> me-1"></i>
                 <?= date('d M Y, h:i A', $followupTime) ?>
               <?php else: ?>
-                ""
+                <span style="opacity:0.3;">---</span>
               <?php endif; ?>
             </td>
             <td>

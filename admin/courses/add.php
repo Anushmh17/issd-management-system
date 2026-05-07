@@ -61,10 +61,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <form method="POST" action="add.php" id="addCourseForm">
     <div class="card-lms mb-20 shadow-sm" style="border-radius: 20px; overflow: hidden;">
-      <div class="card-lms-header" style="background: #ffffff; padding: 25px 30px; border-bottom: 1px solid #f1f5f9;">
+      <div class="card-lms-header" style="padding: 25px 30px;">
         <div class="card-lms-title">
           <div class="d-flex align-items-center gap-3">
-            <div style="background: var(--primary-light); color: var(--primary); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            <div class="stat-icon" style="color: var(--primary); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
               <i class="fas fa-book-open"></i>
             </div>
             <div>
@@ -75,12 +75,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
         <span class="badge-lms primary" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; display: none;">Required fields marked *</span>
       </div>
-      <div class="card-lms-body" style="padding: 30px; background: #fafbff;">
+      <div class="card-lms-body" style="padding: 30px;">
         <div class="row g-4">
 
           <div class="col-md-8">
             <div class="form-group-lms">
-              <label for="course_name" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+              <label for="course_name" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800;">
                 Course Name <span class="req">*</span>
               </label>
               <div class="input-icon-wrap">
@@ -94,7 +94,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="course_code" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+              <label for="course_code" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800;">
                 Course Code <span class="req">*</span>
               </label>
               <div class="input-icon-wrap">
@@ -110,7 +110,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="duration" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+              <label for="duration" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800;">
                 Duration (Months) <span class="req">*</span>
               </label>
               <div class="input-icon-wrap">
@@ -125,7 +125,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="monthly_fee" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+              <label for="monthly_fee" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800;">
                 Monthly Fee (Rs.) <span class="req">*</span>
               </label>
               <div class="input-icon-wrap">
@@ -141,7 +141,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
           <div class="col-md-4">
             <div class="form-group-lms">
-              <label for="status" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+              <label for="status" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800;">
                 Status
               </label>
               <div class="input-icon-wrap">
@@ -156,7 +156,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
           <div class="col-12">
             <div class="form-group-lms">
-              <label for="description" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800; color:#475569;">
+              <label for="description" style="text-transform:uppercase; font-size:12px; letter-spacing:0.5px; font-weight:800;">
                 Course Description
               </label>
               <textarea id="description" name="description" class="form-control-lms" rows="4"

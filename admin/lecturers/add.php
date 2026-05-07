@@ -262,10 +262,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms-title">
           <i class="fas fa-lock" style="color:#ef4444;"></i> Login Credentials
         </div>
-        <span class="section-badge" style="background:#fee2e2;color:#dc2626;">Secure Access</span>
+        <span class="section-badge badge-secure">Secure Access</span>
       </div>
       <div class="card-lms-body">
-        <div class="alert-lms info" style="margin-bottom:16px;padding:10px 14px;font-size:13px;">
+        <div class="alert-lms info">
           <i class="fas fa-info-circle"></i>
           Lecturer can log in using their <strong>email</strong> or <strong>username</strong>.
         </div>
@@ -308,7 +308,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms-title">
           <i class="fas fa-graduation-cap" style="color:#059669;"></i> Course Assignment
         </div>
-        <span class="section-badge" style="background:#d1fae5;color:#065f46;">Optional</span>
+        <span class="section-badge badge-optional">Optional</span>
       </div>
       <div class="card-lms-body">
         <div class="row g-3">
@@ -337,7 +337,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="card-lms-title">
           <i class="fas fa-hand-holding-dollar" style="color:#f59e0b;"></i> Payment Settings
         </div>
-        <span class="section-badge" style="background:#fef3c7;color:#92400e;">Payroll Config</span>
+        <span class="section-badge badge-payroll">Payroll Config</span>
       </div>
       <div class="card-lms-body">
         <div class="row g-3 align-items-start">

@@ -227,7 +227,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <div class="col-md-2">
                 <div class="form-group-lms">
                   <label>Student ID</label>
-                  <input type="text" class="form-control-lms" value="[Auto-generated]" readonly style="background:#f1f5f9; color:#64748b; font-weight: 600;">
+                  <input type="text" class="form-control-lms" value="[Auto-generated]" readonly style="font-weight: 600;">
                 </div>
               </div>
               <div class="col-md-3">
@@ -433,7 +433,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               </div>
             </div>
             <div class="mt-15">
-              <label class="d-flex align-items-center gap-2 cursor-pointer" style="font-weight: 600; color: #475569;">
+              <label class="d-flex align-items-center gap-2 cursor-pointer" style="font-weight: 600;">
                 <input type="checkbox" name="send_email_alert" value="1" checked style="width:18px; height:18px;">
                 Send instant email alert to Admin
               </label>
@@ -569,53 +569,53 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   
   /* Progress Display */
   .progress-display { text-align: right; margin-right: 20px; min-width: 220px; }
-  .progress-label { font-size: 11px; color: #64748b; margin-bottom: 5px; font-weight: 700; letter-spacing: 0.5px; }
-  .progress-bar-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
+  .progress-label { font-size: 11px; margin-bottom: 5px; font-weight: 700; letter-spacing: 0.5px; }
+  .progress-bar-container { width: 100%; height: 8px; border-radius: 10px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
   .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--premium-primary), #8b5cf6); transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .progress-text { font-size: 11px; font-weight: 700; color: var(--premium-primary); margin-top: 5px; }
 
   /* Card Enhancements */
-  .card-lms { border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: var(--card-shadow); overflow: hidden; transition: transform 0.2s; }
-  .card-lms-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 16px 20px; }
-  .card-lms-title { font-family: 'Inter', sans-serif; font-weight: 700; color: #1e293b; font-size: 15px; }
-  .section-badge { font-size: 10px; background: #fee2e2; color: #ef4444; padding: 4px 10px; border-radius: 20px; font-weight: 700; text-transform: uppercase; }
+  .card-lms { border-radius: 16px; overflow: hidden; transition: transform 0.2s; }
+  .card-lms-header { padding: 16px 20px; }
+  .card-lms-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px; }
+
 
   /* Premium Table */
-  .premium-table thead th { background: #f1f5f9; color: #475569; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; padding: 15px 20px; border: none; }
-  .doc-row { border-bottom: 1px solid #f1f5f9; transition: background 0.2s; }
-  .doc-row:hover { background: #f8fafc; }
-  .doc-row.completed { background: #f0fdf4 !important; }
+  .premium-table thead th { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; padding: 15px 20px; border: none; }
+  .doc-row { transition: background 0.2s; }
+  .doc-row:hover { }
+  .doc-row.completed { }
   .doc-row.missing-req { border-left: 4px solid var(--premium-danger); }
   
   .doc-info { display: flex; align-items: center; gap: 15px; padding: 12px 0; }
-  .doc-icon-box { width: 40px; height: 40px; background: #f1f5f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #64748b; }
-  .doc-row.completed .doc-icon-box { background: #dcfce7; color: #10b981; }
+  .doc-icon-box { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .doc-row.completed .doc-icon-box { }
   .doc-text { display: flex; flex-direction: column; }
-  .doc-label { font-weight: 700; color: #334155; font-size: 14px; }
-  .doc-sub { font-size: 11px; color: #94a3b8; font-weight: 500; }
+  .doc-label { font-weight: 700; font-size: 14px; }
+  .doc-sub { font-size: 11px; font-weight: 500; }
 
   /* Status Pills */
   .status-pill { font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 20px; }
   .status-required { background: #fee2e2; color: #ef4444; }
-  .status-optional { background: #f1f5f9; color: #64748b; }
+  .status-optional { background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); }
 
   /* Premium Upload Control */
   .premium-upload-control { position: relative; display: flex; flex-direction: column; gap: 5px; }
   .hidden-file-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
   .upload-btn { 
-    display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid #e2e8f0; 
-    color: #475569; padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 600; 
+    display: inline-flex; align-items: center; gap: 8px; 
+    padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 600; 
     cursor: pointer; transition: all 0.2s; width: fit-content;
   }
-  .upload-btn:hover { border-color: var(--premium-primary); color: var(--premium-primary); background: #f5f3ff; }
-  .doc-row.completed .upload-btn { border-color: #10b981; color: #10b981; background: #f0fdf4; }
-  .file-status-text { font-size: 10px; color: #94a3b8; font-weight: 500; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .upload-btn:hover { }
+  .doc-row.completed .upload-btn { }
+  .file-status-text { font-size: 10px; font-weight: 500; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* Pretty Checkbox */
   .pretty-checkbox { position: relative; width: 24px; height: 24px; margin: 0 auto; }
   .pretty-checkbox input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
   .pretty-checkbox label { 
-    position: absolute; top: 0; left: 0; height: 24px; width: 24px; background-color: #fff; 
+    position: absolute; top: 0; left: 0; height: 24px; width: 24px; 
     border: 2px solid #cbd5e1; border-radius: 6px; cursor: pointer; transition: all 0.2s;
   }
   .pretty-checkbox:hover label { border-color: var(--premium-primary); }
@@ -627,7 +627,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .pretty-checkbox input:checked ~ label:after { display: block; }
   .pretty-checkbox input:checked ~ label { background-color: var(--premium-success); border-color: var(--premium-success); }
 
-  .badge-lms.info-premium { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-weight: 800; padding: 6px 14px; border-radius: 30px; }
+  .badge-lms.info-premium { font-weight: 800; padding: 6px 14px; border-radius: 30px; }
 
   /* Form Group Hover */
   .form-group-lms:focus-within label { color: var(--premium-primary); }

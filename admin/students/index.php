@@ -77,23 +77,22 @@ $extraCSS = <<<CSS
 .doc-badge {
     padding: 4px 10px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
-.doc-badge.completed { background: #dcfce7; color: #10b981; border: 1px solid #b9f6ca; }
-.doc-badge.pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
-.doc-badge.missing { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+.doc-badge i { font-size: 15px; }
+body.lms-dark-mode .doc-badge i { font-size: 14px !important; }
 
 .row-highlight {
     background-color: rgba(91, 78, 250, 0.08) !important;
     border-left: 4px solid var(--primary) !important;
 }
 
-.id-badge-lms { color: #475569; font-weight: 700; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
-.batch-badge-lms { color: #0369a1; font-weight: 600; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+.id-badge-lms { font-weight: 700; padding: 4px 8px; border-radius: 6px; font-size: 12px; white-space: nowrap; display: inline-block; }
+.batch-badge-lms { font-weight: 600; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
 
 /* Legend Styles */
 .list-legend { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
@@ -103,6 +102,12 @@ $extraCSS = <<<CSS
 
 .students-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .filter-select { font-size: 13px !important; height: 38px !important; border-radius: 10px !important; padding: 0 12px !important; }
+
+.btn-lms.btn-sm { 
+  font-size: 14px !important; 
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body.lms-dark-mode .btn-lms.btn-sm i { font-size: 15px !important; }
 </style>
 CSS;
 

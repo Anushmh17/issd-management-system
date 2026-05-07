@@ -81,7 +81,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
     <!-- Card 1: Total Staff Payouts -->
     <div class="col-md-4">
-      <div class="bento-card" style="background:#fff; border-left: 4px solid #6366f1; position:relative; overflow:hidden;">
+      <div class="bento-card" style="border-left: 4px solid #6366f1; position:relative; overflow:hidden;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
           <div style="font-size:10px; font-weight:800; color:#94a3b8; letter-spacing:1px; text-transform:uppercase;">Total Staff Payouts</div>
           <div style="width:36px; height:36px; background:#eef2ff; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; color:#6366f1;">
@@ -95,7 +95,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
     <!-- Card 2: Active Lecturers -->
     <div class="col-md-4">
-      <div class="bento-card" style="background:#fff; border-left: 4px solid #10b981; position:relative; overflow:hidden;">
+      <div class="bento-card" style="border-left: 4px solid #10b981; position:relative; overflow:hidden;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
           <div style="font-size:10px; font-weight:800; color:#94a3b8; letter-spacing:1px; text-transform:uppercase;">Active Lecturers</div>
           <div style="width:36px; height:36px; background:#d1fae5; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; color:#10b981;">
@@ -111,7 +111,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     <div class="col-md-4">
       <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#payrollStatusModal"
          class="bento-card text-decoration-none d-block" 
-         style="background:#fff; border-left: 4px solid <?= $payrollColor ?>; position:relative; overflow:hidden; cursor:pointer;">
+         style="border-left: 4px solid <?= $payrollColor ?>; position:relative; overflow:hidden; cursor:pointer;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
           <div style="font-size:10px; font-weight:800; color:#94a3b8; letter-spacing:1px; text-transform:uppercase;">Payroll Status</div>
           <div style="width:36px; height:36px; background:<?= $payrollColor ?>18; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; color:<?= $payrollColor ?>;">
@@ -159,7 +159,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                         <td>
                             <div class="fw-800"><?= htmlspecialchars($p['lecturer_name']) ?></div>
                         </td>
-                        <td><span class="badge bg-light text-dark fw-800"><?= $p['payment_month'] ?></span></td>
+                        <td><span class="badge-lms" style="background:var(--primary-light); color:var(--primary); font-size:11px;"><?= $p['payment_month'] ?></span></td>
                         <td class="fw-800 text-info">Rs. <?= number_format($p['amount'], 2) ?></td>
                         <td class="text-muted" style="font-size:12px; max-width:200px;"><?= htmlspecialchars($p['notes']) ?></td>
                         <td>

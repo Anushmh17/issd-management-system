@@ -82,8 +82,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
 
         <div class="filter-actions d-flex gap-2">
-          <button type="submit" class="btn-lms btn-primary px-4 rounded-3 shadow-sm" style="height: 46px; padding: 0 25px;">
-            <i class="fas fa-filter me-1"></i> Filter
+          <button type="submit" class="btn-primary-grad btn-sm px-4" style="height: 40px;">
+            <i class="fas fa-filter me-2"></i> Filter
           </button>
           <?php if ($search || $provided): ?>
             <a href="index.php" class="btn-lms btn-outline px-3 rounded-3 d-flex align-items-center justify-content-center" style="height: 46px; width: 46px;" title="Clear Filters">
@@ -145,8 +145,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <form method="POST" style="display:inline-block;">
                   <input type="hidden" name="act" value="toggle">
                   <input type="hidden" name="id" value="<?= $c['id'] ?>">
-                  <button type="submit" class="btn-lms btn-primary btn-sm" title="Toggle Provided Status">
-                    <i class="fas fa-toggle-on"></i> Toggle
+                  <button type="submit" class="btn-primary-grad btn-sm" title="Toggle Provided Status">
+                    <i class="fas fa-toggle-on me-1"></i> Toggle
                   </button>
                 </form>
               </td>

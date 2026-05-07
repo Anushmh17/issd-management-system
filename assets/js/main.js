@@ -26,7 +26,7 @@ function lmsConfirm(message, options = {}) {
     overlay.innerHTML = `
       <div class="lms-modal-box">
         <div class="lms-modal-header">
-          <div class="lms-modal-icon" style="${opts.type === 'danger' ? 'background:#fef2f2;color:#ef4444;' : ''}">
+          <div class="lms-modal-icon ${opts.type === 'danger' ? 'icon-danger' : 'icon-confirm'}">
             <i class="fas ${opts.icon}"></i>
           </div>
           <h3 class="lms-modal-title">${opts.title}</h3>

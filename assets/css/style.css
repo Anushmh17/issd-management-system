@@ -1441,6 +1441,11 @@ img {
   box-shadow: var(--shadow-md);
 }
 
+.btn-lms i, .btn i {
+  color: inherit !important;
+  margin-right: 6px;
+}
+
 .btn-lms.btn-primary {
   background: var(--primary);
   color: #fff;
@@ -1477,6 +1482,16 @@ img {
   padding: 6px 14px;
   font-size: 12px;
   border-radius: var(--radius-sm);
+}
+
+.btn-lms.btn-sm i, .btn-sm i {
+  font-size: 13px !important;
+}
+
+.btn-primary-grad.btn-sm {
+  padding: 6px 14px;
+  font-size: 12px;
+  border-radius: 8px;
 }
 
 .btn-primary-grad {

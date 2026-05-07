@@ -128,42 +128,33 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     <!-- Stats Section -->
     <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="card-lms p-4 border-0 shadow-sm" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #fff;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Ongoing Students</div>
-                        <div style="font-size: 32px; font-weight: 800; margin-top: 5px;"><?= number_format($stats['ongoing'] ?? 0) ?></div>
-                    </div>
-                    <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
-                        <i class="fas fa-user-clock"></i>
-                    </div>
+            <div class="bento-card">
+                <div class="stat-header">
+                    <div class="stat-icon indigo"><i class="fas fa-user-clock"></i></div>
+                    <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> Live</div>
                 </div>
+                <div class="stat-value"><?= number_format($stats['ongoing'] ?? 0) ?></div>
+                <div class="stat-label">Ongoing Students</div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card-lms p-4 border-0 shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Completions</div>
-                        <div style="font-size: 32px; font-weight: 800; margin-top: 5px;"><?= number_format($stats['completed'] ?? 0) ?></div>
-                    </div>
-                    <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
+            <div class="bento-card">
+                <div class="stat-header">
+                    <div class="stat-icon emerald"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="stat-trend trend-up"><i class="fas fa-check-circle"></i> Success</div>
                 </div>
+                <div class="stat-value"><?= number_format($stats['completed'] ?? 0) ?></div>
+                <div class="stat-label">Completions</div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card-lms p-4 border-0 shadow-sm" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">New (Last 30 Days)</div>
-                        <div style="font-size: 32px; font-weight: 800; margin-top: 5px;"><?= number_format($stats['new_30'] ?? 0) ?></div>
-                    </div>
-                    <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
-                        <i class="fas fa-rocket"></i>
-                    </div>
+            <div class="bento-card">
+                <div class="stat-header">
+                    <div class="stat-icon amber"><i class="fas fa-rocket"></i></div>
+                    <div class="stat-trend trend-up"><i class="fas fa-bolt"></i> New</div>
                 </div>
+                <div class="stat-value"><?= number_format($stats['new_30'] ?? 0) ?></div>
+                <div class="stat-label">New (Last 30 Days)</div>
             </div>
         </div>
     </div>
@@ -245,7 +236,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <!-- Enhanced Filters -->
             <form method="GET" class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-2 w-100">
                 <div style="flex: 1; min-width: 240px; max-width: 400px;">
-                    <div class="input-group-lms shadow-sm" style="position:relative; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+                    <div class="input-group-lms shadow-sm" style="position:relative; border-radius: 12px;">
                         <i class="fas fa-search" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color: var(--primary); z-index:10; font-size: 14px;"></i>
                         <input type="text" name="q" class="form-control-lms border-0 bg-transparent" 
                                style="height: 42px; font-weight: 500; font-size: 14px; padding-left: 40px;"
@@ -254,7 +245,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </div>
                 <div style="min-width: 155px;">
                     <select name="course_id" class="form-control-lms shadow-sm" 
-                            style="height: 42px; border-radius: 12px; border: 1.5px solid #e2e8f0; font-weight: 600; background-color: #fff; font-size: 14px; padding-left: 12px;">
+                            style="height: 42px; border-radius: 12px; font-weight: 600; font-size: 14px; padding-left: 12px;">
                         <option value="">All Courses</option>
                         <?php foreach($coursesList as $c): ?>
                             <option value="<?= $c['id'] ?>" <?= $f_course == $c['id'] ? 'selected' : '' ?>><?= htmlspecialchars($c['course_code']) ?></option>
@@ -263,7 +254,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </div>
                 <div style="min-width: 155px;">
                     <select name="status" class="form-control-lms shadow-sm" 
-                            style="height: 42px; border-radius: 12px; border: 1.5px solid #e2e8f0; font-weight: 600; background-color: #fff; font-size: 14px; padding-left: 12px;">
+                            style="height: 42px; border-radius: 12px; font-weight: 600; font-size: 14px; padding-left: 12px;">
                         <option value="">Any Status</option>
                         <option value="ongoing" <?= $f_status==='ongoing'?'selected':'' ?>>Ongoing</option>
                         <option value="completed" <?= $f_status==='completed'?'selected':'' ?>>Completed</option>

@@ -89,13 +89,25 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   }
   .revenue-table tr:last-child td { border-bottom: none; }
   
-  .bento-card {
-    background: #fff;
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0,0,0,0.05);
+  .stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    color: #64748b;
   }
+  .stat-icon.indigo { background: #e0e7ff; color: #4f46e5; }
+  .stat-icon.emerald { background: #dcfce7; color: #059669; }
+  .stat-icon.amber { background: #fef3c7; color: #d97706; }
+  .stat-icon.teal { background: #ccfbf1; color: #0d9488; }
+
+
 </style>
 
 <div id="page-content">
@@ -130,37 +142,41 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <div class="row g-4 mb-4">
         <!-- Highlight Cards -->
         <div class="col-md-3">
-          <div class="bento-card text-center">
-            <div class="stat-icon mb-3 mx-auto" style="background:#e0e7ff; color:#6366f1; width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center;">
+          <div class="bento-card text-center shadow-sm">
+            <div class="stat-icon indigo mx-auto">
               <i class="fas fa-user-graduate"></i>
             </div>
+
             <h3 class="fw-800 m-0" style="color:#0f172a; font-size:28px;"><?= $totalStudents ?></h3>
             <div class="text-muted" style="font-size:12px; font-weight:700; text-transform:uppercase; margin-top:5px;">Total Students</div>
           </div>
         </div>
         <div class="col-md-3">
-          <div class="bento-card text-center">
-            <div class="stat-icon mb-3 mx-auto" style="background:#fef3c7; color:#f59e0b; width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center;">
+          <div class="bento-card text-center shadow-sm">
+            <div class="stat-icon emerald mx-auto">
               <i class="fas fa-chalkboard-user"></i>
             </div>
+
             <h3 class="fw-800 m-0" style="color:#0f172a; font-size:28px;"><?= $totalLecturers ?></h3>
             <div class="text-muted" style="font-size:12px; font-weight:700; text-transform:uppercase; margin-top:5px;">Total Lecturers</div>
           </div>
         </div>
         <div class="col-md-3">
-          <div class="bento-card text-center">
-            <div class="stat-icon mb-3 mx-auto" style="background:#eff6ff; color:#2563eb; width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center;">
+          <div class="bento-card text-center shadow-sm">
+            <div class="stat-icon amber mx-auto">
               <i class="fas fa-book"></i>
             </div>
+
             <h3 class="fw-800 m-0" style="color:#0f172a; font-size:28px;"><?= $totalCourses ?></h3>
             <div class="text-muted" style="font-size:12px; font-weight:700; text-transform:uppercase; margin-top:5px;">Total Courses</div>
           </div>
         </div>
         <div class="col-md-3">
-          <div class="bento-card text-center" style="border: 2px solid #10b981; border-radius:24px;">
-            <div class="stat-icon mb-3 mx-auto" style="background:#dcfce7; color:#10b981; width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center;">
+          <div class="bento-card text-center shadow-sm" style="border: 1px solid #10b981;">
+            <div class="stat-icon teal mx-auto">
               <i class="fas fa-wallet"></i>
             </div>
+
             <h3 class="fw-800 m-0" style="color:#0f172a; font-size:24px;">Rs. <?= number_format($totalRevenue,0) ?></h3>
             <div class="text-muted" style="font-size:11px; font-weight:700; text-transform:uppercase; margin-top:5px;">Total Revenue</div>
           </div>

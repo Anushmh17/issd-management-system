@@ -133,15 +133,17 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
           <span class="badge rounded-pill bg-danger position-absolute" id="notif-badge" style="font-size:8px;top:5px;right:5px;padding:2px 4px; display:none;">0</span>
         </button>
         <div class="dropdown-menu dropdown-menu-end notif-dropdown shadow-lg" aria-labelledby="notifDropdown">
-          <div class="notif-header d-flex justify-content-between align-items-center" style="background:#fff; border-bottom:1px solid #f1f5f9; padding: 15px 20px;">
+          <div class="notif-header d-flex justify-content-between align-items-center">
+
             <div class="d-flex align-items-center gap-2">
               <h6 class="fw-800 m-0" style="font-size:15px; color:var(--text-main);">Notifications</h6>
               <div id="notif-header-spinner" class="spinner-border spinner-border-sm text-primary" style="width:12px; height:12px; border-width:2px; display:none;"></div>
               <span class="text-muted" id="notif-count-text" style="font-size:10px; font-weight:600;">0 New</span>
             </div>
-            <a href="javascript:void(0)" class="text-primary fw-700" style="font-size:11px; text-decoration:none;" onclick="notificationManager.markAllRead()">
+            <a href="javascript:void(0)" class="mark-all-link" onclick="notificationManager.markAllRead()">
                 <i class="fas fa-check-double me-1"></i> Mark All
             </a>
+
           </div>
           
           <!-- Categorization Tabs -->
@@ -160,12 +162,13 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
             </div>
           </div>
 
-          <div class="p-2 d-flex justify-content-between align-items-center" style="background:#f8fafc; border-top:1px solid #e2e8f0; padding: 10px 15px !important;">
-            <a href="javascript:void(0)" class="text-muted" style="font-size:11px; text-decoration:none;" onclick="notificationManager.clearRead()">
+          <div class="notif-footer d-flex justify-content-between align-items-center">
+            <a href="javascript:void(0)" class="clear-read-link" onclick="notificationManager.clearRead()">
                 <i class="fas fa-trash-can me-1"></i> Clear Read
             </a>
-            <a href="<?= BASE_URL ?>/frontend/<?= $role ?>/notifications.php" class="fw-700 text-primary" style="font-size:11px;">View Full History</a>
+            <a href="<?= BASE_URL ?>/frontend/<?= $role ?>/notifications.php" class="view-all-link">View Full History</a>
           </div>
+
         </div>
       </div>
 
@@ -180,7 +183,8 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
         <span class="nav-uname d-none d-md-block"><?= htmlspecialchars($uname) ?></span>
         <i class="fas fa-chevron-down" style="font-size:10px;color:#aaa;margin-left:4px;"></i>
       </div>
-      <ul class="dropdown-menu dropdown-menu-end" style="min-width:180px;border-radius:12px;border:1.5px solid #e8e4ff;box-shadow:0 8px 30px rgba(91,78,250,0.15);">
+      <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu shadow-lg">
+
         <li><a class="dropdown-item" href="<?= BASE_URL ?>/frontend/<?= $role ?>/profile.php"><i class="fas fa-user me-2 text-primary"></i>Profile</a></li>
         <li><a class="dropdown-item" href="<?= BASE_URL ?>/frontend/<?= $role ?>/settings.php"><i class="fas fa-gear me-2 text-primary"></i>Settings</a></li>
         <li><hr class="dropdown-divider"></li>

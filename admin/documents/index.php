@@ -235,9 +235,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </td>
             <td style="text-align:center;">
               <a href="manage.php?student_id=<?= $s['id'] ?>"
-                 class="btn-lms btn-primary btn-sm"
+                 class="btn-primary-grad btn-sm"
                  id="btn-manage-docs-<?= $s['id'] ?>">
-                <i class="fas fa-folder-open"></i> Manage Docs
+                <i class="fas fa-folder-open me-2"></i> Manage Docs
               </a>
             </td>
           </tr>

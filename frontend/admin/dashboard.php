@@ -393,17 +393,37 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   }
 
   /* --- Stat Components --- */
-  .stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
   .stat-icon {
-    width: 44px; height: 44px;
-    border-radius: 14px;
+    width: 52px; height: 52px;
+    border-radius: 18px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
+    font-size: 22px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
   }
-  .stat-value { font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
-  .stat-label { font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-  .stat-trend { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 100px; }
-  .trend-up { background: #d1fae5; color: #065f46; }
+  .stat-value { font-size: 34px; font-weight: 800; color: #0f172a; margin-bottom: 2px; letter-spacing: -1px; }
+  .stat-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; }
+  
+  .stat-trend { 
+    font-size: 10px; 
+    font-weight: 800; 
+    padding: 5px 12px; 
+    border-radius: 100px; 
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(5px);
+  }
+  .trend-up { background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.1); }
+  .trend-down { background: rgba(239, 68, 68, 0.12); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.1); }
+  .trend-neutral { background: rgba(245, 158, 11, 0.12); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.1); }
+
+  /* Icon Glows */
+  .stat-icon.indigo { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #fff; box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25); }
+  .stat-icon.emerald { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25); }
+  .stat-icon.amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.25); }
+  .stat-icon.rose { background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color: #fff; box-shadow: 0 8px 16px rgba(244, 63, 94, 0.25); }
 
   /* --- Welcome Hero --- */
   .hero-card {
@@ -413,8 +433,16 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     display: flex;
     position: relative;
     overflow: hidden;
-    padding: 40px !important;
+    padding: 30px !important;
     box-shadow: 0 20px 50px rgba(79, 70, 229, 0.3) !important;
+  }
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle at center, rgba(52, 211, 153, 0.15) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 2;
   }
   .hero-content {
     position: relative;
@@ -427,74 +455,73 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 15px 30px;
-    border-radius: 20px;
+    padding: 20px 30px;
+    border-radius: 24px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
   }
   .hero-title { 
-    font-size: 36px; /* Slightly smaller */
-    font-weight: 900; 
-    margin-bottom: 8px; 
-    letter-spacing: -1.2px; 
+    font-size: 32px;
+    font-weight: 800; 
+    margin-bottom: 6px; 
+    letter-spacing: -0.5px; 
     line-height: 1.1; 
     color: #fff;
-    text-shadow: 2px 2px 0px rgba(0,0,0,0.1), 
-                 4px 4px 10px rgba(0,0,0,0.2),
-                 0 0 30px rgba(255,255,255,0.2);
-    transform: perspective(1000px) rotateX(2deg);
+    font-family: 'Poppins', sans-serif;
   }
   .hero-sub { 
     font-size: 16px; 
     color: rgba(255, 255, 255, 0.9);
     font-weight: 500; 
     line-height: 1.6; 
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
   .hero-illustration {
     position: absolute;
     right: -20px;
     top: 50%;
     transform: translateY(-50%);
-    width: 450px; /* Slightly larger to fill space */
+    width: 450px;
     height: auto;
     z-index: 1;
     filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
     animation: floatIllustration 6s ease-in-out infinite;
-    mask-image: linear-gradient(to left, black 80%, transparent 100%); /* Smooth fade into text area */
-    pointer-events: none; /* Prevent illustration from blocking clicks */
+    mask-image: linear-gradient(to left, black 80%, transparent 100%);
+    pointer-events: none;
   }
   @keyframes floatIllustration {
     0%, 100% { transform: translateY(-50%) translateX(0); }
     50% { transform: translateY(-55%) translateX(-10px); }
   }
+  .hero-tag { 
+    font-size: 11px; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    color: #fbbf24;
+    margin-bottom: 10px;
+    background: rgba(251, 191, 36, 0.1);
+    padding: 6px 14px;
+    border-radius: 30px;
+    display: inline-block;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+  }
   .hero-clock {
     position: absolute;
-    top: 25px;
+    top: 30px;
     right: 30px;
-    font-size: 13px;
-    font-weight: 800;
-    background: rgba(255,255,255,0.8); /* Brighter for black text */
-    padding: 6px 15px;
-    border-radius: 100px;
-    backdrop-filter: blur(5px);
-    letter-spacing: 1px;
-    z-index: 10; /* Ensure it is above the background */
-    color: #000; /* Pure Black */
-    border: 1px solid rgba(255,255,255,0.5);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  }
-  .hero-tag {
-    display: inline-block;
-    padding: 5px 12px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-    color: #fbbf24; /* Vibrant Gold Accent */
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    padding: 10px 22px;
+    border-radius: 40px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   /* --- Quick Actions --- */
@@ -601,11 +628,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     position: relative;
     overflow: hidden;
   }
-  .schedule-row:hover { 
-    background: #ffffff; 
+  .s-agenda-item:hover {
+    background: rgba(255,255,255,0.05); 
     border-color: var(--accent-indigo);
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   }
+
   .s-time-col { 
     display: flex;
     flex-direction: column;
@@ -659,14 +687,35 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     --bento-bg: rgba(30, 41, 59, 0.4);
     --bento-border: rgba(255, 255, 255, 0.05);
   }
-  body.lms-dark-mode .stat-value { color: #fff; }
-  body.lms-dark-mode .stat-label { color: #94a3b8; }
-  body.lms-dark-mode .action-btn {
-    background: rgba(15, 23, 42, 0.5);
-    border-color: rgba(255, 255, 255, 0.05);
-    color: #fff;
+  body.lms-dark-mode .stat-icon { 
+    background: rgba(255, 255, 255, 0.05) !important; 
   }
-  body.lms-dark-mode .action-btn:hover { background: rgba(30, 41, 59, 0.8); }
+  
+  body.lms-dark-mode .stat-label { color: #94a3b8 !important; }
+  body.lms-dark-mode .stat-value { color: #fff !important; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+  body.lms-dark-mode .stat-trend { border: 1px solid rgba(255,255,255,0.05); }
+
+
+
+  
+  body.lms-dark-mode .action-btn {
+    background: rgba(30, 41, 59, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    color: #fff !important;
+    backdrop-filter: blur(10px) !important;
+  }
+  
+  body.lms-dark-mode .btn-student i { color: #818cf8 !important; }
+  body.lms-dark-mode .btn-payment i { color: #34d399 !important; }
+  body.lms-dark-mode .btn-course i  { color: #fbbf24 !important; }
+  body.lms-dark-mode .btn-notice i  { color: #f87171 !important; }
+
+  body.lms-dark-mode .action-btn:hover {
+    background: rgba(30, 41, 59, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-6px) scale(1.04) !important;
+  }
+  
   body.lms-dark-mode .action-btn span.action-sub { color: #94a3b8; }
   body.lms-dark-mode .schedule-row { background: rgba(15, 23, 42, 0.4); }
   body.lms-dark-mode .schedule-row:hover { background: rgba(30, 41, 59, 0.6); }
@@ -677,6 +726,36 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   body.lms-dark-mode .modern-table tr:hover { background: rgba(30, 41, 59, 0.6); }
   body.lms-dark-mode .modern-table td { color: #e2e8f0; }
   body.lms-dark-mode .hero-clock { background: rgba(15, 23, 42, 0.8); color: #fff; border-color: rgba(255,255,255,0.1); }
+  
+  /* Fixing the muddy grey background for the quick actions container */
+  body.lms-dark-mode .bento-card.quick-actions-container {
+    background: rgba(15, 23, 42, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  }
+
+  /* Dropdown Dark Mode Overrides */
+  body.lms-dark-mode .dropdown-menu {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+  body.lms-dark-mode .dropdown-item {
+    color: #e2e8f0 !important;
+  }
+  body.lms-dark-mode .dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #fff !important;
+  }
+  body.lms-dark-mode .dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  body.lms-dark-mode .dropdown-item .stat-icon {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #fff !important;
+  }
+  body.lms-dark-mode .dropdown-item .text-muted {
+    color: #94a3b8 !important;
+  }
 </style>
 
 
@@ -697,15 +776,19 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <div class="hero-tag">System Administrator</div>
       <div class="hero-title"><?= $greeting ?>, Admin</div>
       <div class="hero-sub">
-        Institute operations are running smoothly today. <br>
-        <a href="<?= BASE_URL ?>/admin/finance/index.php" class="fw-800 text-decoration-none" style="background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 10px; color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); display: inline-block; margin-top: 8px;">
-          <i class="fas fa-bell me-1"></i> You have <span style="font-size: 18px;"><?= $pending_payments ?></span> payment alerts
-        </a> <span style="font-size: 13px; opacity: 0.8; margin-left: 5px;">to review.</span>
+        Institute operations are running smoothly today.
+        <div class="mt-2">
+          <a href="<?= BASE_URL ?>/admin/finance/index.php" class="text-decoration-none d-inline-flex align-items-center" style="background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 12px; color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); backdrop-filter: blur(10px); transition: all 0.3s;">
+            <i class="fas fa-bell me-2" style="animation: swing 2s infinite;"></i> 
+            <span style="font-weight: 700;">You have <?= $pending_payments ?> payment alerts</span>
+            <i class="fas fa-chevron-right ms-2" style="font-size: 10px; opacity: 0.6;"></i>
+          </a>
+        </div>
       </div>
       
-      <div class="mt-4 d-flex gap-3">
-        <a href="reports.php" class="btn btn-light rounded-pill px-4 fw-800 shadow-sm transition-all hover-scale" style="font-size: 13px; position: relative; z-index: 10;">
-          <i class="fas fa-chart-line me-2"></i> View Analytics
+      <div class="mt-3 d-flex gap-3">
+        <a href="reports.php" class="btn-primary-grad rounded-pill px-4 fw-800 shadow-lg transition-all hover-scale d-flex align-items-center" style="font-size: 13px; position: relative; z-index: 10; height: 46px;">
+          <i class="fas fa-chart-pie me-2"></i> View Analytics
         </a>
       </div>
     </div>
@@ -723,7 +806,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </script>
 
   <!-- QUICK ACTIONS -->
-  <div class="bento-card span-4" style="overflow: visible; z-index: 100; background: rgba(248, 250, 252, 0.4);">
+  <div class="bento-card span-4 quick-actions-container" style="overflow: visible; z-index: 100;">
     <div class="action-grid">
       <a href="<?= BASE_URL ?>/admin/students/add.php" class="action-btn btn-student">
         <i class="fas fa-user-plus"></i>
@@ -778,8 +861,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <!-- STATS -->
   <div class="bento-card span-3">
     <div class="stat-header">
-      <div class="stat-icon" style="background:#e0e7ff; color:var(--accent-indigo);"><i class="fas fa-users"></i></div>
-      <div class="stat-trend trend-up">+12.5%</div>
+      <div class="stat-icon indigo"><i class="fas fa-users"></i></div>
+      <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 12.5%</div>
     </div>
     <div class="stat-value"><?= number_format($total_students) ?></div>
     <div class="stat-label">Total Students</div>
@@ -787,8 +870,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <div class="bento-card span-3">
     <div class="stat-header">
-      <div class="stat-icon" style="background:#dcfce7; color:var(--accent-emerald);"><i class="fas fa-user-check"></i></div>
-      <div class="stat-trend trend-up">+4.2%</div>
+      <div class="stat-icon emerald"><i class="fas fa-user-check"></i></div>
+      <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 4.2%</div>
     </div>
     <div class="stat-value"><?= number_format($active_students) ?></div>
     <div class="stat-label">Active Learners</div>
@@ -796,8 +879,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <a href="<?= BASE_URL ?>/admin/finance/index.php" class="bento-card span-3 text-decoration-none">
     <div class="stat-header">
-      <div class="stat-icon" style="background:#fef3c7; color:var(--accent-amber);"><i class="fas fa-clock"></i></div>
-      <div class="stat-trend text-danger" style="background:#fee2e2; padding:4px 8px; border-radius:100px;">Low</div>
+      <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+      <div class="stat-trend trend-neutral"><i class="fas fa-minus"></i> Low</div>
     </div>
     <div class="stat-value"><?= $pending_payments ?></div>
     <div class="stat-label">Pending Payments</div>
@@ -805,12 +888,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <a href="<?= BASE_URL ?>/admin/finance/index.php" class="bento-card span-3 text-decoration-none">
     <div class="stat-header">
-      <div class="stat-icon" style="background:#fce7f3; color:var(--accent-rose);"><i class="fas fa-wallet"></i></div>
-      <div class="stat-trend trend-up">+18%</div>
+      <div class="stat-icon rose"><i class="fas fa-wallet"></i></div>
+      <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 18%</div>
     </div>
     <div class="stat-value">Rs. <?= number_format($monthly_revenue/1000, 0) ?>k</div>
     <div class="stat-label">Monthly Revenue</div>
   </a>
+
 
 
 <?php
@@ -914,7 +998,7 @@ foreach ($checkStudents as $cs) {
                if($a['type']==='lead') { $icon = 'fa-bullseye'; $color = '#f43f5e'; $link = BASE_URL.'/admin/leads/index.php?highlight_id='.$a['target_id']; }
                if($a['type']==='lecturer') { $icon = 'fa-chalkboard-user'; $color = '#f59e0b'; $link = BASE_URL.'/admin/lecturers/index.php?highlight_id='.$a['target_id']; }
             ?>
-            <a href="<?= $link ?>" class="activity-item text-decoration-none p-2 rounded-3 d-flex align-items-center justify-content-between transition-all" style="background: #f8fafc; border: 1px solid #f1f5f9;">
+            <a href="<?= $link ?>" class="activity-item text-decoration-none p-2 rounded-3 d-flex align-items-center justify-content-between transition-all" style="border: 1px solid rgba(255,255,255,0.05);">
               <div class="d-flex align-items-center gap-2">
                 <div class="stat-icon" style="width:32px; height:32px; font-size:11px; background: <?= $color ?>15; color: <?= $color ?>;">
                   <i class="fas <?= $icon ?>"></i>
@@ -941,7 +1025,7 @@ foreach ($checkStudents as $cs) {
 
   <style>
     .activity-item:hover {
-      background: #fff !important;
+      background: rgba(255,255,255,0.05) !important;
       transform: scale(1.02);
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-color: var(--accent-indigo) !important;
@@ -994,7 +1078,7 @@ foreach ($checkStudents as $cs) {
                             data-id="<?= $item['id'] ?>" 
                             data-category="<?= $item['category'] ?>"
                             data-title="<?= htmlspecialchars($item['title']) ?>"
-                            style="font-size:10px; cursor: pointer; background: #f1f5f9 !important; white-space: nowrap;">
+                            style="font-size:10px; cursor: pointer; white-space: nowrap;">
                         <i class="fas fa-clock me-1 text-muted"></i> Snooze
                     </div>
                 <?php endif; ?>
@@ -1009,7 +1093,7 @@ foreach ($checkStudents as $cs) {
       </<?= $tag ?>>
       <?php endforeach; ?>
     </div>
-    <a href="<?= BASE_URL ?>/admin/calendar.php" class="btn btn-primary w-100 mt-4 rounded-pill fw-800 py-3 shadow-sm transition-all hover-scale" style="background: #2563eb;">
+    <a href="<?= BASE_URL ?>/admin/calendar.php" class="btn btn-primary-grad w-100 mt-4 rounded-pill fw-800 py-3 shadow-lg transition-all hover-scale" style="background: var(--grad-blue) !important; border: none !important;">
         <i class="fas fa-calendar-alt me-2"></i> Open Full Calendar
     </a>
   </div>
@@ -1017,9 +1101,9 @@ foreach ($checkStudents as $cs) {
   <!-- CUSTOM MODAL: SNOOZE OPTIONS -->
   <div class="modal fade" id="snoozeModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
         <div class="modal-body p-4 text-center">
-            <div class="stat-icon mx-auto mb-3" style="width:50px; height:50px; background: #f1f5f9; color: #64748b;">
+            <div class="stat-icon mx-auto mb-3" style="width:50px; height:50px;">
                 <i class="fas fa-clock"></i>
             </div>
             <h5 class="fw-800 mb-1" id="snoozeTargetName">Snooze Task</h5>
@@ -1048,9 +1132,9 @@ foreach ($checkStudents as $cs) {
   <!-- CUSTOM MODAL: CALL ACTION -->
   <div class="modal fade" id="callModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
         <div class="modal-body p-4 text-center">
-            <div class="stat-icon mx-auto mb-3" style="width:50px; height:50px; background: #dcfce7; color: #16a34a;">
+            <div class="stat-icon mx-auto mb-3" style="width:50px; height:50px;">
                 <i class="fas fa-phone"></i>
             </div>
             <h5 class="fw-800 mb-1" id="callTargetName">Contact Lead</h5>
@@ -1083,7 +1167,7 @@ foreach ($checkStudents as $cs) {
         filter: brightness(1.05);
     }
     .snooze-opt { border: 1px solid transparent !important; transition: all 0.2s; }
-    .snooze-opt:hover { border-color: var(--accent-indigo) !important; background: #fff !important; transform: scale(1.02); }
+    .snooze-opt:hover { border-color: var(--accent-indigo) !important; transform: scale(1.02); }
   </style>
 
   <script>

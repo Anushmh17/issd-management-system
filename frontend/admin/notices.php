@@ -109,11 +109,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   /* Premium Form */
   .notice-form-card {
-    background: #fff;
     border: 1.5px solid var(--border-color);
     border-radius: var(--admin-notice-radius);
     padding: 32px;
-    box-shadow: var(--shadow-sm);
     margin-bottom: 32px;
   }
   .form-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-light); }
@@ -121,20 +119,18 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   /* Table Styles */
   .premium-table-card {
-    background: #fff;
     border: 1.5px solid var(--border-color);
     border-radius: var(--admin-notice-radius);
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
   }
   .table-header { padding: 24px 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; border-bottom: 1px solid var(--border-light); }
   .table-header h3 { font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 10px; }
 
   .notice-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-  .notice-table th { background: #f8fafc; padding: 14px 24px; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-light); }
+  .notice-table th { padding: 14px 24px; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-light); }
   .notice-table td { padding: 18px 24px; font-size: 13.5px; vertical-align: middle; border-bottom: 1px solid var(--border-light); }
   .notice-table tr:last-child td { border-bottom: none; }
-  .notice-table tr:hover td { background: #fcfdfe; }
+  .notice-table tr:hover td { }
 
   .title-cell { display: flex; flex-direction: column; gap: 4px; }
   .title-cell strong { font-size: 15px; color: #0f172a; }
@@ -148,9 +144,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .aud-admin { background: #fef2f2; color: #dc2626; }
 
   .action-btns { display: flex; gap: 8px; }
-  .action-btn { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.3s; border: 1.5px solid var(--border-color); color: #64748b; background: #fff; }
+  .action-btn { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.3s; border: 1.5px solid var(--border-color); color: #64748b; }
   .action-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
   .action-btn.del:hover { border-color: #ef4444; color: #ef4444; background: #fef2f2; }
+
+
 
   @media (max-width: 768px) {
     .hero-content { flex-direction: column; align-items: flex-start; }

@@ -350,10 +350,7 @@ $extraCSS = <<<'CSS'
     accent-color: var(--primary);
 }
 
-.section-badge {
-    background: var(--primary-light); color: var(--primary);
-    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
-}
+
 
 /* Dark Mode Overrides */
 body.lms-dark-mode .doc-student-banner {
@@ -370,6 +367,39 @@ body.lms-dark-mode .doc-upload-label { background: rgba(15, 23, 42, 0.4); border
 body.lms-dark-mode .dsb-status-box { border-left-color: rgba(255, 255, 255, 0.05); }
 body.lms-dark-mode .doc-del-file { background: rgba(225, 29, 72, 0.1); }
 body.lms-dark-mode .doc-del-file:hover { background: #e11d48; }
+
+/* Enhanced Dark Mode Styles for Checklist */
+body.lms-dark-mode .doc-checklist-table tbody td { color: #cbd5e1; }
+body.lms-dark-mode .opt-badge { background: rgba(255,255,255,0.08); color: #94a3b8; border: 1px solid rgba(255,255,255,0.05); }
+body.lms-dark-mode .req-badge { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+body.lms-dark-mode .doc-file-link { 
+    background: rgba(56, 189, 248, 0.15); 
+    color: #38bdf8; 
+    border: 1px solid rgba(56, 189, 248, 0.2);
+}
+body.lms-dark-mode .doc-file-link:hover { background: #38bdf8; color: #fff; }
+
+body.lms-dark-mode .doc-checkbox {
+    accent-color: #10b981 !important;
+}
+
+body.lms-dark-mode .doc-select, 
+body.lms-dark-mode .doc-input {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+body.lms-dark-mode .doc-status-dot.collected { background: #10b981 !important; box-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
+body.lms-dark-mode .doc-status-dot.missing { background: #ef4444 !important; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
+body.lms-dark-mode .doc-status-dot.optional { background: rgba(255,255,255,0.1); }
+
+
+body.lms-dark-mode .doc-name i[style*="var(--accent)"] { color: #10b981 !important; }
+
+body.lms-dark-mode .doc-name i[style*="#cbd5e1"] { color: #475569 !important; }
+
 </style>
 CSS;
 

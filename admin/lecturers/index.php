@@ -50,7 +50,6 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   height: 44px;
   border-radius: 12px;
   overflow: hidden;
-  background: #f1f5f9;
   border: 1.5px solid #e2e8f0;
   display: flex;
   align-items: center;
@@ -107,7 +106,6 @@ tr:hover .lect-avatar-wrap {
 .photo-modal-content {
   max-width: 90%;
   max-height: 90%;
-  background: #fff;
   border-radius: 24px;
   padding: 12px;
   position: relative;
@@ -216,7 +214,7 @@ tr:hover .lect-avatar-wrap {
 
       <!-- Filters Row -->
       <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
-        <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+        <div class="search-bar" style="flex: 1; min-width: 300px; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
           <input type="text" name="search" placeholder="Search Name, Email, Username..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
@@ -225,7 +223,7 @@ tr:hover .lect-avatar-wrap {
 
         <div class="d-flex gap-2">
           <select name="status" class="form-control-lms filter-select"
-                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  style="min-width: 160px; border-radius: 12px; font-weight: 600; padding: 10px 15px;"
                   onchange="document.getElementById('filterForm').submit()">
             <option value="">All Status</option>
             <option value="active"   <?= $status==='active'   ? 'selected' : '' ?>>Active</option>

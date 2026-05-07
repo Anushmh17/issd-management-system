@@ -59,7 +59,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   
   .students-filter-bar { flex-direction: column; align-items: flex-start !important; padding: 20px 16px !important; gap: 16px; }
   .students-filters { flex-direction: column; width: 100%; gap: 12px !important; }
-  .search-bar { max-width: none !important; background: #f8fafc; }
+  .search-bar { max-width: none !important; }
   .filter-select { width: 100% !important; }
   .students-filters .btn-lms { width: 100%; justify-content: center; }
 
@@ -148,14 +148,14 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="list-legend-label">Course Management</div>
           <div class="list-legend-title" style="font-size: 24px;">
             <span>All Courses</span>
-            <span class="count-badge" style="background: var(--primary-light); color: var(--primary); padding: 4px 14px; border-radius: 30px; font-size: 14px;"><?= $total ?></span>
+            <span class="count-badge"><?= $total ?></span>
           </div>
         </div>
       </div>
 
       <!-- Filters Row -->
       <form method="GET" id="filterForm" class="students-filters" style="display: flex; align-items: center; gap: 15px; margin: 0; flex-wrap: wrap; width: 100%;">
-        <div class="search-bar" style="flex: 1; min-width: 300px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
+        <div class="search-bar" style="flex: 1; min-width: 300px; border-radius: 14px; padding: 0 15px; display: flex; align-items: center;">
           <i class="fas fa-search" style="color: var(--primary); opacity: 0.6; margin-right: 10px;"></i>
           <input type="text" name="search" placeholder="Search Course Name or Code..."
                  style="font-size: 14px; font-weight: 500; border: none; outline: none; padding: 12px 0; width: 100%;"
@@ -164,7 +164,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
         <div class="d-flex gap-2">
           <select name="status" class="form-control-lms filter-select"
-                  style="min-width: 160px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-weight: 600; padding: 10px 15px;"
+                  style="min-width: 160px; border-radius: 12px; font-weight: 600; padding: 10px 15px;"
                   onchange="document.getElementById('filterForm').submit()">
             <option value="">All Status</option>
             <option value="active"   <?= $status==='active'   ? 'selected' : '' ?>>Active</option>
@@ -260,8 +260,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </span>
               <?php endif; ?>
             </td>
-            <td>
-              <div class="d-flex gap-6" style="justify-content:center;">
+            <td style="text-align:center; vertical-align: middle;">
+              <div class="d-flex gap-2 justify-content-center">
                 <a href="assign_lecturer.php?course_id=<?= $c['id'] ?>"
                    class="btn-lms btn-sm"
                    style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;"

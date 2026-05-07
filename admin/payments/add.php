@@ -48,9 +48,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 .select2-container--default .select2-selection--single {
     height: 48px !important;
     padding: 10px 15px !important;
-    border: 1.5px solid #e2e8f0 !important;
+    border: 1.5px solid var(--border-color) !important;
     border-radius: 12px !important;
-    background-color: #fff !important;
+    background-color: var(--bg-input) !important;
     display: flex !important;
     align-items: center !important;
     transition: all 0.2s ease;
@@ -66,19 +66,80 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 }
 .select2-container--default .select2-selection--single .select2-selection__rendered {
     line-height: 28px !important;
-    color: #1e293b !important;
+    color: var(--text-main) !important;
     font-weight: 600 !important;
     padding-left: 0 !important;
     font-size: 14px !important;
 }
 .select2-dropdown {
-    border: 1px solid #e2e8f0 !important;
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
     border-radius: 12px !important;
     box-shadow: var(--shadow-lg) !important;
     overflow: hidden;
     z-index: 9999;
 }
+.select2-results__option {
+    color: var(--text-main) !important;
+}
+.select2-search__field {
+    background-color: var(--bg-input) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Payment Info Boxes */
+.pay-info-box {
+    background: var(--bg-input);
+    padding: 15px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+.pay-info-box.success-tint {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+.pay-info-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 5px;
+}
+.pay-info-value {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* Remaining Balance Box */
+#rem_bal_box {
+    padding: 16px 20px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: 1.5px solid transparent;
+}
+#rem_bal_box.danger-tint {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+#rem_bal_box.success-tint {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+#rem_bal_label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+#lbl_rem_bal { font-size: 26px; font-weight: 800; letter-spacing: -1px; }
+
+body.lms-dark-mode .pay-info-box { background: rgba(255,255,255,0.05); }
+body.lms-dark-mode .success-tint { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); }
+body.lms-dark-mode .danger-tint { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
 </style>
+
 
 <div id="page-content">
   <div class="page-header">
@@ -162,29 +223,30 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </div>
         </div>
 
-        <hr style="margin:20px 0;border-color:#e2e8f0;">
+        <hr style="margin:20px 0; border-color: rgba(0,0,0,0.05); opacity: 0.1;">
 
         <!-- UI Display (Last Month Due, Current Fee, Total Payable) -->
         <div class="row g-3 mb-20">
           <div class="col-md-4">
-            <div style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e2e8f0;">
-              <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;">Last Month Due (Bal)</div>
-              <div id="lbl_prev_bal" style="font-size:20px;font-weight:700;color:#dc2626;">Rs. 0.00</div>
+            <div class="pay-info-box">
+              <div class="pay-info-label">Last Month Due (Bal)</div>
+              <div id="lbl_prev_bal" class="pay-info-value" style="color:#ef4444;">Rs. 0.00</div>
             </div>
           </div>
           <div class="col-md-4">
-            <div style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e2e8f0;">
-              <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;">Current Fee</div>
-              <div id="lbl_monthly_fee" style="font-size:20px;font-weight:700;color:#3b82f6;">Rs. 0.00</div>
+            <div class="pay-info-box">
+              <div class="pay-info-label">Current Fee</div>
+              <div id="lbl_monthly_fee" class="pay-info-value" style="color:#3b82f6;">Rs. 0.00</div>
             </div>
           </div>
           <div class="col-md-4">
-            <div style="background:#f0fdf4;padding:12px;border-radius:8px;border:1px solid #bbf7d0;">
-              <div style="font-size:11px;color:#059669;font-weight:600;text-transform:uppercase;">Total Payable</div>
-              <div id="lbl_total_due" style="font-size:20px;font-weight:800;color:#059669;">Rs. 0.00</div>
+            <div class="pay-info-box success-tint">
+              <div class="pay-info-label" style="color:#10b981;">Total Payable</div>
+              <div id="lbl_total_due" class="pay-info-value" style="color:#10b981;">Rs. 0.00</div>
             </div>
           </div>
         </div>
+
 
         <div class="row g-3" style="align-items:flex-end;">
           <div class="col-md-6">
@@ -199,11 +261,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </div>
           
           <div class="col-md-6">
-            <div id="rem_bal_box" style="padding:10px 14px;background:#fef2f2;border-radius:8px;border:1px solid #fecaca;display:flex;justify-content:space-between;align-items:center;">
-              <div id="rem_bal_label" style="font-size:12px;color:#991b1b;font-weight:700;text-transform:uppercase;">Remaining Balance</div>
-              <div id="lbl_rem_bal" style="font-size:22px;font-weight:800;color:#dc2626;">Rs. 0.00</div>
+            <div id="rem_bal_box" class="danger-tint">
+              <div id="rem_bal_label" style="color:#ef4444;">Remaining Balance</div>
+              <div id="lbl_rem_bal" style="color:#ef4444;">Rs. 0.00</div>
             </div>
           </div>
+
         </div>
 
         <!-- Next Due Date (Conditional) -->
@@ -221,11 +284,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
 
       </div>
-      <div class="card-lms-body" style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 20px;">
-        <button type="submit" class="btn-primary-grad">
-          <i class="fas fa-floppy-disk"></i> Process Payment
+      <div class="card-lms-body" style="background: rgba(0,0,0,0.02); border-top:1px solid rgba(0,0,0,0.05); padding:16px 20px;">
+        <button type="submit" class="btn-primary-grad px-5 py-2" style="border-radius: 12px;">
+          <i class="fas fa-check-circle me-2"></i> Process Payment
         </button>
       </div>
+
     </div>
 
   </form>
@@ -287,26 +351,27 @@ function calcRemaining() {
 
     if (rem <= 0) {
         // Fully paid or Advance
-        box.style.background = '#f0fdf4';
-        box.style.borderColor = '#bbf7d0';
-        lbl.style.color = '#166534';
-        val.style.color = '#166534';
+        box.classList.remove('danger-tint');
+        box.classList.add('success-tint');
+        lbl.style.color = '#10b981';
+        val.style.color = '#10b981';
         lbl.textContent = rem < 0 ? 'Advance Payment' : 'Paid in Full';
         val.textContent = 'Rs. ' + Math.abs(rem).toFixed(2);
         document.getElementById('next_due_row').style.display = 'none';
         document.getElementById('next_due_date').required = false;
     } else {
         // Partial
-        box.style.background = '#fef2f2';
-        box.style.borderColor = '#fecaca';
-        lbl.style.color = '#991b1b';
-        val.style.color = '#dc2626';
+        box.classList.remove('success-tint');
+        box.classList.add('danger-tint');
+        lbl.style.color = '#ef4444';
+        val.style.color = '#ef4444';
         lbl.textContent = 'Remaining Balance';
         val.textContent = 'Rs. ' + rem.toFixed(2);
         document.getElementById('next_due_row').style.display = 'block';
         document.getElementById('next_due_date').required = true;
     }
 }
+
 </script>
 
 <?php
