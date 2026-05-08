@@ -53,11 +53,15 @@ $assignments->execute([$userId]);
 $assignments = $assignments->fetchAll();
 
 // Notices for lecturer
-$notices = $pdo->query("
-    SELECT title, created_at FROM notices
-    WHERE target_role IN ('all','lecturer')
-    ORDER BY created_at DESC LIMIT 4
-")->fetchAll();
+$stmt = $pdo->prepare("
+    SELECT n.*, 0 as is_read
+    FROM notices n 
+    WHERE target_role IN ('all', 'lecturer') 
+    AND n.id NOT IN (SELECT notice_id FROM read_notices WHERE user_id = ?)
+    ORDER BY created_at DESC LIMIT 5
+");
+$stmt->execute([$userId]);
+$notices = $stmt->fetchAll();
 
 require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
@@ -77,29 +81,29 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <!-- Stats -->
   <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon purple"><i class="fas fa-book-open"></i></div>
+    <div class="stat-card color-violet">
+      <div class="stat-icon"><i class="fas fa-book-open"></i></div>
       <div>
         <div class="stat-value" data-count="<?= $myCourses ?>"><?= $myCourses ?></div>
         <div class="stat-label">My Courses</div>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+    <div class="stat-card color-indigo">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
       <div>
         <div class="stat-value" data-count="<?= $myStudents ?>"><?= $myStudents ?></div>
         <div class="stat-label">My Students</div>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon orange"><i class="fas fa-file-alt"></i></div>
+    <div class="stat-card color-amber">
+      <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
       <div>
         <div class="stat-value" data-count="<?= $myAssignments ?>"><?= $myAssignments ?></div>
         <div class="stat-label">Assignments</div>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon green"><i class="fas fa-check-square"></i></div>
+    <div class="stat-card color-emerald">
+      <div class="stat-icon"><i class="fas fa-check-square"></i></div>
       <div>
         <div class="stat-value" data-count="<?= $mySubmissions ?>"><?= $mySubmissions ?></div>
         <div class="stat-label">Submissions</div>
@@ -187,12 +191,26 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <?php if (empty($notices)): ?>
             <div class="empty-state"><i class="fas fa-bell-slash"></i><p>No notices.</p></div>
           <?php else: ?>
-          <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="notice-list-lms">
             <?php foreach ($notices as $n): ?>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg-page);border-radius:8px;border:1px solid var(--border-color);">
-              <div>
-                <div class="fw-600" style="font-size:13px;"><?= htmlspecialchars($n['title']) ?></div>
-                <div class="text-muted" style="font-size:11px;"><?= date('M d, Y', strtotime($n['created_at'])) ?></div>
+            <div class="notice-item-lms <?= $n['is_read']?'is-read':'is-unread' ?>" 
+                 onclick="showNoticeDetailsFromDashboard(this)"
+                 data-id="<?= $n['id'] ?>"
+                 data-is-read="<?= $n['is_read'] ?>"
+                 data-title="<?= htmlspecialchars($n['title']) ?>"
+                 data-content="<?= htmlspecialchars($n['content']) ?>"
+                 data-author="Admin"
+                 data-date="<?= date('M d, Y', strtotime($n['created_at'])) ?>">
+              <div class="d-flex align-items-center gap-2">
+                <?php if($n['is_read']): ?>
+                    <span class="badge-lms success outline" style="font-size:8px; padding:1px 6px; border-radius:100px;">READ</span>
+                <?php else: ?>
+                    <span class="unread-indicator"></span>
+                <?php endif; ?>
+                <div>
+                  <div class="fw-600" style="font-size:13px;"><?= htmlspecialchars($n['title']) ?></div>
+                  <div class="text-muted" style="font-size:11px;"><?= date('M d, Y', strtotime($n['created_at'])) ?></div>
+                </div>
               </div>
               <i class="fas fa-chevron-right text-muted" style="font-size:11px;"></i>
             </div>
@@ -206,6 +224,56 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </div>
 
 </div>
+
+<script>
+function showNoticeDetailsFromDashboard(el) {
+    const data = el.dataset;
+    const modal = document.getElementById('viewNoticeModal');
+    if(!modal) return;
+    
+    document.getElementById('notice-modal-title').innerText = data.title;
+    document.getElementById('notice-modal-content').innerText = data.content;
+    document.getElementById('notice-modal-author').innerText = data.author;
+    document.getElementById('notice-modal-date').innerText = data.date;
+    document.getElementById('notice-modal-avatar').innerText = data.author.charAt(0).toUpperCase();
+    
+    const readBtn = document.getElementById('btn-mark-notice-read');
+    if(readBtn) {
+        if(data.isRead == '1') {
+            readBtn.style.display = 'none';
+        } else {
+            readBtn.style.display = 'block';
+            const newBtn = readBtn.cloneNode(true);
+            readBtn.parentNode.replaceChild(newBtn, readBtn);
+            newBtn.onclick = () => {
+                fetch('../../backend/notice_read.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ notice_id: data.id })
+                }).then(res => res.json())
+                .then(res => {
+                    if(res.success) {
+                        el.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                        el.style.opacity = '0';
+                        el.style.transform = 'translateX(30px)';
+                        setTimeout(() => {
+                            el.remove();
+                            // Check if list is empty
+                            const list = document.querySelector('.notice-list-lms');
+                            if (list && list.children.length === 0) {
+                                list.innerHTML = '<div class="text-muted py-3 text-center" style="font-size:13px;">No new notices</div>';
+                            }
+                        }, 500);
+                        newBtn.style.display = 'none';
+                    }
+                });
+            };
+        }
+    }
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+</script>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
 

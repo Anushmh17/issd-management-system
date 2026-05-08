@@ -16,9 +16,9 @@ if (!isLoggedIn()) {
 
 $data = json_decode(file_get_contents('php://input'), true);
 $noticeId = isset($data['notice_id']) ? (int)$data['notice_id'] : 0;
-$userId = (int)$_SESSION['user']['id'];
+$userId = currentUserId();
 
-if ($noticeId > 0 && $userId > 0) {
+if ($noticeId > 0 && $userId) {
     try {
         $stmt = $pdo->prepare("INSERT IGNORE INTO read_notices (user_id, notice_id) VALUES (?, ?)");
         $stmt->execute([$userId, $noticeId]);

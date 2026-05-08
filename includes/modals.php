@@ -216,6 +216,30 @@ body.lms-dark-mode .help-section h6 { color: #fff !important; }
 body.lms-dark-mode .help-section p { color: #94a3b8 !important; }
 body.lms-dark-mode .help-content-area .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 
+/* Global Modal Dark Mode */
+body.lms-dark-mode .lms-modal {
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.lms-dark-mode #notice-modal-content {
+    color: #cbd5e1 !important;
+}
+
+body.lms-dark-mode .author-box {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.lms-dark-mode #notice-modal-author {
+    color: #fff !important;
+}
+
+body.lms-dark-mode #notice-modal-badge {
+    background: rgba(34, 211, 238, 0.1) !important;
+    color: #22d3ee !important;
+}
+
 
 
 .help-section {

@@ -11,13 +11,13 @@ requireRole(ROLE_STUDENT);
 
 $search = trim($_GET['q'] ?? '');
 $user = currentUser();
-$userId = (int)$user['id'];
+$userId = currentUserId();
 $sql = "SELECT n.*, u.name AS posted_by_name,
-               (SELECT 1 FROM read_notices rn WHERE rn.notice_id = n.id AND rn.user_id = $userId LIMIT 1) as is_read
+               (SELECT COUNT(*) FROM read_notices rn WHERE rn.notice_id = n.id AND rn.user_id = ?) as is_read
         FROM notices n 
         JOIN users u ON u.id = n.posted_by
         WHERE n.target_role IN ('all', 'student')";
-$params = [];
+$params = [$userId];
 
 if ($search) {
     $sql .= " AND (n.title LIKE ? OR n.content LIKE ?)";
@@ -74,6 +74,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <span class="dark-badge db-blue"><?= date('M d, Y', strtotime($n['created_at'])) ?></span>
             <?php if($n['is_read']): ?>
               <span class="dark-badge db-green" style="background:rgba(34,197,94,0.1); color:#4ade80;"><i class="fas fa-check-circle"></i> READ</span>
+            <?php else: ?>
+              <span class="unread-indicator" title="New Notice"></span>
+              <span class="dark-badge db-red" style="background:rgba(239,68,68,0.1); color:#fca5a5;">NEW</span>
             <?php endif; ?>
             <span style="color:#94a3b8;">Posted by <?= htmlspecialchars($n['posted_by_name']) ?></span>
             <?php if($isUrgent): ?>

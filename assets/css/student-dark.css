@@ -12,8 +12,14 @@ body.lms-dark-mode {
   /* Core Variable Overrides for Dark Mode */
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.03);
   --bg-card: rgba(30, 41, 59, 0.4);
+  --bg-page: #0b1120;
+  --primary: #22d3ee;
+  --primary-glow: rgba(34, 211, 238, 0.3);
+  --accent: #34d399;
+  --grad-primary: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
 
   /* Semantic Variables for Badges & Statuses */
   --accent-light: rgba(16, 185, 129, 0.15);
@@ -440,6 +446,78 @@ body.lms-dark-mode .card-lms-header {
 body.lms-dark-mode .card-lms-title {
   color: #fff !important;
 }
+body.lms-dark-mode .card-lms-title i {
+  color: var(--primary) !important;
+}
+
+body.lms-dark-mode .notice-item-lms {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+body.lms-dark-mode .notice-item-lms:hover {
+  background: rgba(34, 211, 238, 0.1) !important;
+}
+
+/* Premium Notice Card Dark Mode */
+body.lms-dark-mode .notice-premium-card {
+  background: rgba(30, 41, 59, 0.4) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.lms-dark-mode .notice-premium-card:hover {
+  background: rgba(30, 41, 59, 0.6) !important;
+  box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 211, 238, 0.15) !important;
+}
+
+body.lms-dark-mode .notice-card-time {
+  border-left-color: rgba(255, 255, 255, 0.1) !important;
+  color: #22d3ee !important;
+}
+
+body.lms-dark-mode .notice-card-footer {
+  border-top-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.lms-dark-mode .author-name {
+  color: #fff !important;
+}
+
+body.lms-dark-mode .unread-indicator {
+  background: #22d3ee !important;
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.4) !important;
+}
+body.lms-dark-mode .unread-indicator::after {
+  border-color: #22d3ee !important;
+}
+
+/* Premium Search Dark Mode */
+body.lms-dark-mode .search-input-group {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.lms-dark-mode .search-input-group i {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+body.lms-dark-mode .search-input-group input {
+  color: #f8fafc !important;
+}
+
+body.lms-dark-mode .search-input-group:focus-within {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.1) !important;
+}
+
+body.lms-dark-mode .search-clear {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+body.lms-dark-mode .search-clear:hover {
+  color: #fca5a5 !important;
+}
 
 /* Stat Cards Dark Mode */
 body.lms-dark-mode .stat-card {
@@ -460,6 +538,12 @@ body.lms-dark-mode .stat-card .stat-icon {
 body.lms-dark-mode .stat-card[style*="--primary"] .stat-icon i {
   color: #5eead4 !important; 
 }
+
+/* Stat Icon Color Mappings for Lecturer Dashboard */
+body.lms-dark-mode .stat-icon.purple { --sc-color: #c084fc !important; }
+body.lms-dark-mode .stat-icon.blue   { --sc-color: #60a5fa !important; }
+body.lms-dark-mode .stat-icon.orange { --sc-color: #fbbf24 !important; }
+body.lms-dark-mode .stat-icon.green  { --sc-color: #34d399 !important; }
 
 /* Admin Table Overrides */
 body.lms-dark-mode .table-lms thead th {

@@ -58,6 +58,8 @@ if ($action === 'edit' && isset($_GET['id'])) {
 
 $search = trim($_GET['q'] ?? '');
 $sql = "SELECT n.*, u.name AS posted_by_name,
+               (SELECT COUNT(*) FROM read_notices rn WHERE rn.notice_id = n.id AND rn.user_id LIKE 'L%') as lecturer_read_count,
+               (SELECT COUNT(*) FROM read_notices rn WHERE rn.notice_id = n.id AND rn.user_id NOT LIKE 'L%') as student_read_count,
                (SELECT COUNT(*) FROM read_notices rn WHERE rn.notice_id = n.id) as read_count,
                (CASE 
                    WHEN n.target_role = 'all' THEN (SELECT COUNT(*) FROM users WHERE role != 'admin')
@@ -295,12 +297,14 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <span class="aud-badge <?= $audClass ?>"><?= $audLabel ?></span>
             </td>
             <td>
-              <div style="font-weight:700; color:#0f172a; font-size:14px;">
-                <span class="text-success"><i class="fas fa-check-circle"></i> <?= $n['read_count'] ?></span>
+              <div style="font-weight:700; color:#0f172a; font-size:14px; cursor:pointer;" onclick="viewNoticeReaders(<?= $n['id'] ?>, '<?= addslashes($n['title']) ?>')">
+                <span class="text-primary" title="Lecturers Read"><i class="fas fa-chalkboard-user"></i> <?= $n['lecturer_read_count'] ?></span>
+                <span style="color:#94a3b8; font-weight:400; margin:0 4px;">|</span>
+                <span class="text-success" title="Students Read"><i class="fas fa-user-graduate"></i> <?= $n['student_read_count'] ?></span>
                 <span style="color:#94a3b8; font-weight:400; margin:0 4px;">/</span>
-                <span style="color:#ef4444;" title="Still Pending"><i class="fas fa-clock"></i> <?= max(0, $n['total_target'] - $n['read_count']) ?></span>
+                <span style="color:#ef4444;" title="Total Target"><i class="fas fa-bullseye"></i> <?= $n['total_target'] ?></span>
               </div>
-              <div class="progress" style="height:4px; width:60px; margin-top:6px; background:#f1f5f9; border-radius:10px;">
+              <div class="progress" style="height:4px; width:80px; margin-top:6px; background:#f1f5f9; border-radius:10px;">
                 <div class="progress-bar bg-success" style="width: <?= ($n['total_target'] > 0) ? ($n['read_count'] / $n['total_target'] * 100) : 0 ?>%; border-radius:10px;"></div>
               </div>
             </td>
@@ -338,3 +342,124 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+
+<!-- Readers List Modal -->
+<div class="modal fade" id="readersListModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content lms-modal" style="border:none; border-radius:24px; overflow:hidden;">
+        <div class="modal-header border-0 p-4 pb-0">
+            <div>
+                <h4 class="fw-800 m-0" style="font-size:20px; color:var(--text-main);">Notice Engagement</h4>
+                <p id="readers-modal-subtitle" class="text-muted m-0" style="font-size:12px;">Detailed breakdown of who has read this notice.</p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+            <div id="readers-loading" class="text-center py-5">
+                <div class="spinner-border text-primary"></div>
+                <p class="mt-2 text-muted">Fetching reader data...</p>
+            </div>
+            <div id="readers-content" style="display:none;">
+                <div class="row g-4">
+                    <!-- Lecturers Column -->
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-4 h-100">
+                            <h6 class="fw-800 mb-3 d-flex align-items-center gap-2" style="color:var(--primary);">
+                                <i class="fas fa-chalkboard-user"></i> Lecturers
+                                <span id="lecturer-read-badge" class="badge bg-primary rounded-pill" style="font-size:10px;">0</span>
+                            </h6>
+                            <div id="lecturer-readers-list" class="readers-scroll-list" style="max-height:300px; overflow-y:auto;">
+                                <!-- List goes here -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Students Column -->
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-4 h-100">
+                            <h6 class="fw-800 mb-3 d-flex align-items-center gap-2" style="color:var(--accent-dark);">
+                                <i class="fas fa-user-graduate"></i> Students
+                                <span id="student-read-badge" class="badge bg-success rounded-pill" style="font-size:10px;">0</span>
+                            </h6>
+                            <div id="student-readers-list" class="readers-scroll-list" style="max-height:300px; overflow-y:auto;">
+                                <!-- List goes here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.reader-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+.reader-item:last-child { border: none; }
+.reader-info .r-name { font-weight: 700; font-size: 13px; color: var(--text-main); display: block; line-height: 1.2; }
+.reader-info .r-time { font-size: 10px; color: var(--text-muted); }
+
+body.lms-dark-mode .bg-light { background: rgba(255,255,255,0.02) !important; }
+body.lms-dark-mode .reader-item { border-bottom-color: rgba(255,255,255,0.05); }
+</style>
+
+<script>
+function viewNoticeReaders(id, title) {
+    const modal = new bootstrap.Modal(document.getElementById('readersListModal'));
+    document.getElementById('readers-modal-subtitle').innerText = 'Breakdown for: ' + title;
+    document.getElementById('readers-loading').style.display = 'block';
+    document.getElementById('readers-content').style.display = 'none';
+    
+    // Clear lists
+    document.getElementById('lecturer-readers-list').innerHTML = '';
+    document.getElementById('student-readers-list').innerHTML = '';
+    
+    modal.show();
+    
+    fetch(`../../api/notices.php?action=readers&id=${id}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('readers-loading').style.display = 'none';
+            document.getElementById('readers-content').style.display = 'block';
+            
+            if(data.success) {
+                let lCount = 0;
+                let sCount = 0;
+                
+                data.readers.forEach(r => {
+                    const item = `
+                        <div class="reader-item">
+                            <div class="avatar-initials" style="width:30px; height:30px; font-size:11px;">${r.name.charAt(0).toUpperCase()}</div>
+                            <div class="reader-info">
+                                <span class="r-name">${r.name}</span>
+                                <span class="r-time">${r.read_at}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if(r.role === 'lecturer') {
+                        document.getElementById('lecturer-readers-list').innerHTML += item;
+                        lCount++;
+                    } else if(r.role === 'student') {
+                        document.getElementById('student-readers-list').innerHTML += item;
+                        sCount++;
+                    }
+                });
+                
+                document.getElementById('lecturer-read-badge').innerText = lCount;
+                document.getElementById('student-read-badge').innerText = sCount;
+                
+                if(lCount === 0) document.getElementById('lecturer-readers-list').innerHTML = '<p class="text-center text-muted py-3" style="font-size:12px;">No lecturers read yet.</p>';
+                if(sCount === 0) document.getElementById('student-readers-list').innerHTML = '<p class="text-center text-muted py-3" style="font-size:12px;">No students read yet.</p>';
+                
+            } else {
+                alert('Error: ' + data.message);
+            }
+        });
+}
+</script>
