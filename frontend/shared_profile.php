@@ -147,79 +147,105 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
   }
 </style>
 
-<div class="row g-4">
-  <div class="col-lg-4">
-    <div class="profile-premium-card text-center">
-      <div class="profile-banner"></div>
-      <div class="profile-avatar-wrap">
-        <div class="profile-avatar">
-          <?= strtoupper(substr($userDetails['name'], 0, 1)) ?>
+<div class="card-lms overflow-hidden shadow-premium" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);">
+  <div class="row g-0">
+    <!-- Profile Info Column -->
+    <div class="col-lg-4" style="background: rgba(255, 255, 255, 0.02); border-right: 1px solid rgba(255, 255, 255, 0.1);">
+      <div class="text-center py-5 px-4 h-100 position-relative">
+        <!-- Banner using background instead of absolute div to prevent edge line issues -->
+        <div class="profile-header-bg" style="position: absolute; top:0; left:0; right:0; height:120px; background: var(--grad-primary); opacity: 0.8; z-index:0;"></div>
+        
+        <div class="profile-avatar-wrap" style="position: relative; z-index: 5; margin-top: 30px; display: inline-block;">
+          <div class="profile-avatar" style="width: 130px; height: 130px; font-size: 56px; border: 8px solid #141b1b; background: var(--grad-emerald); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800;">
+            <?= strtoupper(substr($userDetails['name'], 0, 1)) ?>
+          </div>
         </div>
-      </div>
-      <div class="profile-info">
-        <h3 class="fw-800 m-0" style="font-size:22px; color: var(--text-main);"><?= htmlspecialchars($userDetails['name']) ?></h3>
-        <div class="text-muted mt-1" style="font-size:14px;"><?= htmlspecialchars($userDetails['email']) ?></div>
-        <div class="profile-role-badge">
-          <i class="fas fa-shield-halved me-1"></i> <?= ucfirst($userDetails['role']) ?>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="col-lg-8">
-    <div class="card-lms">
-      <div class="card-lms-header">
-        <div class="card-lms-title">
-          <div class="d-flex align-items-center gap-3">
-            <div class="stat-icon indigo" style="width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
-              <i class="fas fa-user-gear"></i>
-            </div>
-            <div>
-              <div style="font-size: 18px; font-weight: 800;">Account Settings</div>
-              <div style="font-size: 12px; font-weight: 500; color: var(--text-muted);">Manage your personal information</div>
+        
+        <div class="profile-info mt-4" style="position: relative; z-index: 5;">
+          <h3 class="fw-800 m-0" style="font-size:28px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.3);"><?= htmlspecialchars($userDetails['name']) ?></h3>
+          <div class="mt-2 fw-500" style="font-size:15px; color: rgba(255,255,255,0.6) !important;"><?= htmlspecialchars($userDetails['email']) ?></div>
+          <div class="profile-role-badge mt-4" style="background: var(--accent); color: #000; padding: 8px 24px; font-weight: 900; box-shadow: 0 10px 20px rgba(52, 211, 153, 0.2);">
+            <i class="fas fa-shield-halved me-1"></i> <?= strtoupper($userDetails['role']) ?>
+          </div>
+          
+          <div class="mt-5 p-4 rounded-4" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);">
+            <div class="d-flex align-items-center gap-3 text-start">
+               <div class="stat-icon emerald" style="width: 40px; height: 40px; border-radius: 12px; font-size: 16px; background: rgba(52, 211, 153, 0.2); color: #34d399; display: flex; align-items: center; justify-content: center;">
+                 <i class="fas fa-clock-rotate-left"></i>
+               </div>
+               <div>
+                 <div class="fw-800" style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5) !important;">Member Since</div>
+                 <div class="fw-800" style="font-size: 14px; color: #fff;"><?= date('M d, Y', strtotime($userDetails['created_at'])) ?></div>
+               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="card-lms-body">
+    </div>
+    
+    <!-- Settings Form Column -->
+    <div class="col-lg-8">
+      <div class="p-5">
+        <div class="d-flex align-items-center gap-4 mb-5">
+          <div class="stat-icon indigo" style="width: 55px; height: 55px; border-radius: 18px; font-size: 24px; background: rgba(99, 102, 241, 0.15); color: #818cf8; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-user-gear"></i>
+          </div>
+          <div>
+            <h2 class="fw-900 m-0" style="font-size: 26px; color: #fff; letter-spacing: -0.5px;">Account Settings</h2>
+            <p class="m-0 fw-500" style="font-size: 14px; color: rgba(255,255,255,0.5) !important;">Manage your personal profile and contact information</p>
+          </div>
+        </div>
+
         <form method="POST">
           <div class="row g-4">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <div class="form-group-lms">
-                <label class="form-label-lms">Full Name</label>
+                <label class="form-label-lms" style="color: rgba(255,255,255,0.4);">Full Name</label>
                 <div class="input-icon-wrap">
-                  <i class="fas fa-user"></i>
+                  <i class="fas fa-user" style="color: var(--accent);"></i>
                   <input type="text" name="name" class="form-control-lms" 
-                         value="<?= htmlspecialchars($userDetails['name']) ?>" required>
+                         value="<?= htmlspecialchars($userDetails['name']) ?>" 
+                         style="background: rgba(255,255,255,0.03); height: 55px; border: 1px solid rgba(255,255,255,0.1); color: #fff;" required>
                 </div>
               </div>
             </div>
+            
             <div class="col-md-6">
               <div class="form-group-lms">
-                <label class="form-label-lms">Email Address</label>
+                <label class="form-label-lms" style="color: rgba(255,255,255,0.4);">Email Address</label>
                 <div class="input-icon-wrap">
-                  <i class="fas fa-envelope"></i>
+                  <i class="fas fa-envelope" style="color: var(--accent);"></i>
                   <input type="email" class="form-control-lms" 
-                         value="<?= htmlspecialchars($userDetails['email']) ?>" disabled>
+                         value="<?= htmlspecialchars($userDetails['email']) ?>" 
+                         style="background: rgba(255,255,255,0.05); height: 55px; border: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); cursor: not-allowed;" disabled>
                 </div>
+                <small class="mt-2 d-block" style="font-size: 11px; color: rgba(255,255,255,0.3) !important;">Email cannot be changed manually. Contact admin if needed.</small>
               </div>
             </div>
+            
             <div class="col-md-6">
               <div class="form-group-lms">
-                <label class="form-label-lms">Phone Number</label>
+                <label class="form-label-lms" style="color: rgba(255,255,255,0.4);">Phone Number</label>
                 <div class="input-icon-wrap">
-                  <i class="fas fa-phone"></i>
+                  <i class="fas fa-phone" style="color: var(--accent);"></i>
                   <input type="text" name="phone" class="form-control-lms" 
-                         value="<?= htmlspecialchars($userDetails['phone'] ?? '') ?>" placeholder="e.g. +94 77 123 4567">
+                         value="<?= htmlspecialchars($userDetails['phone'] ?? '') ?>" 
+                         placeholder="e.g. +94 77 123 4567"
+                         style="background: rgba(255,255,255,0.03); height: 55px; border: 1px solid rgba(255,255,255,0.1); color: #fff;">
                 </div>
               </div>
             </div>
           </div>
           
-          <div class="d-flex justify-content-end mt-4">
-            <button type="submit" class="btn-primary-grad px-4 py-2 rounded-3 fw-800 d-flex align-items-center gap-2">
-              <i class="fas fa-save"></i> Save Changes
-            </button>
+          <div class="mt-5 pt-5 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-4">
+              <p class="m-0" style="font-size: 13px; max-width: 350px; color: rgba(255,255,255,0.4) !important;">
+                Updating your profile will reflect across all modules. Keep your contact details current for important notifications.
+              </p>
+              <button type="submit" class="btn-primary-grad px-5 py-3 rounded-pill fw-900 d-flex align-items-center gap-2 shadow-lg" style="font-size: 16px;">
+                <i class="fas fa-save"></i> Save Profile Changes
+              </button>
+            </div>
           </div>
         </form>
       </div>

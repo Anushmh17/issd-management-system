@@ -258,29 +258,45 @@ body.lms-dark-mode #notice-modal-badge {
 }
 </style>
 
-<!-- Notice Viewer Modal -->
+<!-- Notice Viewer Modal (Premium UI) -->
 <div class="modal fade" id="viewNoticeModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content lms-modal" style="border:none; border-radius:18px; overflow:hidden;">
-        <div id="notice-modal-header" style="padding:40px 30px 20px 30px; background: linear-gradient(135deg, var(--primary), var(--accent)); color:#fff; position:relative;">
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="position:absolute; top:20px; right:20px;"></button>
-            <div id="notice-modal-badge" class="badge bg-white text-primary mb-3" style="font-size:10px; text-transform:uppercase; letter-spacing:1px; font-weight:700;">OFFICIAL NOTICE</div>
-            <h3 id="notice-modal-title" class="fw-800 m-0" style="font-size:24px; line-height:1.2;">Notice Title</h3>
+    <div class="modal-content lms-modal" style="border:none; border-radius:28px; overflow:hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+        <!-- Premium Indigo Header -->
+        <div id="notice-modal-header" style="padding:45px 35px 25px 35px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color:#fff; position:relative;">
+            <div style="position:absolute; top:0; left:0; right:0; bottom:0; background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity:0.1;"></div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="position:absolute; top:25px; right:25px; opacity:0.8; transition:0.3s;"></button>
+            
+            <div id="notice-modal-badge" style="display:inline-block; padding:4px 12px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius:8px; font-size:10px; text-transform:uppercase; letter-spacing:1.5px; font-weight:800; margin-bottom:15px; border:1px solid rgba(255,255,255,0.3);">
+                <i class="fas fa-shield-halved" style="margin-right:6px;"></i> Official Notice
+            </div>
+            <h3 id="notice-modal-title" class="fw-800 m-0" style="font-size:28px; line-height:1.2; letter-spacing:-0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.1);">Notice Title</h3>
         </div>
-        <div class="modal-body p-4 pt-4">
-            <div class="d-flex align-items-center gap-3 mb-4 p-3 author-box" style="background:#f8fafc; border-radius:12px; border:1px solid #f1f5f9;">
-                <div id="notice-modal-avatar" style="width:45px; height:45px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px;">A</div>
+
+        <div class="modal-body p-35" style="padding:35px;">
+            <!-- Premium Author Box -->
+            <div class="d-flex align-items-center gap-3 mb-30 p-3 author-box" style="background: rgba(99, 102, 241, 0.03); border-radius:20px; border:1px solid rgba(99, 102, 241, 0.1); padding:15px 20px !important;">
+                <div id="notice-modal-avatar" style="width:50px; height:50px; border-radius:16px; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px; box-shadow: 0 8px 15px rgba(99, 102, 241, 0.2);">A</div>
                 <div>
-                   <div id="notice-modal-author" class="fw-700" style="color:var(--text-main); font-size:14px;">Super Admin</div>
-                   <div id="notice-modal-date" class="text-muted" style="font-size:12px;">Apr 09, 2026</div>
+                   <div class="text-muted fw-700" style="font-size:10px; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Issued By</div>
+                   <div id="notice-modal-author" class="fw-800" style="color:var(--text-main); font-size:16px; line-height:1;">Super Admin</div>
+                </div>
+                <div class="ms-auto text-end">
+                    <div id="notice-modal-date" class="fw-700" style="font-size:13px; color:#6366f1;">Apr 09, 2026</div>
+                    <div class="text-muted" style="font-size:10px; font-weight:600;">Broadcast Date</div>
                 </div>
             </div>
-            <div id="notice-modal-content" style="font-size:15px; line-height:1.8; color:#475569; white-space:pre-wrap;">
+
+            <!-- Content -->
+            <div id="notice-modal-content" style="font-size:16px; line-height:1.8; color:var(--text-main); white-space:pre-wrap; opacity:0.9; font-weight:500;">
                 Notice content goes here...
             </div>
         </div>
-        <div class="modal-footer border-0 p-4 pt-0">
-            <button type="button" id="btn-mark-notice-read" class="btn-lms btn-primary w-100" data-bs-dismiss="modal"><?= ($role === 'admin') ? 'Close Preview' : "I've Read This" ?></button>
+
+        <div class="modal-footer border-0 p-35 pt-0" style="padding:35px; padding-top:0;">
+            <button type="button" class="btn-lms btn-primary w-100 shadow-premium" data-bs-dismiss="modal" style="border-radius:16px; padding:14px; font-weight:800; letter-spacing:0.5px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(255,255,255,0.05);">
+                Acknowledge & Close
+            </button>
         </div>
     </div>
   </div>

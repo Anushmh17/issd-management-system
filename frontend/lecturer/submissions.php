@@ -8,7 +8,7 @@ require_once dirname(__DIR__, 2) . '/backend/db.php';
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
 
 requireRole(ROLE_LECTURER);
-$userId = currentUserId();
+$lecturerId = $_SESSION['lecturer_id'] ?? currentUserId();
 $error = '';
 
 $assignment_id = (int)($_GET['assignment_id'] ?? 0);
@@ -22,7 +22,7 @@ $stmt = $pdo->prepare("SELECT a.*, c.course_name AS course_name, c.course_code A
                        FROM assignments a 
                        JOIN courses c ON c.id=a.course_id 
                        WHERE a.id = ? AND a.lecturer_id = ?");
-$stmt->execute([$assignment_id, $userId]);
+$stmt->execute([$assignment_id, $lecturerId]);
 $assignment = $stmt->fetch();
 
 if (!$assignment) {
@@ -117,12 +117,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           ?>
           <tr>
             <td>
-              <div class="d-flex align-center gap-10">
-                <div class="avatar-initials" style="width:30px;height:30px;font-size:12px;"><?= strtoupper(substr($s['student_name'],0,1)) ?></div>
-                <div>
-                  <div class="fw-600"><?= htmlspecialchars($s['student_name']) ?></div>
-                  <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars($s['s_id'] ?? '') ?></div>
-                </div>
+              <div>
+                <div class="fw-600"><?= htmlspecialchars($s['student_name']) ?></div>
+                <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars($s['s_id'] ?? '') ?></div>
               </div>
             </td>
             <td>

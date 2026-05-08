@@ -9,14 +9,19 @@ require_once dirname(__DIR__, 2) . '/includes/auth.php';
 
 requireRole(ROLE_LECTURER);
 $userId = currentUserId();
+$lecturerId = (isset($_SESSION['lecturer_id'])) ? $_SESSION['lecturer_id'] : $userId;
 
 $sql = "SELECT DISTINCT c.*,
-               (SELECT COUNT(*) FROM enrollments e2 WHERE e2.course_id = c.id AND e2.lecturer_id = ?) AS student_count
+               (SELECT COUNT(DISTINCT student_id) FROM (
+                   SELECT student_id, course_id FROM enrollments
+                   UNION
+                   SELECT student_id, course_id FROM student_courses
+               ) as all_stu WHERE all_stu.course_id = c.id) AS student_count
         FROM courses c
-        JOIN enrollments e ON e.course_id = c.id
-        WHERE e.lecturer_id = ? AND c.status = 'active'";
+        JOIN course_assignments ca ON ca.course_id = c.id
+        WHERE ca.lecturer_id = ? AND c.status = 'active'";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([$userId, $userId]);
+$stmt->execute([$lecturerId]);
 $courses = $stmt->fetchAll();
 
 require_once dirname(__DIR__, 2) . '/includes/header.php';
@@ -33,28 +38,53 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <div class="row g-4">
     <?php if (empty($courses)): ?>
-        <div class="col-12"><div class="card-lms"><div class="empty-state"><i class="fas fa-book-open"></i><p>You have not been assigned to any active courses yet.</p></div></div></div>
+        <div class="col-12">
+          <div class="glass-card">
+            <div class="empty-state">
+              <i class="fas fa-book-open" style="font-size: 48px; color: var(--primary); opacity: 0.5;"></i>
+              <p style="font-size: 16px; margin-top: 15px;">You have not been assigned to any active courses yet.</p>
+            </div>
+          </div>
+        </div>
     <?php else: ?>
         <?php foreach ($courses as $c): ?>
         <div class="col-md-6 col-lg-4">
-          <div class="card-lms h-100" style="position:relative;overflow:hidden;border:1.5px solid var(--primary-light);">
-            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--primary);"></div>
-            <div class="card-lms-body">
-              <div class="d-flex justify-between align-center mb-3">
-                  <span class="badge-lms primary"><?= htmlspecialchars($c['course_code']) ?></span>
-                  <span class="text-muted" style="font-size:12px;"><i class="fas fa-clock"></i> <?= htmlspecialchars($c['duration']) ?></span>
-              </div>
-              <h3 class="fw-700 mb-2" style="font-size:18px;color:var(--text-main);"><?= htmlspecialchars($c['course_name']) ?></h3>
-              <p class="text-muted mb-4" style="font-size:13px;line-height:1.5;min-height:40px;">
-                  <?= htmlspecialchars($c['description'] ?? 'No description provided.') ?>
-              </p>
-              
-              <div class="d-flex justify-between align-center" style="border-top:1px solid var(--border-color);padding-top:15px;">
-                  <div>
-                      <div class="fw-700" style="font-size:16px;color:var(--accent);"><?= $c['student_count'] ?></div>
-                      <div class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">My Students</div>
+          <div class="glass-card h-100 premium-hover-card" style="padding: 28px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
+            <!-- Left Side Accent -->
+            <div style="position: absolute; top: 0; left: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, var(--primary), var(--accent));"></div>
+            
+            <div class="card-content-wrap" style="display: flex; flex-direction: column; height: 100%;">
+              <div class="d-flex justify-content-between align-items-center mb-20">
+                  <div class="badge-lms primary" style="padding: 6px 12px; font-weight: 800; font-size: 10px; letter-spacing: 1px; border-radius: 8px; background: rgba(34, 211, 238, 0.15); color: var(--primary);"><?= htmlspecialchars($c['course_code']) ?></div>
+                  <div class="d-flex align-items-center gap-6 text-muted fw-700" style="font-size:10px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <i class="fas fa-clock" style="color:var(--primary); font-size: 12px;"></i> <?= htmlspecialchars($c['duration']) ?>
                   </div>
-                  <a href="<?= BASE_URL ?>/frontend/lecturer/students.php?q=<?= urlencode($c['course_name']) ?>" class="btn-lms btn-outline btn-sm">View Students <i class="fas fa-arrow-right"></i></a>
+              </div>
+              
+              <h3 class="fw-800 mb-12" style="font-size:22px; color:var(--text-main); letter-spacing: -0.5px; line-height: 1.2;">
+                <?= htmlspecialchars($c['course_name']) ?>
+              </h3>
+              
+              <div class="text-muted mb-24" style="font-size:13px; line-height:1.6; min-height:40px; opacity: 0.8;">
+                  <?= htmlspecialchars($c['description'] ?? 'Explore the core principles and advanced techniques of this comprehensive module.') ?>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mt-auto">
+                  <div class="d-flex align-items-center" style="gap: 20px;">
+                      <div class="stat-mini-icon shadow-sm" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.05)); color: var(--primary); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid rgba(34, 211, 238, 0.1);">
+                        <i class="fas fa-user-graduate"></i>
+                      </div>
+                      <div>
+                        <div class="fw-800" style="font-size:20px; color:var(--text-main); line-height:1;"><?= $c['student_count'] ?></div>
+                        <div class="text-muted fw-700" style="font-size:9px; text-transform:uppercase; letter-spacing:1px; margin-top: 2px;">Students</div>
+                      </div>
+                  </div>
+                  
+                  <a href="<?= BASE_URL ?>/frontend/lecturer/students.php?q=<?= urlencode($c['course_name']) ?>" 
+                     class="btn-lms btn-primary btn-sm shadow-premium" 
+                     style="border-radius: 12px; font-weight: 700; padding: 10px 20px; font-size: 12px; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--accent)); border: none; box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);">
+                    Manage <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                  </a>
               </div>
             </div>
           </div>

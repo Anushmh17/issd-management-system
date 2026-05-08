@@ -12,7 +12,8 @@ require_once dirname(__DIR__, 3) . '/backend/assignment_controller.php';
 requireRole(ROLE_LECTURER);
 
 $user = currentUser();
-$assignments = getLecturerAssignments($pdo, $user['id']);
+$lecturerId = $_SESSION['lecturer_id'] ?? $user['id'];
+$assignments = getLecturerAssignments($pdo, $lecturerId);
 
 require_once dirname(__DIR__, 3) . '/includes/header.php';
 require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
@@ -31,14 +32,14 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
     </a>
   </div>
 
-  <div class="card-lms">
-    <div class="card-lms-header">
-      <div class="card-lms-title">
-        <i class="fas fa-file-alt" style="color:#5b4efa;"></i> Assigned Work
-        <span class="badge-lms info" style="margin-left:6px;"><?= count($assignments) ?></span>
-      </div>
+  <div class="glass-card">
+    <div class="glass-card-title">
+      <span style="display:flex; align-items:center; gap:10px;">
+        <i class="fas fa-file-alt" style="color:var(--primary);"></i> 
+        Assigned Work (<?= count($assignments) ?>)
+      </span>
     </div>
-    <div class="card-lms-body" style="padding:0;overflow-x:auto;">
+    <div class="card-lms-body" style="padding:0; overflow-x:auto;">
       <?php if (empty($assignments)): ?>
         <div class="empty-state">
           <i class="fas fa-folder-open"></i>

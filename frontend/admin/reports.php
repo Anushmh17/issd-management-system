@@ -83,9 +83,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .revenue-table thead th:last-child { border-radius: 0 14px 14px 0; }
   .revenue-table tbody td {
     padding: 16px 20px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-light, #f1f5f9);
     font-size: 14px;
-    color: #1e293b;
+    color: var(--text-main, #1e293b);
   }
   .revenue-table tr:last-child td { border-bottom: none; }
   
@@ -99,13 +99,35 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     font-size: 20px;
     margin-bottom: 16px;
     transition: all 0.3s ease;
-    background: #f8fafc;
-    color: #64748b;
+    background: var(--bg-input, #f8fafc);
+    color: var(--text-muted, #64748b);
   }
   .stat-icon.indigo { background: #e0e7ff; color: #4f46e5; }
   .stat-icon.emerald { background: #dcfce7; color: #059669; }
   .stat-icon.amber { background: #fef3c7; color: #d97706; }
   .stat-icon.teal { background: #ccfbf1; color: #0d9488; }
+
+  /* Dark mode overrides */
+  body.lms-dark-mode .revenue-table tbody td {
+    border-bottom-color: rgba(255,255,255,0.05);
+  }
+  body.lms-dark-mode .stat-icon:not([class*="indigo"]):not([class*="emerald"]):not([class*="amber"]):not([class*="teal"]) {
+    background: rgba(255,255,255,0.05);
+    color: #94a3b8;
+  }
+  body.lms-dark-mode .bento-card h3 {
+    color: #fff !important;
+  }
+  body.lms-dark-mode .rpt-kpi,
+  body.lms-dark-mode .rpt-card,
+  body.lms-dark-mode .rpt-insight {
+    background: rgba(30, 41, 59, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+  }
+  body.lms-dark-mode .rpt-bar-track,
+  body.lms-dark-mode .rpt-progress-track {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
 
 
 </style>

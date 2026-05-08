@@ -65,6 +65,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <div class="glass-card notice-card-clickable <?= $n['is_read'] ? 'is-read' : '' ?>" 
              style="cursor:pointer; <?= $n['is_read'] ? 'opacity:0.6;' : '' ?>"
              data-real-id="<?= $n['id'] ?>"
+             data-is-read="<?= $n['is_read'] ?>"
              data-title="<?= htmlspecialchars($n['title']) ?>"
              data-content="<?= htmlspecialchars($n['content']) ?>"
              data-author="<?= htmlspecialchars($n['posted_by_name']) ?>"

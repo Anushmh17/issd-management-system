@@ -254,32 +254,34 @@ document.addEventListener('DOMContentLoaded', function () {
   animateCounters();
 
   // --- Notice Viewer ---
-  document.addEventListener('click', function(e) {
-    const card = e.target.closest('.notice-card-clickable');
-    if (!card) return;
+  const noticeModal = document.getElementById('viewNoticeModal');
+  if (noticeModal) {
+    document.addEventListener('click', function(e) {
+      const card = e.target.closest('.notice-card-clickable, .notice-item-lms');
+      if (!card) return;
 
-    const modal = document.getElementById('viewNoticeModal');
-    if (!modal) return;
+      // Store notice data in modal
+      noticeModal.dataset.noticeId = card.dataset.realId || card.dataset.id;
+      noticeModal.dataset.isRead = card.dataset.isRead;
+      
+      document.getElementById('notice-modal-title').textContent = card.dataset.title;
+      document.getElementById('notice-modal-content').textContent = card.dataset.content;
+      document.getElementById('notice-modal-author').textContent = card.dataset.author || 'Admin';
+      document.getElementById('notice-modal-date').textContent = card.dataset.date;
+      
+      const avatar = document.getElementById('notice-modal-avatar');
+      if(avatar) avatar.textContent = (card.dataset.author || 'Admin').substring(0, 1).toUpperCase();
 
-    modal.dataset.noticeId = card.dataset.realId; // Store for the "Read" button
-    document.getElementById('notice-modal-title').textContent = card.dataset.title;
-    document.getElementById('notice-modal-content').textContent = card.dataset.content;
-    document.getElementById('notice-modal-author').textContent = card.dataset.author;
-    document.getElementById('notice-modal-date').textContent = card.dataset.date;
-    document.getElementById('notice-modal-avatar').textContent = card.dataset.author.substring(0, 1).toUpperCase();
+      const bsModal = new bootstrap.Modal(noticeModal);
+      bsModal.show();
+    });
 
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-  });
+    // Automatically mark as read when modal is closed
+    noticeModal.addEventListener('hidden.bs.modal', function() {
+      const noticeId = this.dataset.noticeId;
+      const isRead = this.dataset.isRead === '1';
 
-  // Handle "I've Read This" Button
-  const markReadBtn = document.getElementById('btn-mark-notice-read');
-  if (markReadBtn) {
-    markReadBtn.addEventListener('click', function() {
-      const modal = document.getElementById('viewNoticeModal');
-      const noticeId = modal.dataset.noticeId;
-
-      if (!noticeId) return;
+      if (!noticeId || isRead) return;
 
       fetch(BASE_URL + '/backend/notice_read.php', {
         method: 'POST',
@@ -289,19 +291,41 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          // Success! Optionally update UI (like removing a 'new' tag)
-          const card = document.querySelector(`.notice-card-clickable[data-real-id="${noticeId}"]`);
-          if (card) {
-            card.classList.add('is-read');
-            card.style.opacity = '0.7';
-            // Dynamically add the READ badge if it doesn't exist
-            const header = card.querySelector('div:first-child');
+          // Update Lecturer Dashboard Item (if exists)
+          const lecturerItem = document.querySelector(`.notice-item-lms[data-id="${noticeId}"]`);
+          if (lecturerItem) {
+            lecturerItem.dataset.isRead = '1';
+            lecturerItem.classList.replace('is-unread', 'is-read');
+            lecturerItem.style.transition = 'all 0.5s ease';
+            lecturerItem.style.opacity = '0.7';
+            lecturerItem.style.transform = 'translateX(10px)';
+            const indicator = lecturerItem.querySelector('.unread-indicator');
+            if (indicator) {
+                const readBadge = document.createElement('span');
+                readBadge.className = 'badge-lms success outline';
+                readBadge.style.cssText = 'font-size:8px; padding:1px 6px; border-radius:100px;';
+                readBadge.textContent = 'READ';
+                indicator.parentNode.replaceChild(readBadge, indicator);
+            }
+          }
+
+          // Update Student Notices Card (if exists)
+          const studentCard = document.querySelector(`.notice-card-clickable[data-real-id="${noticeId}"]`);
+          if (studentCard) {
+            studentCard.dataset.isRead = '1';
+            studentCard.classList.add('is-read');
+            studentCard.style.opacity = '0.6';
+            const header = studentCard.querySelector('div:first-child');
             if (header && !header.querySelector('.db-green')) {
                 const badge = document.createElement('span');
                 badge.className = 'dark-badge db-green';
                 badge.style.background = 'rgba(34,197,94,0.1)';
                 badge.style.color = '#4ade80';
                 badge.innerHTML = '<i class="fas fa-check-circle"></i> READ';
+                const indicator = header.querySelector('.unread-indicator');
+                if (indicator) indicator.remove();
+                const newBadge = header.querySelector('.db-red');
+                if (newBadge) newBadge.remove();
                 header.insertBefore(badge, header.children[1]);
             }
           }

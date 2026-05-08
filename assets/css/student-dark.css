@@ -1739,6 +1739,92 @@ body.lms-dark-mode .stat-icon.amber { color: #fbbf24 !important; background: rgb
 body.lms-dark-mode .stat-icon.teal { color: #2dd4bf !important; background: rgba(20, 184, 166, 0.2) !important; border: 1px solid rgba(20, 184, 166, 0.3) !important; }
 body.lms-dark-mode .stat-icon.rose { color: #fca5a5 !important; background: rgba(244, 63, 94, 0.2) !important; border: 1px solid rgba(244, 63, 94, 0.3) !important; }
 
+/* --- Glass Card Dark Mode --- */
+body.lms-dark-mode .glass-card {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+body.lms-dark-mode .glass-card-title {
+  color: #ffffff !important;
+}
+
+body.lms-dark-mode .dark-list-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+
+body.lms-dark-mode .item-title { color: #f1f5f9 !important; }
+body.lms-dark-mode .item-sub { color: #94a3b8 !important; }
+body.lms-dark-mode .item-val { color: #ffffff !important; }
+
+body.lms-dark-mode .db-blue { background: rgba(3, 105, 161, 0.2) !important; color: #7dd3fc !important; }
+body.lms-dark-mode .db-green { background: rgba(21, 128, 61, 0.2) !important; color: #4ade80 !important; }
+body.lms-dark-mode .db-red { background: rgba(185, 28, 28, 0.2) !important; color: #fca5a5 !important; }
+body.lms-dark-mode .db-gray { background: rgba(255, 255, 255, 0.05) !important; color: #94a3b8 !important; }
+
+/* --- Premium Search Dark Mode --- */
+body.lms-dark-mode .search-input-group {
+  background: rgba(15, 23, 42, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.lms-dark-mode .search-input-group:focus-within {
+  border-color: var(--primary) !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+
+body.lms-dark-mode .search-input-group input {
+  color: #fff !important;
+}
+
+body.lms-dark-mode .btn-search-premium {
+  box-shadow: 0 4px 15px rgba(34, 211, 238, 0.2) !important;
+}
+
+body.lms-dark-mode .card-lms-footer {
+  background: rgba(15, 23, 42, 0.4) !important;
+}
+
+/* --- Fix Calendar Icon Visibility --- */
+body.lms-dark-mode input[type="date"]::-webkit-calendar-picker-indicator,
+body.lms-dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.5) !important;
+  cursor: pointer;
+}
+
+body.lms-dark-mode input[type="datetime-local"] {
+  color-scheme: dark !important;
+}
+
+/* --- Premium Stat Cards Dark Mode --- */
+body.lms-dark-mode .stat-card {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(12px);
+}
+
+body.lms-dark-mode .stat-card .stat-value {
+  color: #ffffff !important;
+}
+
+body.lms-dark-mode .stat-card .stat-label {
+  color: #94a3b8 !important;
+}
+
+/* --- Glass Card Dark Mode --- */
+body.lms-dark-mode .glass-card {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.lms-dark-mode .glass-card-title {
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
 
 
 

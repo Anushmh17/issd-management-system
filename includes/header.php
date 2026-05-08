@@ -27,15 +27,19 @@ if (!defined('BASE_URL'))   define('BASE_URL', '/Webbuilders%20Projects/issd_man
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Flatpickr CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/confirmDate/confirmDate.css">
+  <?php if (isset($_COOKIE['lms_theme']) && $_COOKIE['lms_theme'] === 'dark'): ?>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+  <?php endif; ?>
   <!-- Select2 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <!-- Cropper.js CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= time() ?>">
+  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=1.0.2">
 
   <?php if (isset($extraCSS)) echo $extraCSS; ?>
-  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/student-dark.css?v=<?= time() ?>">
+  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/student-dark.css?v=1.0.2">
 
   <script>
     const BASE_URL = '<?= BASE_URL ?>';
