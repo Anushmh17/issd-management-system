@@ -67,6 +67,38 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .enroll-badge .count { font-size: 13px; font-weight: 800; }
   .enroll-badge .label { font-size: 8.5px; text-transform: uppercase; opacity: 0.8; letter-spacing: 0.5px; }
 }
+
+/* Count Badge & Dark Mode Polish */
+.count-badge {
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 4px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 800;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+body.lms-dark-mode .count-badge {
+  background: rgba(34, 211, 238, 0.15) !important;
+  color: #22d3ee !important;
+  border: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+body.lms-dark-mode .list-legend-label {
+  background: rgba(34, 211, 238, 0.15) !important;
+  color: #22d3ee !important;
+  font-weight: 800;
+}
+
+body.lms-dark-mode .table-lms td { color: #e2e8f0; }
+
+.course-code-badge { background: #f8fafc; color: #475569; border: 1.5px solid #e2e8f0; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: monospace; }
+body.lms-dark-mode .course-code-badge { background: rgba(255, 255, 255, 0.05) !important; color: #cbd5e1 !important; border-color: rgba(255, 255, 255, 0.1) !important; }
+
+.course-fee-badge { background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 800; }
+body.lms-dark-mode .course-fee-badge { background: rgba(16, 185, 129, 0.1) !important; color: #34d399 !important; }
 </style>
 
 <div id="page-content">
@@ -233,12 +265,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </td>
             <td>
               <?php if ($c['lecturer_name']): ?>
-                <div class="d-flex align-center gap-6">
-                  <div class="avatar-initials" style="width:26px;height:26px;font-size:11px;background:#5b4efa;">
-                    <?= strtoupper(substr($c['lecturer_name'], 0, 1)) ?>
-                  </div>
-                  <span style="font-size:13px;"><?= htmlspecialchars($c['lecturer_name']) ?></span>
-                </div>
+                <span style="font-size:13px; font-weight: 600;"><i class="fas fa-user-tie me-2 opacity-50"></i> <?= htmlspecialchars($c['lecturer_name']) ?></span>
               <?php else: ?>
                 <span style="font-size:12px;color:#94a3b8;font-style:italic;">Not assigned</span>
               <?php endif; ?>

@@ -145,10 +145,40 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .aud-lecturer { background: #fffbeb; color: #d97706; }
   .aud-admin { background: #fef2f2; color: #dc2626; }
 
+  /* Dark Mode Badges */
+  body.lms-dark-mode .aud-all { background: rgba(34, 211, 238, 0.15) !important; color: #22d3ee !important; }
+  body.lms-dark-mode .aud-student { background: rgba(52, 211, 153, 0.15) !important; color: #34d399 !important; }
+  body.lms-dark-mode .aud-lecturer { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; }
+  body.lms-dark-mode .aud-admin { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+
   .action-btns { display: flex; gap: 8px; }
-  .action-btn { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.3s; border: 1.5px solid var(--border-color); color: #64748b; }
-  .action-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-  .action-btn.del:hover { border-color: #ef4444; color: #ef4444; background: #fef2f2; }
+  .action-btn { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.3s; border: 1.5px solid var(--border-color); background: transparent; }
+  
+  .action-btn.view { color: var(--primary); border-color: rgba(30, 77, 77, 0.2); }
+  .action-btn.edit { color: var(--warning); border-color: rgba(245, 158, 11, 0.2); }
+  .action-btn.del { color: var(--danger); border-color: rgba(239, 68, 68, 0.2); }
+
+  .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .action-btn.view:hover { background: var(--primary-light); border-color: var(--primary); }
+  .action-btn.edit:hover { background: var(--warning-light); border-color: var(--warning); }
+  .action-btn.del:hover { background: var(--danger-light); border-color: var(--danger); }
+
+  /* Dark Mode Overrides */
+  body.lms-dark-mode .title-cell strong { color: #fff !important; }
+  body.lms-dark-mode .title-cell small { color: #94a3b8 !important; }
+  body.lms-dark-mode .table-header h3 { color: #fff !important; }
+  body.lms-dark-mode .notice-table th { color: #94a3b8 !important; border-bottom-color: rgba(255,255,255,0.05); }
+  body.lms-dark-mode .notice-table td { border-bottom-color: rgba(255,255,255,0.05); color: #e2e8f0; }
+  body.lms-dark-mode .notice-table td span { color: #94a3b8 !important; }
+  body.lms-dark-mode .notice-table .fw-600 { color: #e2e8f0 !important; }
+  
+  body.lms-dark-mode .action-btn { border-color: rgba(255,255,255,0.15); }
+  body.lms-dark-mode .action-btn.view { color: #22d3ee !important; border-color: rgba(34, 211, 238, 0.3); }
+  body.lms-dark-mode .action-btn.edit { color: #fbbf24 !important; border-color: rgba(251, 191, 36, 0.3); }
+  body.lms-dark-mode .action-btn.del { color: #f87171 !important; border-color: rgba(248, 113, 113, 0.3); }
+  
+  body.lms-dark-mode .action-btn i { color: inherit !important; }
+  body.lms-dark-mode .action-btn:hover { background: rgba(255,255,255,0.08); border-color: currentColor; }
 
 
 
@@ -316,7 +346,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </td>
             <td>
               <div class="action-btns" style="justify-content:flex-end;">
-                <button type="button" class="action-btn notice-card-clickable" title="Quick View"
+                <button type="button" class="action-btn view notice-card-clickable" title="Quick View"
                         data-real-id="<?= $n['id'] ?>"
                         data-title="<?= htmlspecialchars($n['title']) ?>"
                         data-content="<?= htmlspecialchars($n['content']) ?>"
@@ -324,7 +354,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                         data-date="<?= date('M d, Y', strtotime($n['created_at'])) ?>">
                   <i class="fas fa-eye"></i>
                 </button>
-                <a href="?action=edit&id=<?= $n['id'] ?>" class="action-btn" title="Edit Notice"><i class="fas fa-pen"></i></a>
+                <a href="?action=edit&id=<?= $n['id'] ?>" class="action-btn edit" title="Edit Notice"><i class="fas fa-pen"></i></a>
                 <form method="POST" style="display:inline;" onsubmit="return confirm('Archive this notice?')">
                   <input type="hidden" name="act" value="delete">
                   <input type="hidden" name="id" value="<?= $n['id'] ?>">

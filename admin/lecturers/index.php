@@ -136,6 +136,35 @@ tr:hover .lect-avatar-wrap {
   transition: 0.2s;
 }
 .photo-modal-close:hover { transform: scale(1.1); background: #dc2626; }
+
+/* Username Tag & Status Fixes */
+.username-tag {
+  font-family: 'Inter', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f0edff;
+  color: #5b4efa;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #e0d9ff;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+body.lms-dark-mode .username-tag {
+  background: rgba(91, 78, 250, 0.15) !important;
+  color: #a5b4fc !important;
+  border-color: rgba(91, 78, 250, 0.3) !important;
+}
+
+body.lms-dark-mode .lect-avatar-wrap {
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+body.lms-dark-mode .table-lms td {
+  color: #e2e8f0;
+}
 </style>
 
 <div id="page-content">
@@ -298,8 +327,7 @@ tr:hover .lect-avatar-wrap {
               </div>
             </td>
             <td>
-              <span style="font-family:monospace;font-size:12px;background:#f0edff;
-                           color:#5b4efa;padding:3px 8px;border-radius:5px;border:1px solid #e0d9ff;">
+              <span class="username-tag">
                 @<?= htmlspecialchars($l['username']) ?>
               </span>
             </td>
@@ -310,11 +338,11 @@ tr:hover .lect-avatar-wrap {
             </td>
             <td>
               <?php if ($l['status'] === 'active'): ?>
-                <span class="badge-lms" style="background:#d1fae5;color:#059669;border:1px solid #a7f3d0;">
+                <span class="badge-lms success">
                   <i class="fas fa-circle-dot" style="font-size:8px;"></i> Active
                 </span>
               <?php else: ?>
-                <span class="badge-lms" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;">
+                <span class="badge-lms" style="background:rgba(255,255,255,0.05); color:#94a3b8; border:1px solid rgba(255,255,255,0.1);">
                   <i class="fas fa-circle-dot" style="font-size:8px;"></i> Inactive
                 </span>
               <?php endif; ?>

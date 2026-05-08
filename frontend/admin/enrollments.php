@@ -390,6 +390,25 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     background-color: rgba(79, 70, 229, 0.08) !important;
     border-left: 4px solid var(--primary) !important;
 }
+
+/* Dark Mode Overrides for Enrollments Hub */
+body.lms-dark-mode .card-lms-header { background: rgba(30, 41, 59, 0.4) !important; }
+body.lms-dark-mode .list-legend-label { background: rgba(34, 211, 238, 0.15) !important; color: #22d3ee !important; font-weight: 800; }
+body.lms-dark-mode h2, 
+body.lms-dark-mode .fw-800.text-dark, 
+body.lms-dark-mode .fw-700.text-dark { color: #ffffff !important; }
+body.lms-dark-mode .text-muted { color: #94a3b8 !important; }
+
+body.lms-dark-mode .avatar-sm { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.1) !important; color: #22d3ee !important; }
+body.lms-dark-mode .badge.bg-white { background: rgba(255,255,255,0.03) !important; color: #f8fafc !important; border-color: rgba(255,255,255,0.05) !important; }
+
+body.lms-dark-mode .bg-primary-light { background: rgba(34, 211, 238, 0.1) !important; }
+body.lms-dark-mode .table-lms th { color: #94a3b8 !important; border-bottom-color: rgba(255,255,255,0.05) !important; background: transparent !important; }
+body.lms-dark-mode .table-lms td { border-bottom-color: rgba(255,255,255,0.02) !important; }
+
+body.lms-dark-mode .input-group-lms { background: rgba(15, 23, 42, 0.6) !important; border: 1px solid rgba(255,255,255,0.05) !important; }
+body.lms-dark-mode .input-group-lms input { color: #fff !important; }
+body.lms-dark-mode .form-control-lms.shadow-sm { background: rgba(15, 23, 42, 0.6) !important; border-color: rgba(255,255,255,0.05) !important; color: #fff !important; }
 </style>
 
 <?php

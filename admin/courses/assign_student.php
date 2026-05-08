@@ -78,6 +78,49 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
+<style>
+  /* Dark Mode Overrides for Enrollment Page */
+  body.lms-dark-mode .card-lms-header { background: rgba(30, 41, 59, 0.4) !important; }
+  body.lms-dark-mode .fw-700, 
+  body.lms-dark-mode .fw-600,
+  body.lms-dark-mode h1 { color: #f8fafc !important; }
+  body.lms-dark-mode .text-muted { color: #94a3b8 !important; }
+  
+  body.lms-dark-mode .table-lms th { color: #94a3b8 !important; border-bottom-color: rgba(255,255,255,0.05) !important; background: transparent !important; }
+  body.lms-dark-mode .table-lms td { border-bottom-color: rgba(255,255,255,0.02) !important; color: #e2e8f0 !important; }
+  
+  body.lms-dark-mode .course-code-badge { background: rgba(255,255,255,0.05) !important; color: #cbd5e1 !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+  body.lms-dark-mode .badge-lms.info { background: rgba(34, 211, 238, 0.15) !important; color: #22d3ee !important; }
+
+  /* Button Icon Fix */
+  .btn-primary-grad {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px !important;
+    min-width: 160px;
+    white-space: nowrap;
+  }
+  .btn-primary-grad i { font-size: 14px; }
+
+  /* Form Actions Alignment */
+  .form-actions-lms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .form-actions-lms .btn-lms, 
+  .form-actions-lms .btn-primary-grad {
+    flex: 1;
+    min-width: 140px;
+    padding: 12px 15px !important;
+    font-size: 13px !important;
+    justify-content: center;
+  }
+</style>
+
 <div id="page-content">
   <div class="page-header">
     <div class="page-header-left">
@@ -157,14 +200,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <?php endif; ?>
             </div>
 
-            <!-- Fee Preview -->
-            <div id="feePreview" style="display:none;background:#f0fdf4;border:1.5px solid #a7f3d0;
-                                        border-radius:8px;padding:12px 14px;margin-bottom:16px;">
-              <div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:4px;">
+            <div id="feePreview" style="display:none; background:rgba(16, 185, 129, 0.1); border:1.5px solid rgba(16, 185, 129, 0.2);
+                                        border-radius:12px; padding:15px; margin-bottom:20px;">
+              <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; margin-bottom:6px;">
                 Monthly Fee
               </div>
-              <div id="feeAmount" style="font-size:22px;font-weight:800;color:#059669;"></div>
-              <div style="font-size:11px;color:#6b7280;">per month "" used for payment tracking</div>
+              <div id="feeAmount" style="font-size:24px; font-weight:800; color:#34d399; letter-spacing:-0.5px;"></div>
+              <div style="font-size:11px; color:#64748b; margin-top:4px;">per month "" used for payment tracking</div>
             </div>
 
             <div class="row g-3">
@@ -192,7 +234,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               </select>
             </div>
 
-            <div class="form-actions" style="margin-bottom:0;">
+            <div class="form-actions-lms">
               <button type="submit" class="btn-primary-grad" id="btn-enroll-student"
                       <?= (empty($students) || empty($courses)) ? 'disabled' : '' ?>>
                 <i class="fas fa-user-plus"></i> <span id="submit-text">Enroll Student</span>
@@ -200,7 +242,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <button type="button" class="btn-lms btn-outline" id="btn-cancel-edit" style="display:none;" onclick="resetEnrollForm()">
                 <i class="fas fa-xmark"></i> Cancel Edit
               </button>
-              <a href="index.php" class="btn-lms btn-outline" id="btn-back-courses"><i class="fas fa-arrow-left"></i> Back to Courses</a>
+              <a href="index.php" class="btn-lms btn-outline" id="btn-back-courses" style="display:inline-flex;"><i class="fas fa-arrow-left"></i> Back to Courses</a>
             </div>
           </form>
         </div>
@@ -235,14 +277,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <?php foreach ($enrollments as $e): ?>
               <tr onclick='editEnrollment(<?= json_encode($e) ?>)' style="cursor:pointer;" title="Click to Edit Enrollment">
                 <td>
-                  <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-initials" style="width:36px; height:36px; font-size:12px; background: var(--primary-light); color: var(--primary);">
-                      <?= strtoupper(substr($e['full_name'], 0, 1)) ?>
-                    </div>
-                    <div>
-                      <div class="fw-700" style="font-size:13.5px; color: var(--text-main);"><?= htmlspecialchars($e['full_name']) ?></div>
-                      <div class="text-muted" style="font-size:11px; font-weight:600;"><?= htmlspecialchars($e['sid']) ?></div>
-                    </div>
+                  <div>
+                    <div class="fw-700" style="font-size:13.5px; color: var(--text-main);"><?= htmlspecialchars($e['full_name']) ?></div>
+                    <div class="text-muted" style="font-size:11px; font-weight:600;"><?= htmlspecialchars($e['sid']) ?></div>
                   </div>
                 </td>
                 <td>
