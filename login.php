@@ -22,6 +22,7 @@ if (isset($_GET['logged_out'])) $success = 'You have been logged out successfull
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf(); // A2: verify CSRF token
     $email    = trim($_POST['email']    ?? '');
     $password = trim($_POST['password'] ?? '');
 

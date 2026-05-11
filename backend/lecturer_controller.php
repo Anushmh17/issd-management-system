@@ -23,10 +23,13 @@ function ensureLectPhotoDir(): void {
 // -------------------------------------------------------
 // Validate lecturer input fields
 // -------------------------------------------------------
-function validateLecturerFields(array $d, bool $isAdd = true, ?int $editId = null): array {
+// E1: accept $pdo as parameter instead of opening a second DB connection internally
+function validateLecturerFields(array $d, bool $isAdd = true, ?int $editId = null, ?PDO $pdo = null): array {
     $errors = [];
-    require_once __DIR__ . '/db.php';
-    $pdo = getDBConnection();
+    if ($pdo === null) {
+        require_once __DIR__ . '/db.php';
+        $pdo = getDBConnection();
+    }
 
     if (empty(trim($d['name'] ?? '')))     $errors[] = 'Full name is required.';
     if (empty(trim($d['email'] ?? '')))    $errors[] = 'Email address is required.';
@@ -117,7 +120,8 @@ function uploadLecturerPhoto(array $file, int $lecturerId): array {
 // Add Lecturer
 // -------------------------------------------------------
 function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
-    $errors = validateLecturerFields($d, true);
+    // E1: pass $pdo into validation to avoid a second DB connection
+    $errors = validateLecturerFields($d, true, null, $pdo);
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     $paymentMode    = in_array($d['payment_mode'] ?? '', ['flat_monthly','per_student']) ? $d['payment_mode'] : 'flat_monthly';
@@ -126,7 +130,9 @@ function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
     $courseId       = !empty($d['course_id']) ? (int)$d['course_id'] : null;
 
     try {
-        $pdo->beginTransaction();
+        // E3: check inTransaction before calling beginTransaction
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
 
         $pdo->prepare("
             INSERT INTO lecturers
@@ -175,10 +181,10 @@ function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'lecturer_joined', "New lecturer: " . trim($d['name']));
 
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true, 'id' => $newId, 'warning' => $warning];
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('addLecturer: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to add lecturer. Please try again.']];
     }
@@ -188,7 +194,8 @@ function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
 // Update Lecturer
 // -------------------------------------------------------
 function updateLecturer(PDO $pdo, int $id, array $d, ?array $photoFile = null): array {
-    $errors = validateLecturerFields($d, false, $id);
+    // E1: pass $pdo into validation to avoid a second DB connection
+    $errors = validateLecturerFields($d, false, $id, $pdo);
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     try {

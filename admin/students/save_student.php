@@ -47,18 +47,15 @@ $studentData = [
 $result = addStudent($pdo, $studentData);
 
 if (!$result['success']) {
-    // Return to form with errors stored in session
-    session_start();
+    // Return to form with errors stored in session (session already started by requireRole)
     $_SESSION['form_errors']  = $result['errors'];
     $_SESSION['form_old']     = $studentData;
     header('Location: add.php');
     exit;
 }
 
-// Fetch the numeric PK for the newly inserted student
-$studentRow = $pdo->prepare("SELECT id FROM students WHERE student_id = ?");
-$studentRow->execute([$result['student_id']]);
-$studentDbId = (int) $studentRow->fetchColumn();
+// C6: use the student DB id already returned by addStudent() — no extra query needed
+$studentDbId = (int)$result['id'];
 
 // â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // 3. Create the student_documents row (blank skeleton)
@@ -147,8 +144,7 @@ foreach ($docMap as $formKey => $dbKey) {
 
 // â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // 5. Redirect with success (or partial-success) message
-// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-session_start();
+// session already active via requireRole() — no session_start() needed
 
 if (empty($docErrors)) {
     $_SESSION['flash_success'] = 'Student <strong>' . htmlspecialchars($studentData['full_name']) . '</strong> added successfully. (ID: ' . htmlspecialchars($result['student_id']) . ')';

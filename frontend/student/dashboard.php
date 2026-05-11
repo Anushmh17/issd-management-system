@@ -17,14 +17,15 @@ $studentId = (int)$studentStmt->fetchColumn();
 
 $paymentAlerts = $studentId ? getStudentPaymentAlerts($pdo, $studentId) : [];
 
-$myCourses = $pdo->prepare("SELECT COUNT(*) FROM enrollments WHERE student_id=? AND status='active'");
-$myCourses->execute([$userId]); $myCourses = $myCourses->fetchColumn();
+// Use $studentId (students.id) for all student_courses / payment queries
+$myCourses = $pdo->prepare("SELECT COUNT(*) FROM student_courses WHERE student_id=? AND status='ongoing'");
+$myCourses->execute([$studentId]); $myCourses = $myCourses->fetchColumn();
 
-$myAssignments = $pdo->prepare("SELECT COUNT(*) FROM assignments a JOIN enrollments e ON e.course_id=a.course_id WHERE e.student_id=?");
-$myAssignments->execute([$userId]); $myAssignments = $myAssignments->fetchColumn();
+$myAssignments = $pdo->prepare("SELECT COUNT(*) FROM assignments a JOIN student_courses sc ON sc.course_id=a.course_id WHERE sc.student_id=?");
+$myAssignments->execute([$studentId]); $myAssignments = $myAssignments->fetchColumn();
 
 $submitted = $pdo->prepare("SELECT COUNT(*) FROM assignment_submissions WHERE student_id=?");
-$submitted->execute([$userId]); $submitted = $submitted->fetchColumn();
+$submitted->execute([$studentId]); $submitted = $submitted->fetchColumn();
 
 $totalPaid = $pdo->prepare("SELECT COALESCE(SUM(amount_paid),0) FROM student_payments WHERE student_id=?");
 $totalPaid->execute([$studentId]); $totalPaid = $totalPaid->fetchColumn();
@@ -32,13 +33,13 @@ $totalPaid->execute([$studentId]); $totalPaid = $totalPaid->fetchColumn();
 $totalBalance = $pdo->prepare("SELECT COALESCE(SUM(balance),0) FROM student_payments WHERE student_id=? AND status != 'paid'");
 $totalBalance->execute([$studentId]); $totalBalance = $totalBalance->fetchColumn();
 
-$courses = $pdo->prepare("SELECT c.course_name as title, c.course_code as code, c.duration, c.monthly_fee as fee, e.status, e.enrolled_at, u.name AS lecturer FROM enrollments e JOIN courses c ON c.id=e.course_id LEFT JOIN users u ON u.id=e.lecturer_id WHERE e.student_id=? ORDER BY e.enrolled_at DESC LIMIT 4");
-$courses->execute([$userId]); $courses = $courses->fetchAll();
+$courses = $pdo->prepare("SELECT c.course_name as title, c.course_code as code, c.duration, c.monthly_fee as fee, sc.status, sc.start_date as enrolled_at FROM student_courses sc JOIN courses c ON c.id=sc.course_id WHERE sc.student_id=? ORDER BY sc.start_date DESC LIMIT 4");
+$courses->execute([$studentId]); $courses = $courses->fetchAll();
 
-$pendingAssignments = $pdo->prepare("SELECT a.id, a.title, a.due_date, a.max_marks, c.course_name AS course, (SELECT id FROM assignment_submissions WHERE assignment_id=a.id AND student_id=?) AS is_submitted FROM assignments a JOIN enrollments e ON e.course_id=a.course_id AND e.student_id=? JOIN courses c ON c.id=a.course_id ORDER BY a.due_date ASC LIMIT 5");
-$pendingAssignments->execute([$userId, $userId]); $pendingAssignments = $pendingAssignments->fetchAll();
+$pendingAssignments = $pdo->prepare("SELECT a.id, a.title, a.due_date, a.max_marks, c.course_name AS course, (SELECT id FROM assignment_submissions WHERE assignment_id=a.id AND student_id=?) AS is_submitted FROM assignments a JOIN student_courses sc ON sc.course_id=a.course_id AND sc.student_id=? JOIN courses c ON c.id=a.course_id ORDER BY a.due_date ASC LIMIT 5");
+$pendingAssignments->execute([$studentId, $studentId]); $pendingAssignments = $pendingAssignments->fetchAll();
 
-$payments = $pdo->prepare("SELECT p.payment_date as paid_date, c.course_name AS course, p.amount_paid as amount, 'gateway' as method, p.status FROM student_payments p JOIN courses c ON c.id=p.course_id WHERE p.student_id=? ORDER BY p.created_at DESC LIMIT 5");
+$payments = $pdo->prepare("SELECT p.payment_date as paid_date, c.course_name AS course, p.amount_paid as amount, p.method, p.status FROM student_payments p JOIN courses c ON c.id=p.course_id WHERE p.student_id=? ORDER BY p.created_at DESC LIMIT 5");
 $payments->execute([$studentId]); $payments = $payments->fetchAll();
 
 $notices = $pdo->prepare("

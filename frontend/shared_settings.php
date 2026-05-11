@@ -16,6 +16,7 @@ $success = '';
 
 // Handle password change
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf(); // K2: CSRF protection
     $current_password = $_POST['current_password'] ?? '';
     $new_password = $_POST['new_password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
@@ -28,20 +29,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "New password must be at least 6 characters long.";
     } else {
         $source = $user['source'] ?? 'users';
-        $table  = ($source === 'lecturers') ? 'lecturers' : 'users';
 
-        // Fetch current pass
-        $stmt = $pdo->prepare("SELECT password FROM $table WHERE id = ?");
+        // K1: use safe conditional queries instead of dynamic $table variable
+        if ($source === 'lecturers') {
+            $stmt = $pdo->prepare("SELECT password FROM lecturers WHERE id = ?");
+        } else {
+            $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
+        }
         $stmt->execute([$userId]);
         $dbPass = $stmt->fetchColumn();
 
-        if (!$dbPass || (!password_verify($current_password, $dbPass) && $current_password !== $dbPass)) {
+        // K3: remove plaintext password fallback — only use password_verify()
+        if (!$dbPass || !password_verify($current_password, $dbPass)) {
             $error = "Current password is incorrect.";
         } else {
             // Update
             try {
                 $hash = password_hash($new_password, PASSWORD_DEFAULT);
-                $pdo->prepare("UPDATE $table SET password = ? WHERE id = ?")->execute([$hash, $userId]);
+                if ($source === 'lecturers') {
+                    $pdo->prepare("UPDATE lecturers SET password = ? WHERE id = ?")->execute([$hash, $userId]);
+                } else {
+                    $pdo->prepare("UPDATE users SET password = ? WHERE id = ?")->execute([$hash, $userId]);
+                }
                 $success = "Password changed successfully.";
             } catch (PDOException $e) {
                 $error = "Failed to update password.";
@@ -84,6 +93,7 @@ $logs = $stmt->fetchAll();
         </div>
         
         <form method="POST" style="display:flex; flex-direction:column; gap:12px;">
+          <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
           <div class="form-group-lms">
             <label style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.6; font-weight:700; margin-bottom:5px; display:block;">Current Password</label>
             <div class="position-relative">

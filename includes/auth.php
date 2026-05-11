@@ -72,6 +72,13 @@ function requireRole(string ...$roles): void {
 }
 
 // -------------------------------------------------------
+// Safe table name resolver (prevents dynamic table injection)
+// -------------------------------------------------------
+function resolveUserTable(string $source): string {
+    return ($source === 'lecturers') ? 'lecturers' : 'users';
+}
+
+// -------------------------------------------------------
 // Login logic "" checks users table (admin) AND lecturers table
 // -------------------------------------------------------
 function loginUser(string $identifier, string $password): array {
@@ -84,8 +91,9 @@ function loginUser(string $identifier, string $password): array {
     $user = $stmt->fetch();
 
     if ($user) {
-        $valid = password_verify($password, $user['password']) || $user['password'] === $password;
+        $valid = password_verify($password, $user['password']);
         if ($valid) {
+            session_regenerate_id(true); // A4: prevent session fixation
             $_SESSION['user_id']       = $user['id'];
             $_SESSION['role']          = $user['role'];
             $_SESSION['last_activity'] = time();
@@ -112,6 +120,7 @@ function loginUser(string $identifier, string $password): array {
     $lect = $stmt2->fetch();
 
     if ($lect && password_verify($password, $lect['password'])) {
+        session_regenerate_id(true); // A4: prevent session fixation
         $_SESSION['user_id']       = 'L' . $lect['id']; // prefix to distinguish from users.id
         $_SESSION['role']          = ROLE_LECTURER;
         $_SESSION['lecturer_id']   = $lect['id'];
@@ -124,8 +133,8 @@ function loginUser(string $identifier, string $password): array {
             'avatar' => $lect['photo'] ?? null,
             'source' => 'lecturers',
         ];
-        // log as generic entry
-        logActivity(null, 'login', 'Lecturer ' . $lect['name'] . ' logged in');
+        // A3: log with actual integer lecturer ID instead of null
+        logActivity($lect['id'], 'login', 'Lecturer ' . $lect['name'] . ' logged in');
         return ['success' => true, 'role' => ROLE_LECTURER];
     }
 

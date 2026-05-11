@@ -154,6 +154,13 @@ function updateStudent(PDO $pdo, int $id, array $data): array {
 
     try {
         if (!$inTransaction) $pdo->beginTransaction();
+
+        // Fetch old follow-up date to check if it changed
+        $oldStmt = $pdo->prepare("SELECT next_follow_up FROM students WHERE id = ?");
+        $oldStmt->execute([$id]);
+        $oldFollowUp = $oldStmt->fetchColumn();
+        $newFollowUp = !empty($data['next_follow_up']) ? $data['next_follow_up'] : null;
+
         $stmt = $pdo->prepare("
             UPDATE students SET
               full_name             = ?,
@@ -171,6 +178,8 @@ function updateStudent(PDO $pdo, int $id, array $data): array {
               guardian_verified     = ?,
               house_address         = ?,
               boarding_address      = ?,
+              next_follow_up        = ?,
+              follow_up_note        = ?,
               status                = ?
             WHERE id = ?
         ");
@@ -190,9 +199,21 @@ function updateStudent(PDO $pdo, int $id, array $data): array {
             !empty($data['guardian_verified']) ? 1 : 0,
             !empty($data['house_address']) ? trim($data['house_address']) : null,
             !empty($data['boarding_address']) ? trim($data['boarding_address']) : null,
+            $newFollowUp,
+            !empty($data['follow_up_note']) ? trim($data['follow_up_note']) : null,
             $data['status'] ?? 'new_joined',
             $id,
         ]);
+
+        // C2: Sync notification only if follow-up date actually changed
+        if ($newFollowUp && $newFollowUp !== $oldFollowUp) {
+            require_once __DIR__ . '/notification_controller.php';
+            $notifTitle = "Updated Follow-up: " . trim($data['full_name']);
+            $notifMsg = "Rescheduled for " . date('M d, Y', strtotime($newFollowUp)) . ". Note: " . ($data['follow_up_note'] ?? 'No instructions');
+            $hLink = BASE_URL . "/admin/students/index.php?highlight_id=" . $id;
+            addNotification($pdo, null, 'call', $notifTitle, $notifMsg, $hLink);
+        }
+
         // --- Activity Log ---
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'student_updated', "Student info updated: " . trim($data['full_name']));

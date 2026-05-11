@@ -19,6 +19,7 @@ $table = ($source === 'lecturers') ? 'lecturers' : 'users';
 
 // Handle profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf(); // K2: CSRF protection
     $name = trim($_POST['name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
 
@@ -26,9 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Name is required.";
     } else {
         try {
-            $pdo->prepare("UPDATE $table SET name = ?, phone = ? WHERE id = ?")
-                ->execute([$name, $phone, $userId]);
-            
+            // K1: use safe table resolver instead of dynamic $table interpolation
+            if ($source === 'lecturers') {
+                $pdo->prepare("UPDATE lecturers SET name = ?, phone = ? WHERE id = ?")
+                    ->execute([$name, $phone, $userId]);
+            } else {
+                $pdo->prepare("UPDATE users SET name = ?, phone = ? WHERE id = ?")
+                    ->execute([$name, $phone, $userId]);
+            }
             // Update session
             $_SESSION['user']['name'] = $name;
             $user['name'] = $name;
@@ -197,6 +203,7 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
         </div>
 
         <form method="POST">
+          <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
           <div class="row g-4">
             <div class="col-md-12">
               <div class="form-group-lms">

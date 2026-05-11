@@ -39,6 +39,13 @@ function validateLeadFields(array $d): array {
 // -------------------------------------------------------
 function addLead(PDO $pdo, array $d): array {
     $errors = validateLeadFields($d);
+
+    // L1: validate status on add (update already validates it)
+    $allowedStatuses = ['new', 'talking', 'converted', 'not_interested'];
+    if (!in_array($d['status'] ?? 'new', $allowedStatuses, true)) {
+        $errors[] = 'Invalid status selected.';
+    }
+
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     try {

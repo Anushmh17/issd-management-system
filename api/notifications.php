@@ -59,9 +59,17 @@ try {
     } elseif ($action === 'read') {
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
-            markAsRead($pdo, $id);
-            ob_clean();
-            echo json_encode(['success' => true]);
+            // I1: ownership check — only mark notifications belonging to this user (or global ones)
+            $check = $pdo->prepare("SELECT id FROM notifications WHERE id = ? AND (user_id = ? OR user_id IS NULL) LIMIT 1");
+            $check->execute([$id, $userId]);
+            if ($check->fetch()) {
+                markAsRead($pdo, $id);
+                ob_clean();
+                echo json_encode(['success' => true]);
+            } else {
+                ob_clean();
+                echo json_encode(['success' => false, 'error' => 'Notification not found']);
+            }
         } else {
             ob_clean();
             echo json_encode(['success' => false, 'error' => 'Invalid ID']);
@@ -71,10 +79,11 @@ try {
         ob_clean();
         echo json_encode(['success' => true]);
     } elseif ($action === 'dismiss') {
-        $type    = $_POST['type']    ?? 'system';
-        $title   = $_POST['title']   ?? 'Alert Closed';
-        $message = $_POST['message'] ?? '';
-        $link    = $_POST['link']    ?? null;
+        // I2: sanitize all input before writing to the notifications table
+        $type    = in_array($_POST['type'] ?? '', ['call','payment','enrollment','system']) ? ($_POST['type']) : 'system';
+        $title   = htmlspecialchars(strip_tags(trim($_POST['title']   ?? 'Alert Closed')), ENT_QUOTES, 'UTF-8');
+        $message = htmlspecialchars(strip_tags(trim($_POST['message'] ?? '')), ENT_QUOTES, 'UTF-8');
+        $link    = filter_var($_POST['link'] ?? '', FILTER_SANITIZE_URL) ?: null;
         
         // For dismissed alerts, we create them as 'read' so they appear in history
         $stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, link, status) VALUES (?, ?, ?, ?, ?, 'read')");
@@ -98,7 +107,9 @@ try {
 } catch (\Throwable $e) {
     http_response_code(500);
     ob_clean();
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    // I4: do not expose internal error details to client
+    error_log('Notifications API error: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'error' => 'An internal error occurred. Please try again.']);
 }
 ?>
 

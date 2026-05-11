@@ -30,6 +30,18 @@ function uploadAssignmentFile(array $file, string $prefix = 'ASM'): array {
         return ['success' => false, 'error' => 'Invalid file type. Allowable types: PDF, DOCX, ZIP, RAR.'];
     }
 
+    // H2: add MIME type validation consistent with other upload functions
+    $allowedMimes = ['application/pdf','application/msword',
+                     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                     'application/zip','application/x-zip-compressed',
+                     'application/x-rar-compressed','application/octet-stream'];
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime  = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+    if (!in_array($mime, $allowedMimes, true)) {
+        return ['success' => false, 'error' => 'Invalid MIME type detected. Only PDF, DOCX, ZIP, RAR allowed.'];
+    }
+
     $filename = $prefix . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
     if (move_uploaded_file($file['tmp_name'], ASSIGNMENT_DIR . $filename)) {
         return ['success' => true, 'path' => $filename];
@@ -183,6 +195,15 @@ function submitAssignment(PDO $pdo, int $studentId, int $assignmentId, array $fi
     try {
         $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();
+
+        // H4: delete old submission file from disk before overwriting the DB record
+        $existing = $pdo->prepare("SELECT submission_file FROM assignment_submissions WHERE assignment_id = ? AND student_id = ? LIMIT 1");
+        $existing->execute([$assignmentId, $studentId]);
+        $oldFile = $existing->fetchColumn();
+        if ($oldFile && is_file(ASSIGNMENT_DIR . $oldFile)) {
+            @unlink(ASSIGNMENT_DIR . $oldFile);
+        }
+
         $pdo->prepare("
             INSERT INTO assignment_submissions (assignment_id, student_id, submission_file)
             VALUES (?, ?, ?)
