@@ -28,6 +28,7 @@ $form = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf(); // CSRF protection on lead update
     foreach ($form as $k => $_) $form[$k] = $_POST[$k] ?? '';
     
     $result = updateLead($pdo, $id, $form);
@@ -67,6 +68,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <?php endif; ?>
 
   <form method="POST" action="edit.php?id=<?= $id ?>" id="editLeadForm">
+    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
 
     <div class="card-lms mb-20" style="max-width:800px;margin:0 auto;">
       <div class="card-lms-header">

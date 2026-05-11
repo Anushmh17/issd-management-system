@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // =====================================================
 // ISSD Management - Admin: Students List
 // admin/students/index.php
@@ -14,6 +14,7 @@ requireRole(ROLE_ADMIN);
 
 // ---- Handle POST actions before any output ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf(); // CSRF protection for state-changing POST actions
     $act = $_POST['act'] ?? '';
     if ($act === 'delete' && !empty($_POST['id'])) {
         $id = (int)$_POST['id'];
@@ -307,7 +308,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                ?>
             </td>
             <td style="font-size:13px;color:#64748b;">
-              <?= $s['join_date'] ? date('d M Y', strtotime($s['join_date'])) : '""' ?>
+              <?= !empty($s['join_date']) ? date('d M Y', strtotime($s['join_date'])) : '—' ?>
             </td>
             <td>
               <div class="d-flex gap-6" style="justify-content:center;">

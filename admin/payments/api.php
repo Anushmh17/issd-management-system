@@ -2,10 +2,18 @@
 // admin/payments/api.php
 require_once dirname(__DIR__, 2) . '/backend/config.php';
 require_once dirname(__DIR__, 2) . '/backend/db.php';
+require_once dirname(__DIR__, 2) . '/includes/auth.php';
 require_once dirname(__DIR__, 2) . '/backend/payment_controller.php';
 
 header('Content-Type: application/json');
 if (ob_get_length()) ob_clean();
+
+// SECURITY: require admin login — this API exposes student financial data
+if (!isLoggedIn() || !hasRole(ROLE_ADMIN)) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Unauthorized']);
+    exit;
+}
 
 $action = $_GET['api'] ?? '';
 

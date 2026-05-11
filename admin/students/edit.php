@@ -54,6 +54,7 @@ $cropperHead = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/l
 $cropperLib  = '<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf(); // CSRF protection on student profile update
     // Merge posted data
     foreach ($form as $key => $_) {
         $form[$key] = $_POST[$key] ?? '';
@@ -304,7 +305,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <span class="id-tag"><?= htmlspecialchars($student['student_id']) ?></span>
         </div>
         <div class="esb-meta-item">
-          <i class="fas fa-calendar-alt"></i> Joined: <?= date('M d, Y', strtotime($student['join_date'])) ?>
+          <i class="fas fa-calendar-alt"></i> Joined: <?= !empty($student['join_date']) ? date('M d, Y', strtotime($student['join_date'])) : 'N/A' ?>
         </div>
         <div class="esb-meta-item">
           <i class="fas fa-layer-group"></i> <?= htmlspecialchars($student['batch_number']) ?>
@@ -331,6 +332,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <?php endif; ?>
 
   <form method="POST" action="edit.php?id=<?= $id ?>" id="editStudentForm" enctype="multipart/form-data" novalidate>
+    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
     <!-- Hidden File Input for Banner Interaction -->
     <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display:none;" onchange="handlePhotoSelect(this)">
 
