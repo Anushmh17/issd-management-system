@@ -190,10 +190,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="col-md-4">
             <div class="form-group-lms">
               <label>Phone Number</label>
-              <div class="input-icon-wrap">
-                <i class="fas fa-phone"></i>
-                <input type="text" name="phone" class="form-control-lms with-icon"
-                       value="<?= htmlspecialchars($form['phone']) ?>" placeholder="07X XXX XXXX">
+              <div class="phone-input-group">
+                <span class="phone-prefix">+94</span>
+                <input type="tel" name="phone" value="<?= htmlspecialchars(stripSriLankanCountryCode($form['phone'])) ?>"
+                       placeholder="7XXXXXXXX" maxlength="9" pattern="[0-9]{9}"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.startsWith('0')) this.value = this.value.substring(1);">
               </div>
             </div>
           </div>
@@ -445,19 +446,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
 <script>
 function restrictPhone(e) {
-    let val = e.value;
-    val = val.replace(/[^0-9+]/g, '');
-    if (val.indexOf('+') > 0) {
-        val = val.substring(0, 1) + val.substring(1).replace(/\+/g, '');
-    }
-    if (val.startsWith('0')) {
-        if (val.length > 10) val = val.substring(0, 10);
-    } else if (val.startsWith('+94')) {
-        if (val.length > 12) val = val.substring(0, 12);
-    } else if (val.startsWith('94')) {
-        if (val.length > 11) val = val.substring(0, 11);
-    }
-    e.value = val;
+    // Deprecated
 }
 
 document.addEventListener('DOMContentLoaded', function() {

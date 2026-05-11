@@ -25,9 +25,10 @@ $total    = $result['total'];
 $pages    = $result['pages'];
 $batches  = getAllBatches($pdo);
 
-// ---- Bulk doc status ----
-$studentIds = array_column($students, 'id');
-$docStatuses = getBulkDocStatus($pdo, array_map('intval', $studentIds));
+// ---- Bulk doc progress & status ----
+$studentIds = array_map('intval', array_column($students, 'id'));
+$docProgress = getBulkDocCounts($pdo, $studentIds);
+$docStatuses = getBulkDocStatus($pdo, $studentIds);
 
 // ---- Filter by doc_status if chosen ----
 if ($docStatus !== '') {
@@ -184,19 +185,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <tbody>
           <?php foreach ($students as $i => $s): ?>
           <?php
-            $docSt  = $docStatuses[(int)$s['id']] ?? 'missing';
-            // Get per-student doc counts for progress bar
-            $docRow = $pdo->prepare("SELECT * FROM student_documents WHERE student_id = ?");
-            $docRow->execute([$s['id']]);
-            $docRow = $docRow->fetch() ?: [];
-            $defs   = getDocumentDefinitions();
-            $reqKeys  = array_keys(array_filter($defs, fn($d) => $d['required']));
-            $reqTotal = count($reqKeys);
-            $reqDone  = 0;
-            foreach ($reqKeys as $k) {
-                if (!empty($docRow[$k . '_status'])) $reqDone++;
-            }
-            $pct = $reqTotal > 0 ? round(($reqDone / $reqTotal) * 100) : 0;
+            $sid      = (int)$s['id'];
+            $docSt    = $docStatuses[$sid] ?? 'missing';
+            $prog     = $docProgress[$sid] ?? ['collected' => 0, 'total' => 0];
+            $reqDone  = $prog['collected'];
+            $reqTotal = $prog['total'];
+            $pct      = $reqTotal > 0 ? round(($reqDone / $reqTotal) * 100) : 0;
           ?>
           <tr class="doc-row-<?= $docSt ?>">
             <td style="color:#94a3b8;font-size:13px;"><?= (($page-1)*20)+$i+1 ?></td>
@@ -207,8 +201,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </td>
             <td>
               <div class="d-flex align-center gap-10">
-                <div class="avatar-initials" style="background:<?= studentAvatarColor($s['full_name']) ?>;flex-shrink:0;">
-                  <?= strtoupper(substr($s['full_name'], 0, 1)) ?>
+                <div class="avatar-initials" style="background:<?= !empty($s['profile_picture']) ? 'none' : studentAvatarColor($s['full_name']) ?>;flex-shrink:0; overflow:hidden; padding:0;">
+                  <?php if (!empty($s['profile_picture'])): ?>
+                    <img src="<?= studentPhotoUrl($s['profile_picture']) ?>" alt="Avatar" style="width:100%; height:100%; object-fit:cover;">
+                  <?php else: ?>
+                    <?= strtoupper(substr($s['full_name'], 0, 1)) ?>
+                  <?php endif; ?>
                 </div>
                 <div>
                   <div class="fw-600" style="font-size:14px;"><?= htmlspecialchars($s['full_name']) ?></div>
@@ -286,7 +284,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms mb-20">
                 <label>Select Student <span class="req">*</span></label>
                 <select name="student_id" class="form-control-lms" required>
-                    <option value="">"" Select a student ""</option>
+                    <option value="">Select a student</option>
                     <?php 
                       $allStudents = $pdo->query("SELECT id, full_name, student_id FROM students ORDER BY full_name")->fetchAll();
                       foreach ($allStudents as $as): 
@@ -299,7 +297,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="form-group-lms mb-20">
                 <label>Document Type <span class="req">*</span></label>
                 <select name="doc_key" id="quick_doc_key" class="form-control-lms" required onchange="toggleQuickLabel()">
-                    <option value="">"" Select document type ""</option>
+                    <option value="">Select document type</option>
                     <optgroup label="Standard Documents">
                         <?php 
                           $defs = getDocumentDefinitions();
@@ -324,7 +322,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                     <div class="form-group-lms mb-20">
                         <label>Collected Office</label>
                         <select name="other_collected_by" class="form-control-lms">
-                            <option value="">""</option>
+                            <option value=""></option>
                             <option value="W1">W1</option><option value="W2">W2</option>
                             <option value="H1">H1</option><option value="H2">H2</option>
                         </select>
@@ -333,7 +331,14 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <div class="col-6">
                     <div class="form-group-lms mb-20">
                         <label>File (PDF/Image) <span class="req">*</span></label>
-                        <input type="file" name="doc_file" class="form-control-lms" required>
+                        <div class="premium-upload-control">
+                            <input type="file" name="doc_file" id="quick_doc_file" class="hidden-file-input" required onchange="updateQuickFileName(this)">
+                            <label for="quick_doc_file" class="upload-btn w-100">
+                                <i class="fas fa-cloud-arrow-up"></i>
+                                <span>Choose File</span>
+                            </label>
+                            <div class="file-status-text" id="quick_file_name">No file chosen</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -372,6 +377,11 @@ function toggleQuickLabel() {
             infoText.innerHTML = '<i class="fas fa-info-circle me-1"></i> Please select a document type.';
         }
     }
+}
+
+function updateQuickFileName(input) {
+    const fileName = input.files[0] ? input.files[0].name : "No file chosen";
+    document.getElementById('quick_file_name').innerText = fileName;
 }
 </script>
 

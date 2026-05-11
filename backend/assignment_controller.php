@@ -56,7 +56,8 @@ function addAssignment(PDO $pdo, int $lecturerId, array $d, ?array $file = null)
     }
 
     try {
-        $pdo->beginTransaction();
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         $pdo->prepare("
             INSERT INTO assignments (course_id, lecturer_id, title, description, file, due_date)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -64,10 +65,10 @@ function addAssignment(PDO $pdo, int $lecturerId, array $d, ?array $file = null)
             $d['course_id'], $lecturerId, trim($d['title']), trim($d['description'] ?? ''),
             $filePath, $d['due_date']
         ]);
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('addAssignment: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to create assignment.']];
     }
@@ -180,16 +181,17 @@ function submitAssignment(PDO $pdo, int $studentId, int $assignmentId, array $fi
     if (!$up['success']) return ['success' => false, 'errors' => [$up['error']]];
 
     try {
-        $pdo->beginTransaction();
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         $pdo->prepare("
             INSERT INTO assignment_submissions (assignment_id, student_id, submission_file)
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE submission_file = VALUES(submission_file), submitted_at = CURRENT_TIMESTAMP
         ")->execute([$assignmentId, $studentId, $up['path']]);
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('submitAssignment: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to submit assignment.']];
     }

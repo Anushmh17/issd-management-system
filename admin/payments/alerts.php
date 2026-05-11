@@ -88,16 +88,18 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <div class="row g-4">
     <!-- OVERDUE ALERTS -->
     <div class="col-md-7">
-      <div class="card-lms h-100">
+      <div class="card-lms h-100 d-flex flex-column">
         <div class="card-lms-header d-flex justify-content-between align-items-center">
             <div class="card-lms-title text-danger"><i class="fas fa-circle-exclamation"></i> Overdue Student Fees</div>
             <span class="badge bg-danger rounded-pill px-3"><?= count($overdueStudents) ?> High Priority</span>
         </div>
-        <div class="card-lms-body p-0">
+        <div class="card-lms-body p-0 flex-grow-1 d-flex flex-column <?= empty($overdueStudents) ? 'justify-content-center' : '' ?>">
           <?php if (empty($overdueStudents)): ?>
-            <div class="p-50 text-center text-muted">
-                <i class="fas fa-check-circle fa-3x mb-3 text-success opacity-50"></i>
-                <p>All student payments are currently up to date!</p>
+            <div class="py-5 text-center w-100">
+                <i class="fas fa-check-circle fa-4x mb-3 text-success d-block mx-auto" style="opacity: 0.4;"></i>
+                <div class="text-muted fw-600" style="font-size: 15px; margin: 0 auto;">
+                    All student payments are currently up to date!
+                </div>
             </div>
           <?php else: ?>
             <div class="table-responsive">
@@ -138,11 +140,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
     <!-- UPCOMING / RECENT ACTIONS -->
     <div class="col-md-5">
-      <div class="card-lms">
+      <div class="card-lms h-100 d-flex flex-column">
         <div class="card-lms-header">
             <div class="card-lms-title text-warning"><i class="fas fa-clock"></i> Upcoming Dues (Next 7 Days)</div>
         </div>
-        <div class="card-lms-body p-0">
+        <div class="card-lms-body p-0 flex-grow-1 d-flex flex-column <?= empty($upcomingStudents) ? 'justify-content-center' : '' ?>">
           <div class="list-group list-group-flush">
             <?php foreach ($upcomingStudents as $s): ?>
             <div class="list-group-item p-3 border-bottom d-flex justify-content-between align-items-center" style="background:transparent;">
@@ -157,18 +159,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </div>
             <?php endforeach; ?>
             <?php if (empty($upcomingStudents)): ?>
-                <div class="p-40 text-center text-muted" style="font-size:13px;">No upcoming dues for the next week.</div>
+                <div class="py-5 text-center w-100">
+                    <i class="fas fa-calendar-check fa-3x mb-3 text-muted d-block mx-auto" style="opacity: 0.2;"></i>
+                    <div class="text-muted small">No upcoming dues for the next week.</div>
+                </div>
             <?php endif; ?>
           </div>
         </div>
-      </div>
-
-      <div class="bento-card mt-4" style="background: var(--primary); color: #fff;">
-        <h4 class="fw-900 mb-10" style="font-size:16px;">Financial Tip</h4>
-        <p style="font-size:12px; opacity:0.9; line-height:1.6;">
-            Regularly auditing overdue payments helps maintain a healthy cash flow. Consider sending automated SMS reminders to students listed in the "High Priority" section.
-        </p>
-        <button class="btn btn-light btn-sm rounded-pill fw-800 mt-2 px-3">Learn More</button>
       </div>
     </div>
   </div>

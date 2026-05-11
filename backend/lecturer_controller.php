@@ -38,8 +38,8 @@ function validateLecturerFields(array $d, bool $isAdd = true, ?int $editId = nul
     $phone = trim($d['phone'] ?? '');
     if (!empty($phone)) {
         $cleanPhone = preg_replace('/[^0-9+]/', '', $phone);
-        if (!preg_match('/^(\+94|94|0)(7[0-9]{8})$/', $cleanPhone)) {
-            $errors[] = 'Invalid phone number. Use 07XXXXXXXX format.';
+        if (!preg_match('/^(\+94|94|0)?[7][0-9]{8}$/', $cleanPhone)) {
+            $errors[] = 'Invalid phone number. Use standard 9-digit format (7XXXXXXXX).';
         }
     }
 

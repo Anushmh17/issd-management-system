@@ -84,8 +84,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $newFileName = "profile_{$studentInternalId}." . $ext;
                 $newPath = BASE_PATH . '/assets/documents/' . $newFileName;
                 
-                if (rename($oldPath, $newPath)) {
-                    $pdo->prepare("UPDATE students SET profile_picture = ? WHERE id = ?")->execute([$newFileName, $studentInternalId]);
+                if (file_exists($oldPath)) {
+                    if (rename($oldPath, $newPath)) {
+                        $pdo->prepare("UPDATE students SET profile_picture = ? WHERE id = ?")->execute([$newFileName, $studentInternalId]);
+                    } else {
+                        error_log("Failed to rename profile picture from $oldPath to $newPath");
+                    }
+                } else {
+                    error_log("Temporary profile picture not found at $oldPath");
                 }
             }
             
@@ -268,7 +274,19 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <div class="col-md-3">
                 <div class="form-group-lms">
                   <label for="profile_picture">Profile Picture (JPG/PNG)</label>
-                  <input type="file" id="profile_picture" name="profile_picture" class="form-control-lms" accept="image/*" onchange="handleProfileSelect(this)">
+                  <div class="custom-file-upload">
+                    <div id="profile-preview-container" class="mb-10 text-center" style="display:none;">
+                      <img id="profile-preview-img" src="" style="width:100px; height:100px; border-radius:15px; object-fit:cover; border:3px solid var(--primary-light); box-shadow: var(--shadow-sm);">
+                      <div class="mt-5">
+                        <button type="button" class="btn-sm btn-danger" onclick="removeProfilePhoto()" style="padding:2px 8px; font-size:10px; border-radius:5px; border:none; cursor:pointer;"><i class="fas fa-trash-alt"></i> Remove</button>
+                      </div>
+                    </div>
+                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*" onchange="handleProfileSelect(this)">
+                    <label for="profile_picture" id="profile_picture_label">
+                      <i class="fas fa-cloud-upload-alt"></i>
+                      <span id="profile_picture_text">Choose Profile Photo...</span>
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -325,18 +343,18 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <div class="col-md-4">
                 <div class="form-group-lms">
                   <label for="phone_number">Telephone Number <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-phone"></i>
-                    <input type="tel" id="phone_number" name="phone_number" class="form-control-lms with-icon" value="<?= htmlspecialchars($form['phone_number']) ?>" required placeholder="07XXXXXXXX">
+                  <div class="phone-input-group">
+                    <span class="phone-prefix">+94</span>
+                    <input type="tel" id="phone_number" name="phone_number" value="<?= htmlspecialchars(stripSriLankanCountryCode($form['phone_number'])) ?>" required placeholder="7XXXXXXXX" maxlength="9" pattern="[0-9]{9}" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.startsWith('0')) this.value = this.value.substring(1);">
                   </div>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="form-group-lms">
                   <label for="whatsapp_number">WhatsApp Number <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fab fa-whatsapp" style="color:#25d366;"></i>
-                    <input type="tel" id="whatsapp_number" name="whatsapp_number" class="form-control-lms with-icon" value="<?= htmlspecialchars($form['whatsapp_number']) ?>" required placeholder="07XXXXXXXX">
+                  <div class="phone-input-group">
+                    <span class="phone-prefix">+94</span>
+                    <input type="tel" id="whatsapp_number" name="whatsapp_number" value="<?= htmlspecialchars(stripSriLankanCountryCode($form['whatsapp_number'])) ?>" required placeholder="7XXXXXXXX" maxlength="9" pattern="[0-9]{9}" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.startsWith('0')) this.value = this.value.substring(1);">
                   </div>
                 </div>
               </div>
@@ -362,9 +380,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <div class="col-md-4">
                 <div class="form-group-lms">
                   <label for="guardian_phone">Guardian Phone Number <span class="req">*</span></label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-phone"></i>
-                    <input type="tel" id="guardian_phone" name="guardian_phone" class="form-control-lms with-icon" value="<?= htmlspecialchars($form['guardian_phone']) ?>" required placeholder="07XXXXXXXX">
+                  <div class="phone-input-group">
+                    <span class="phone-prefix">+94</span>
+                    <input type="tel" id="guardian_phone" name="guardian_phone" value="<?= htmlspecialchars(stripSriLankanCountryCode($form['guardian_phone'])) ?>" required placeholder="7XXXXXXXX" maxlength="9" pattern="[0-9]{9}" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.startsWith('0')) this.value = this.value.substring(1);">
                   </div>
                 </div>
               </div>
@@ -525,7 +543,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
 
     <!-- Form Actions -->
-    <div class="form-actions mt-20">
+    <div class="form-actions mt-20" style="gap: 15px;">
       <button type="submit" class="btn-primary-grad px-4 py-2" style="font-weight: 700; font-size: 16px;">
         <i class="fas fa-save"></i> Save Student Record
       </button>
@@ -632,6 +650,27 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   /* Form Group Hover */
   .form-group-lms:focus-within label { color: var(--premium-primary); }
   .form-control-lms:focus { border-color: var(--premium-primary); box-shadow: 0 0 0 4px rgba(91, 78, 250, 0.1); }
+
+  /* Cropping Modal */
+  .crop-modal {
+    display: none; position: fixed; z-index: 10000;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15,23,42,0.85); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+  }
+  .crop-modal-content {
+    background: #fff;
+    width: 95%; max-width: 500px;
+    border-radius: 24px; padding: 28px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes modalSlideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+  }
+  .crop-container { width:100%; height:400px; background:#f8fafc; margin:20px 0; border-radius:16px; overflow:hidden; border: 1px solid #e2e8f0; }
+  .crop-actions { display:flex; gap:12px; justify-content:flex-end; }
 </style>
 
 <?php
@@ -698,10 +737,35 @@ function applyCrop() {
         container.items.add(file);
         document.getElementById('profile_picture').files = container.files;
         
-        // No preview element in students/add.php, just show modal closed
+        // Show preview
+        const previewImg = document.getElementById('profile-preview-img');
+        const previewContainer = document.getElementById('profile-preview-container');
+        const textSpan = document.getElementById('profile_picture_text');
+        const label = document.getElementById('profile_picture_label');
+
+        if (previewImg && previewContainer) {
+            previewImg.src = canvas.toDataURL('image/jpeg');
+            previewContainer.style.display = 'block';
+            textSpan.innerText = 'Photo Selected';
+            label.style.borderColor = 'var(--primary)';
+            label.style.background = 'rgba(91, 78, 250, 0.05)';
+            label.style.color = 'var(--primary)';
+        }
+        
         document.getElementById('cropModal').style.display = 'none';
         if (cropper) cropper.destroy();
     }, 'image/jpeg');
+}
+
+function removeProfilePhoto() {
+    document.getElementById('profile_picture').value = '';
+    document.getElementById('profile-preview-container').style.display = 'none';
+    const textSpan = document.getElementById('profile_picture_text');
+    const label = document.getElementById('profile_picture_label');
+    textSpan.innerText = 'Choose Profile Photo...';
+    label.style.borderColor = 'var(--border-color)';
+    label.style.background = 'var(--bg-input)';
+    label.style.color = 'var(--text-muted)';
 }
 
 // Restriction logics
@@ -843,6 +907,8 @@ function handleFileSelect(key) {
         nameLabel.style.color = '#94a3b8';
     }
 }
+
+// handleProfileSelect is defined at the top of script section
 
 function updateOverallProgress() {
     const rows = document.querySelectorAll('.doc-row');

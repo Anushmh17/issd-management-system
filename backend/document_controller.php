@@ -99,8 +99,9 @@ function ensureDocUploadDir(): void {
 // Get or create the document row for a student
 // -------------------------------------------------------
 function getOrCreateDocRecord(PDO $pdo, int $studentId): array {
+    $inTransaction = $pdo->inTransaction();
     try {
-        $pdo->beginTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         $stmt = $pdo->prepare("SELECT * FROM student_documents WHERE student_id = ?");
         $stmt->execute([$studentId]);
         $row = $stmt->fetch();
@@ -112,10 +113,10 @@ function getOrCreateDocRecord(PDO $pdo, int $studentId): array {
             $stmt->execute([$studentId]);
             $row = $stmt->fetch();
         }
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return $row;
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('getOrCreateDocRecord error: ' . $e->getMessage());
         return [];
     }
@@ -200,12 +201,13 @@ function saveDocTracking(PDO $pdo, int $studentId, string $docKey, array $data):
     $sql = "UPDATE student_documents SET " . implode(', ', $sets) . " WHERE student_id = ?";
 
     try {
-        $pdo->beginTransaction();
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         $pdo->prepare($sql)->execute($params);
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return true;
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('saveDocTracking error: ' . $e->getMessage());
         return false;
     }
@@ -231,10 +233,10 @@ function computeDocStatus(array $docRow): string {
 }
 
 // -------------------------------------------------------
-// Get document status for multiple students (bulk)
-// Returns: [student_id => 'missing'|'pending'|'completed']
+// Get document counts for multiple students (bulk)
+// Returns: [student_id => ['collected'=>int, 'total'=>int]]
 // -------------------------------------------------------
-function getBulkDocStatus(PDO $pdo, array $studentIds): array {
+function getBulkDocCounts(PDO $pdo, array $studentIds): array {
     if (empty($studentIds)) return [];
 
     $in   = implode(',', array_fill(0, count($studentIds), '?'));
@@ -242,20 +244,68 @@ function getBulkDocStatus(PDO $pdo, array $studentIds): array {
     $stmt->execute($studentIds);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $defs = getDocumentDefinitions();
+    $requiredKeys = array_keys(array_filter($defs, fn($d) => $d['required']));
+    $totalRequired = count($requiredKeys);
+
     $map = [];
     foreach ($rows as $row) {
-        $map[(int)$row['student_id']] = computeDocStatus($row);
+        $collected = 0;
+        foreach ($requiredKeys as $key) {
+            if (!empty($row[$key . '_status'])) $collected++;
+        }
+        $map[(int)$row['student_id']] = [
+            'collected' => $collected,
+            'total'     => $totalRequired
+        ];
     }
-    // Students with no doc row = missing
+    // Default for students with no doc row
     foreach ($studentIds as $sid) {
-        if (!isset($map[$sid])) $map[$sid] = 'missing';
+        if (!isset($map[$sid])) {
+            $map[$sid] = ['collected' => 0, 'total' => $totalRequired];
+        }
     }
     return $map;
 }
 
 // -------------------------------------------------------
-// Render the doc status badge HTML
+// Get document statuses for multiple students (bulk)
+// Returns: [student_id => 'completed' | 'pending' | 'missing']
 // -------------------------------------------------------
+function getBulkDocStatus(PDO $pdo, array $studentIds): array {
+    $counts = getBulkDocCounts($pdo, $studentIds);
+    $statuses = [];
+    foreach ($counts as $sid => $data) {
+        $collected = $data['collected'];
+        $total     = $data['total'];
+        if ($collected === 0)     $statuses[$sid] = 'missing';
+        elseif ($collected < $total) $statuses[$sid] = 'pending';
+        else                      $statuses[$sid] = 'completed';
+    }
+    return $statuses;
+}
+
+// -------------------------------------------------------
+// Render the doc status count badge HTML
+// -------------------------------------------------------
+function renderDocCountBadge(int $collected, int $total): string {
+    $pct = $total > 0 ? ($collected / $total) * 100 : 0;
+    $class = 'missing';
+    if ($pct === 100) $class = 'completed';
+    elseif ($pct > 0) $class = 'pending';
+
+    $icon = match($class) {
+        'completed' => 'fa-circle-check',
+        'pending'   => 'fa-clock',
+        default     => 'fa-circle-xmark',
+    };
+
+    return sprintf(
+        '<span class="doc-badge %s" title="%d of %d documents collected"><i class="fas %s"></i> %d / %d</span>',
+        $class, $collected, $total, $icon, $collected, $total
+    );
+}
+
 function renderDocStatusBadge(string $status): string {
     return match($status) {
         'completed' => '<span class="doc-badge completed"><i class="fas fa-circle-check"></i> Completed</span>',
@@ -287,8 +337,9 @@ function getOtherStudentDocs(PDO $pdo, int $studentId): array {
 // -------------------------------------------------------
 function saveOtherDoc(PDO $pdo, array $data): bool {
     $sql = "INSERT INTO student_other_documents (student_id, label, file_path, collected_by, collected_date) VALUES (?, ?, ?, ?, ?)";
+    $inTransaction = $pdo->inTransaction();
     try {
-        $pdo->beginTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         $pdo->prepare($sql)->execute([
             $data['student_id'],
             $data['label'],
@@ -296,10 +347,10 @@ function saveOtherDoc(PDO $pdo, array $data): bool {
             $data['collected_by'],
             $data['collected_date']
         ]);
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return true;
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('saveOtherDoc error: ' . $e->getMessage());
         return false;
     }

@@ -7,7 +7,7 @@ $year = date('Y');
   <!-- ===== PAGE FOOTER ===== -->
   <footer id="page-footer">
     &copy; <?= $year ?> <strong>ISSD Management</strong>. All rights reserved. &nbsp;|&nbsp;
-    Institute Management System &nbsp;&bull;&nbsp; Version 1.0
+    Institute Management System &nbsp;&bull;&nbsp; Version 2.1
   </footer>
 
 </div><!-- /#main-content -->
@@ -86,7 +86,7 @@ function showToast(type, message, title = '') {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Custom JS -->
 <script>const BASE_URL = "<?= BASE_URL ?>";</script>
-<script src="<?= BASE_URL ?>/assets/js/main.js?v=<?= time() ?>"></script>
+<script src="<?= BASE_URL ?>/assets/js/main.js?v=2.1"></script>
 <script src="<?= BASE_URL ?>/assets/js/notifications.js"></script>
 
 <?php if (isset($extraJS)) echo $extraJS; ?>

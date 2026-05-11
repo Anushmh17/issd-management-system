@@ -42,6 +42,10 @@ $overdueDues = $pdo->prepare("
 $overdueDues->execute([$today]);
 $overdueItems = $overdueDues->fetchAll();
 
+// Fetch Recent Transactions
+$recentStudentPayments = getRecentStudentPayments($pdo, 5);
+$recentLecturerPayments = getRecentLecturerPayments($pdo, 5);
+
 require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
@@ -113,6 +117,7 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
             <div class="text-muted small">Real-time revenue and expenditure tracking</div>
         </div>
         <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-light rounded-pill px-4 fw-800 shadow-sm no-print"><i class="fas fa-print me-2"></i>Print Report</button>
             <a href="../payments/add.php" class="btn-primary-grad shadow-sm">
                 <i class="fas fa-plus me-2"></i>New Student Payment
             </a>
@@ -168,8 +173,8 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
     <div class="row g-3 mb-30">
         <!-- Upcoming Payments Column -->
         <div class="col-lg-4">
-            <div class="card-lms h-100 border shadow-sm">
-                <div class="card-lms-header border-bottom bg-white py-3 px-3">
+            <div class="card-lms h-100 shadow-sm border-0">
+                <div class="card-lms-header border-bottom py-3 px-3">
                     <div class="card-lms-title fw-700" style="font-size:13px;">
                         <i class="fas fa-calendar-alt text-primary me-2"></i> Upcoming Collections
                     </div>
@@ -186,7 +191,7 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
                                     <?php foreach (array_slice($upcomingItems, 0, 4) as $item): ?>
                                         <tr class="border-bottom-light">
                                             <td class="ps-3 py-2">
-                                                <div class="fw-600 text-dark"><?= htmlspecialchars($item['full_name']) ?></div>
+                                                <div class="fw-600 var-text-main"><?= htmlspecialchars($item['full_name']) ?></div>
                                             </td>
                                             <td><?= date('d M', strtotime($item['next_due_date'])) ?></td>
                                             <td class="text-end pe-3 fw-700">Rs. <?= number_format($item['balance'], 0) ?></td>
@@ -202,8 +207,8 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
 
         <!-- Recent Student Payouts -->
         <div class="col-lg-4">
-            <div class="card-lms h-100 border shadow-sm">
-                <div class="card-lms-header border-bottom bg-white py-3 px-3">
+            <div class="card-lms h-100 shadow-sm border-0">
+                <div class="card-lms-header border-bottom py-3 px-3">
                     <div class="card-lms-title fw-700" style="font-size:13px;">
                         <i class="fas fa-history text-success me-2"></i> Recent Receipts
                     </div>
@@ -218,7 +223,7 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
                                     <?php foreach ($recentStudentPayments as $p): ?>
                                         <tr class="border-bottom-light">
                                             <td class="ps-3 py-2">
-                                                <div class="fw-600 text-dark"><?= htmlspecialchars($p['full_name']) ?></div>
+                                                <div class="fw-600 var-text-main"><?= htmlspecialchars($p['full_name']) ?></div>
                                             </td>
                                             <td class="text-muted"><?= date('d M', strtotime($p['payment_date'])) ?></td>
                                             <td class="text-end pe-3 text-success fw-700">+<?= number_format($p['amount_paid'], 0) ?></td>
@@ -234,8 +239,8 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
 
         <!-- Recent Lecturer Payouts -->
         <div class="col-lg-4">
-            <div class="card-lms h-100 border shadow-sm">
-                <div class="card-lms-header border-bottom bg-white py-3 px-3">
+            <div class="card-lms h-100 shadow-sm border-0">
+                <div class="card-lms-header border-bottom py-3 px-3">
                     <div class="card-lms-title fw-700" style="font-size:13px;">
                         <i class="fas fa-user-tie text-info me-2"></i> Recent Lecturer Payouts
                     </div>
@@ -250,7 +255,7 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
                                     <?php foreach ($recentLecturerPayments as $lp): ?>
                                         <tr class="border-bottom-light">
                                             <td class="ps-3 py-2">
-                                                <div class="fw-600 text-dark"><?= htmlspecialchars($lp['lecturer_name']) ?></div>
+                                                <div class="fw-600 var-text-main"><?= htmlspecialchars($lp['lecturer_name']) ?></div>
                                             </td>
                                             <td class="text-muted"><?= date('d M', strtotime($lp['payment_date'])) ?></td>
                                             <td class="text-end pe-3 text-danger fw-700">-<?= number_format($lp['amount'], 0) ?></td>

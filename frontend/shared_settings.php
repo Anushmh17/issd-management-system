@@ -75,7 +75,7 @@ $logs = $stmt->fetchAll();
       <div class="alert-lms success auto-dismiss" style="margin-bottom:20px;"><i class="fas fa-check-circle"></i> <?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
 
-    <div class="dark-grid-2">
+    <div class="dark-grid-2" style="align-items: start;">
       
       <!-- Password Card -->
       <div class="glass-card">
@@ -83,32 +83,32 @@ $logs = $stmt->fetchAll();
           <span><i class="fas fa-shield-alt" style="color:#22d3ee;"></i> Change Password</span>
         </div>
         
-        <form method="POST" style="display:flex; flex-direction:column; gap:20px;">
+        <form method="POST" style="display:flex; flex-direction:column; gap:12px;">
           <div class="form-group-lms">
-            <label style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.6; font-weight:700; margin-bottom:8px; display:block;">Current Password</label>
+            <label style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.6; font-weight:700; margin-bottom:5px; display:block;">Current Password</label>
             <div class="position-relative">
-              <input type="password" name="current_password" id="curr_pass" class="form-control-lms" style="height:48px; border-radius:12px; padding-right:45px;" required>
+              <input type="password" name="current_password" id="curr_pass" class="form-control-lms" style="height:42px; border-radius:12px; padding-right:45px;" required>
               <i class="fas fa-eye toggle-password" data-target="#curr_pass" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); cursor:pointer; opacity:0.5;"></i>
             </div>
           </div>
           
           <div class="form-group-lms">
-            <label style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.6; font-weight:700; margin-bottom:8px; display:block;">New Password</label>
+            <label style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.6; font-weight:700; margin-bottom:5px; display:block;">New Password</label>
             <div class="position-relative">
-              <input type="password" name="new_password" id="new_pass" class="form-control-lms" style="height:48px; border-radius:12px; padding-right:45px;" required>
+              <input type="password" name="new_password" id="new_pass" class="form-control-lms" style="height:42px; border-radius:12px; padding-right:45px;" required>
               <i class="fas fa-eye toggle-password" data-target="#new_pass" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); cursor:pointer; opacity:0.5;"></i>
             </div>
           </div>
           
           <div class="form-group-lms">
-            <label style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.6; font-weight:700; margin-bottom:8px; display:block;">Confirm New Password</label>
+            <label style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.6; font-weight:700; margin-bottom:5px; display:block;">Confirm New Password</label>
             <div class="position-relative">
-              <input type="password" name="confirm_password" id="conf_pass" class="form-control-lms" style="height:48px; border-radius:12px; padding-right:45px;" required>
+              <input type="password" name="confirm_password" id="conf_pass" class="form-control-lms" style="height:42px; border-radius:12px; padding-right:45px;" required>
               <i class="fas fa-eye toggle-password" data-target="#conf_pass" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); cursor:pointer; opacity:0.5;"></i>
             </div>
           </div>
           
-          <button type="submit" class="btn-primary-grad" style="padding:14px; border-radius:12px; font-weight:800; font-size:14px; margin-top:10px;">
+          <button type="submit" class="btn-primary-grad" style="padding:12px; border-radius:12px; font-weight:800; font-size:14px; margin-top:5px;">
             <i class="fas fa-key me-2"></i> Update Password
           </button>
         </form>

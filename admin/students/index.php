@@ -49,9 +49,9 @@ $total    = $result['total'];
 $pages    = $result['pages'];
 $batches  = getAllBatches($pdo);
 
-// ---- Bulk document status ----
+// ---- Bulk document counts ----
 $sIds = array_map('intval', array_column($students, 'id'));
-$docStatuses = getBulkDocStatus($pdo, $sIds);
+$docCounts = getBulkDocCounts($pdo, $sIds);
 
 // ---- Stats ----
 $totalAll  = (int)$pdo->query("SELECT COUNT(*) FROM students")->fetchColumn();
@@ -300,7 +300,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </td>
             <td style="font-size:13px;"><?= htmlspecialchars($s['phone_number']) ?></td>
             <td><?= renderStatusBadge($s['status']) ?></td>
-            <td><?= renderDocStatusBadge($docStatuses[(int)$s['id']] ?? 'missing') ?></td>
+            <td>
+               <?php 
+                 $dc = $docCounts[(int)$s['id']] ?? ['collected' => 0, 'total' => 0];
+                 echo renderDocCountBadge($dc['collected'], $dc['total']);
+               ?>
+            </td>
             <td style="font-size:13px;color:#64748b;">
               <?= $s['join_date'] ? date('d M Y', strtotime($s['join_date'])) : '""' ?>
             </td>

@@ -209,12 +209,12 @@ body.lms-dark-mode .modal-header .btn-close {
 .dark-layout-wrapper {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 10px 10px 60px 10px;
+  padding: 10px 10px 40px 10px;
 }
 
-.welcome-header { margin-bottom: 30px; }
-.welcome-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px; }
-.welcome-header p { font-size: 15px; margin: 0; }
+.welcome-header { margin-bottom: 25px; }
+.welcome-header h1 { font-size: 28px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px; }
+.welcome-header p { font-size: 14px; margin: 0; }
 
 /* Grid Layouts */
 .dark-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px; }
@@ -230,7 +230,7 @@ body.lms-dark-mode .modal-header .btn-close {
 /* Glass Cards Structure */
 .glass-card {
   border-radius: 24px;
-  padding: 24px;
+  padding: 20px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -239,7 +239,7 @@ body.lms-dark-mode .modal-header .btn-close {
 .glass-card-title {
   font-size: 16px;
   font-weight: 700;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -659,6 +659,25 @@ body.lms-dark-mode .btn-primary-grad i {
   color: #fff !important;
 }
 
+/* Fix Warning Button Contrast in Dark Mode */
+body.lms-dark-mode .btn-warning {
+  background: #fbbf24 !important;
+  border-color: #fbbf24 !important;
+  color: #000000 !important; /* Force black text for contrast */
+  font-weight: 800 !important;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.25) !important;
+}
+body.lms-dark-mode .btn-warning i {
+  color: #000000 !important;
+}
+body.lms-dark-mode .btn-warning:hover {
+  background: #f59e0b !important;
+  border-color: #f59e0b !important;
+  color: #000000 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(251, 191, 36, 0.35) !important;
+}
+
 /* Table Action Buttons Premium Look */
 body.lms-dark-mode .btn-lms.btn-sm {
   min-width: 32px;
@@ -1027,6 +1046,107 @@ body.lms-dark-mode .lms-modal-icon.icon-danger {
   background: rgba(239, 68, 68, 0.15) !important;
   color: #f87171 !important;
 }
+
+/* Premium Upload Control Styles */
+.premium-upload-control {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hidden-file-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upload-btn:hover {
+    background: rgba(91, 78, 250, 0.1);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.upload-btn i {
+    font-size: 14px;
+}
+
+.file-status-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 4px;
+}
+
+body.lms-dark-mode .upload-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Standard Sri Lankan Phone Input */
+body.lms-dark-mode .phone-input-group {
+    display: flex;
+    align-items: stretch;
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+body.lms-dark-mode .phone-input-group:focus-within {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px var(--primary-glow) !important;
+}
+
+body.lms-dark-mode .phone-prefix {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #94a3b8 !important;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 13px;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    user-select: none;
+}
+
+body.lms-dark-mode .phone-input-group input {
+    flex: 1;
+    background: transparent !important;
+    border: none !important;
+    padding: 10px 12px !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    outline: none !important;
+}
+
+body.lms-dark-mode .phone-input-group input::placeholder {
+    color: #475569 !important;
+}
 body.lms-dark-mode .lms-modal-icon.icon-confirm {
   background: rgba(56, 189, 248, 0.15) !important;
   color: #38bdf8 !important;
@@ -1301,6 +1421,7 @@ body.lms-dark-mode .enroll-badge {
 /* Fix Button Wrapping */
 body.lms-dark-mode .btn-lms,
 body.lms-dark-mode .btn-primary-grad {
+  text-decoration: none !important;
   white-space: nowrap !important;
   display: inline-flex !important;
   align-items: center;
@@ -1387,7 +1508,42 @@ body.lms-dark-mode .btn-light:hover {
 
 /* Leads Module Specific Fix */
 body.lms-dark-mode td[style*="color:#64748b"] { color: #94a3b8 !important; }
-body.lms-dark-mode .modern-table th { color: #94a3b8 !important; }
+/* Modern Table Dark Mode Enhancements (Recent Activity) */
+body.lms-dark-mode .modern-table {
+  background: rgba(15, 23, 42, 0.4) !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+body.lms-dark-mode .modern-table th { 
+  color: #22d3ee !important; /* Cyan glowing text */
+  background: rgba(13, 58, 67, 0.8) !important; /* Deep dark teal background */
+  border-bottom: 2px solid rgba(34, 211, 238, 0.2) !important; /* Cyan subtle border */
+  font-weight: 800 !important;
+  letter-spacing: 1.5px !important;
+}
+body.lms-dark-mode .modern-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+body.lms-dark-mode .modern-table tbody tr {
+  transition: all 0.3s ease;
+}
+body.lms-dark-mode .modern-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  box-shadow: inset 3px 0 0 var(--accent-indigo);
+}
+/* Enhanced Action Buttons in Table */
+body.lms-dark-mode .modern-table .btn-outline-primary {
+  border-color: rgba(99, 102, 241, 0.5) !important;
+  color: #818cf8 !important;
+  transition: all 0.3s ease;
+}
+body.lms-dark-mode .modern-table .btn-outline-primary:hover {
+  background: rgba(99, 102, 241, 0.15) !important;
+  border-color: #818cf8 !important;
+  color: #fff !important;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
 
 /* Dashboard Specific Overrides */
 body.lms-dark-mode .bg-danger-subtle { background: rgba(239, 68, 68, 0.1) !important; }

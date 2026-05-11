@@ -21,8 +21,8 @@ function validateLeadFields(array $d): array {
         // Clean phone for validation: remove spaces, dashes, etc.
         $cleanPhone = preg_replace('/[^0-9+]/', '', $phone);
         // Regex for SL formats: 07XXXXXXXX, 947XXXXXXXX, +947XXXXXXXX
-        if (!preg_match('/^(\+94|94|0)(7[0-9]{8})$/', $cleanPhone)) {
-            $errors[] = 'Invalid Sri Lankan phone number. Use 07XXXXXXXX format.';
+        if (!preg_match('/^(\+94|94|0)?[7][0-9]{8}$/', $cleanPhone)) {
+            $errors[] = 'Invalid Sri Lankan phone number. Use standard 9-digit format (7XXXXXXXX).';
         }
     }
     
@@ -42,7 +42,8 @@ function addLead(PDO $pdo, array $d): array {
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     try {
-        $pdo->beginTransaction();
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         $pdo->prepare("
             INSERT INTO leads
               (name, phone, source, status, next_followup_datetime, notes)
@@ -69,10 +70,10 @@ function addLead(PDO $pdo, array $d): array {
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'lead_added', "New lead: " . trim($d['name']));
 
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true, 'id' => $leadId];
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('addLead: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to add lead. Please try again.']];
     }
@@ -92,7 +93,8 @@ function updateLead(PDO $pdo, int $id, array $d): array {
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     try {
-        $pdo->beginTransaction();
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         // Fetch existing lead to check for changes
         $stmt = $pdo->prepare("SELECT next_followup_datetime FROM leads WHERE id = ?");
         $stmt->execute([$id]);
@@ -126,10 +128,10 @@ function updateLead(PDO $pdo, int $id, array $d): array {
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'lead_updated', "Lead updated: " . trim($d['name']));
 
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('updateLead: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to update lead.']];
     }

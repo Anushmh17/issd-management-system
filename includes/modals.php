@@ -242,19 +242,19 @@ body.lms-dark-mode #notice-modal-badge {
 
 
 
-.help-section {
-   margin-bottom: 25px;
-}
-.help-section h6 {
-   font-weight: 700;
-   color: var(--text-main);
-   margin-bottom: 8px;
-   font-size: 15px;
-}
 .help-section p {
    font-size: 14px;
    color: #64748b;
    line-height: 1.6;
+}
+
+/* Hide Modal Sidebar Scrollbar Only */
+#helpGuideModal .col-md-3::-webkit-scrollbar {
+    display: none !important;
+}
+#helpGuideModal .col-md-3 {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
 }
 </style>
 

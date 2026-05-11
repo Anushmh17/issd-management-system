@@ -43,8 +43,8 @@ function validateStudentFields(array $data): array {
         $errors[] = 'Phone number is required.';
     } else {
         $cleanPhone = preg_replace('/[^0-9+]/', '', $phone);
-        if (!preg_match('/^(\+94|94|0)(7[0-9]{8})$/', $cleanPhone)) {
-            $errors[] = 'Invalid student phone number. Use 07XXXXXXXX format.';
+        if (!preg_match('/^(\+94|94|0)?[7][0-9]{8}$/', $cleanPhone)) {
+            $errors[] = 'Invalid student phone number. Use standard 9-digit format (7XXXXXXXX).';
         }
     }
 
@@ -56,8 +56,8 @@ function validateStudentFields(array $data): array {
         $errors[] = 'Guardian phone is required.';
     } else {
         $cleanGPhone = preg_replace('/[^0-9+]/', '', $gPhone);
-        if (!preg_match('/^(\+94|94|0)(7[0-9]{8})$/', $cleanGPhone)) {
-            $errors[] = 'Invalid guardian phone number.';
+        if (!preg_match('/^(\+94|94|0)?[7][0-9]{8}$/', $cleanGPhone)) {
+            $errors[] = 'Invalid guardian phone number. Use standard 9-digit format (7XXXXXXXX).';
         }
     }
 
@@ -81,9 +81,10 @@ function addStudent(PDO $pdo, array $data): array {
     if ($errors) return ['success' => false, 'errors' => $errors];
 
     $studentId = generateStudentId($pdo);
+    $inTransaction = $pdo->inTransaction();
 
     try {
-        $pdo->beginTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
 
         $stmt = $pdo->prepare("
             INSERT INTO students
@@ -115,7 +116,7 @@ function addStudent(PDO $pdo, array $data): array {
             !empty($data['follow_up_note']) ? trim($data['follow_up_note']) : null,
             $data['status'] ?? 'new_joined',
         ]);
-        $studentDbId = $pdo->lastInsertId();
+        $studentDbId = (int)$pdo->lastInsertId();
 
         // --- Sync to Notifications Table ---
         if (!empty($data['next_follow_up'])) {
@@ -130,15 +131,15 @@ function addStudent(PDO $pdo, array $data): array {
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'student_registered', "New student: " . trim($data['full_name']));
 
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true, 'id' => $studentDbId, 'student_id' => $studentId];
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         if ($e->getCode() == 23000) {
             return ['success' => false, 'errors' => ['NIC number or Student ID already exists.']];
         }
         error_log('addStudent error: ' . $e->getMessage());
-        return ['success' => false, 'errors' => ['Failed to add student. Please try again.']];
+        return ['success' => false, 'errors' => ['Failed to add student: ' . $e->getMessage()]];
     }
 }
 
@@ -149,8 +150,10 @@ function updateStudent(PDO $pdo, int $id, array $data): array {
     $errors = validateStudentFields($data);
     if ($errors) return ['success' => false, 'errors' => $errors];
 
+    $inTransaction = $pdo->inTransaction();
+
     try {
-        $pdo->beginTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         $stmt = $pdo->prepare("
             UPDATE students SET
               full_name             = ?,
@@ -194,12 +197,12 @@ function updateStudent(PDO $pdo, int $id, array $data): array {
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'student_updated', "Student info updated: " . trim($data['full_name']));
 
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('updateStudent error: ' . $e->getMessage());
-        return ['success' => false, 'errors' => ['Failed to update student. Please try again.']];
+        return ['success' => false, 'errors' => ['Failed to update student: ' . $e->getMessage()]];
     }
 }
 
@@ -351,6 +354,16 @@ function getPendingFollowUps(PDO $pdo, int $limit = 5): array {
     $stmt->bindValue(1, $limit, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Get student photo URL
+ */
+function studentPhotoUrl(?string $photo): string {
+    if ($photo && is_file(BASE_PATH . '/assets/documents/' . $photo)) {
+        return BASE_URL . '/assets/documents/' . $photo;
+    }
+    return BASE_URL . '/assets/images/avatar-default.png';
 }
 ?>
 

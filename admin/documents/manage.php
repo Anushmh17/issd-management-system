@@ -8,6 +8,7 @@ require_once dirname(__DIR__, 2) . '/backend/config.php';
 require_once dirname(__DIR__, 2) . '/backend/db.php';
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
 require_once dirname(__DIR__, 2) . '/backend/document_controller.php';
+require_once dirname(__DIR__, 2) . '/backend/student_controller.php';
 
 requireRole(ROLE_ADMIN);
 
@@ -400,6 +401,85 @@ body.lms-dark-mode .doc-name i[style*="var(--accent)"] { color: #10b981 !importa
 
 body.lms-dark-mode .doc-name i[style*="#cbd5e1"] { color: #475569 !important; }
 
+/* Custom File Upload for Supporting Docs */
+.custom-file-upload-lms {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f1f5f9;
+    border: 2px dashed #94a3b8;
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    height: 46px;
+    width: 100%;
+    position: relative;
+}
+.custom-file-upload-lms:hover {
+    border-color: var(--primary);
+    background: #eff6ff;
+}
+.custom-file-upload-lms:hover span { color: var(--primary); }
+.custom-file-upload-lms i {
+    font-size: 18px;
+    color: var(--primary);
+}
+.custom-file-upload-lms span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.custom-file-upload-lms input[type="file"] {
+    display: none;
+}
+
+body.lms-dark-mode .custom-file-upload-lms {
+    background: rgba(15, 23, 42, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+body.lms-dark-mode .custom-file-upload-lms:hover {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.2);
+}
+body.lms-dark-mode .custom-file-upload-lms span {
+    color: #94a3b8;
+}
+
+/* Glowing Elements for Dark Theme */
+body.lms-dark-mode .btn-primary-grad {
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+}
+body.lms-dark-mode .btn-lms.btn-primary {
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+}
+body.lms-dark-mode .btn-lms.btn-primary:hover {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+}
+body.lms-dark-mode .doc-status-dot.collected { 
+    background: #10b981 !important; 
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); 
+}
+body.lms-dark-mode .doc-status-dot.missing { 
+    background: #ef4444 !important; 
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); 
+}
+body.lms-dark-mode .section-badge {
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+}
+body.lms-dark-mode .dsb-progress-ring circle:last-child {
+    filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
+}
+body.lms-dark-mode .ring-pct {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
 </style>
 CSS;
 
@@ -430,7 +510,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <div class="doc-student-banner mb-20">
     <div class="dsb-avatar" onclick="document.getElementById('profilePicInput').click();">
         <?php if (!empty($student['profile_picture'])): ?>
-            <img src="<?= BASE_URL ?>/assets/documents/<?= htmlspecialchars($student['profile_picture']) ?>" 
+            <img src="<?= studentPhotoUrl($student['profile_picture']) ?>" 
                  style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;" 
                  alt="<?= htmlspecialchars($student['full_name']) ?>">
         <?php else: ?>
@@ -639,7 +719,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="col-md-4">
             <div class="form-group-lms mb-0">
               <label>Select File</label>
-              <input type="file" name="other_file" class="form-control-lms" required>
+              <label class="custom-file-upload-lms">
+                  <i class="fas fa-file-arrow-up"></i>
+                  <span id="other-file-label">Choose File</span>
+                  <input type="file" name="other_file" id="other-file-input" required onchange="updateOtherFileLabel(this)">
+              </label>
             </div>
           </div>
           <div class="col-md-3">
@@ -726,6 +810,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+function updateOtherFileLabel(input) {
+  const label = document.getElementById('other-file-label');
+  if (input.files && input.files.length > 0) {
+    label.innerText = input.files[0].name;
+    label.style.color = 'var(--primary)';
+  } else {
+    label.innerText = 'Choose File';
+    label.style.color = '';
+  }
+}
 </script>
 JS;
 

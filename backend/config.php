@@ -46,6 +46,11 @@ function formatSriLankanPhone($phone) {
         return '+94' . $matches[1];
     }
     
+    // If it is just 9 digits (e.g. 712345678) -> convert to +94712345678
+    if (preg_match('/^([0-9]{9})$/', $phone, $matches)) {
+        return '+94' . $matches[0];
+    }
+    
     // If starts with 94 (e.g. 94712345678) -> prepend +
     if (preg_match('/^94([0-9]{9})$/', $phone, $matches)) {
         return '+94' . $matches[1];
@@ -56,6 +61,18 @@ function formatSriLankanPhone($phone) {
         return $phone;
     }
     
-    return $phone; 
+    return $phone;
 }
 
+/**
+ * Strip +94 or 0 for display in standard input
+ */
+function stripSriLankanCountryCode($phone) {
+    if (empty($phone)) return '';
+    $phone = preg_replace('/[^0-9]/', '', $phone);
+    if (strlen($phone) === 11 && strpos($phone, '94') === 0) return substr($phone, 2);
+    if (strlen($phone) === 10 && strpos($phone, '0') === 0) return substr($phone, 1);
+    // If it's already 9 digits
+    if (strlen($phone) === 9) return $phone;
+    return $phone;
+}

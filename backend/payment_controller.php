@@ -153,7 +153,7 @@ function addPayment(PDO $pdo, array $d): array {
         return ['success' => false, 'errors' => ['Amount paid must be greater than zero.']];
     }
 
-    $info = getPaymentInfoForm($pdo, $studentId, $courseId);
+    $info = getPaymentInfoForm($pdo, $studentId, $courseId, $month);
     $totalDue = $info['total_due'];
 
     $balance = $totalDue - $amountPaid;
@@ -163,7 +163,8 @@ function addPayment(PDO $pdo, array $d): array {
     $nextDueDate = !empty($d['next_due_date']) ? $d['next_due_date'] : date('Y-m-d', strtotime('+1 month'));
 
     try {
-        $pdo->beginTransaction();
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         $pdo->prepare("
             INSERT INTO student_payments 
             (student_id, course_id, month, monthly_fee, previous_balance, total_due, amount_paid, balance, status, payment_date, next_due_date, method, reference)
@@ -188,10 +189,10 @@ function addPayment(PDO $pdo, array $d): array {
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'payment_received', "Payment of Rs. " . number_format($amountPaid, 0) . " from Student ID: " . $studentId);
 
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true, 'id' => $id];
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('addPayment: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to process payment.']];
     }
@@ -280,7 +281,8 @@ function addLecturerPayment(PDO $pdo, array $d): array {
     }
 
     try {
-        $pdo->beginTransaction();
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
         $pdo->prepare("
             INSERT INTO lecturer_payments (lecturer_id, amount, payment_month, payment_date, status, notes)
             VALUES (?, ?, ?, NOW(), 'paid', ?)
@@ -289,10 +291,10 @@ function addLecturerPayment(PDO $pdo, array $d): array {
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'lecturer_payout', "Payout of Rs. " . number_format($amount, 0) . " to Lecturer ID: " . $lecturerId);
 
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         return ['success' => false, 'errors' => [$e->getMessage()]];
     }
 }
@@ -367,11 +369,11 @@ function getLecturerPaymentsList(PDO $pdo, int $page = 1): array {
 function getFinancialStats(PDO $pdo): array {
     $thisMonth = date('Y-m');
     
-    $stmt1 = $pdo->prepare("SELECT SUM(amount_paid) FROM student_payments WHERE month = ?");
+    $stmt1 = $pdo->prepare("SELECT SUM(amount_paid) FROM student_payments WHERE DATE_FORMAT(payment_date, '%Y-%m') = ?");
     $stmt1->execute([$thisMonth]);
     $income = (float)$stmt1->fetchColumn();
 
-    $stmt2 = $pdo->prepare("SELECT SUM(amount) FROM lecturer_payments WHERE payment_month = ?");
+    $stmt2 = $pdo->prepare("SELECT SUM(amount) FROM lecturer_payments WHERE DATE_FORMAT(payment_date, '%Y-%m') = ?");
     $stmt2->execute([$thisMonth]);
     $expense = (float)$stmt2->fetchColumn();
 

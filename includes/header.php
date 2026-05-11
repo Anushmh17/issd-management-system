@@ -36,10 +36,10 @@ if (!defined('BASE_URL'))   define('BASE_URL', '/Webbuilders%20Projects/issd_man
   <!-- Cropper.js CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=1.0.2">
+  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=1.0.3">
 
   <?php if (isset($extraCSS)) echo $extraCSS; ?>
-  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/student-dark.css?v=1.0.2">
+  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/student-dark.css?v=1.0.4">
 
   <script>
     const BASE_URL = '<?= BASE_URL ?>';

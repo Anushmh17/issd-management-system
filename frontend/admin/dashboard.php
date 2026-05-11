@@ -28,7 +28,7 @@ $pending_payments = $overdue_count + $lecturer_pending_count;
 
 // 4. Monthly Revenue (Current Month)
 $current_month = date('Y-m');
-$stmtRev = $pdo->prepare("SELECT SUM(amount_paid) FROM student_payments WHERE month = ?");
+$stmtRev = $pdo->prepare("SELECT SUM(amount_paid) FROM student_payments WHERE DATE_FORMAT(payment_date, '%Y-%m') = ?");
 $stmtRev->execute([$current_month]);
 $monthly_revenue = (float)$stmtRev->fetchColumn();
 
@@ -901,28 +901,34 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 // 6. Missing Documents Tracker (Real-time scan) - RESTORED
 $stmtCheck = $pdo->query("SELECT id, full_name FROM students ORDER BY created_at DESC LIMIT 50");
 $checkStudents = $stmtCheck->fetchAll();
-$sIds = array_column($checkStudents, 'id');
+$sIds = array_map('intval', array_column($checkStudents, 'id'));
+$docProgress = getBulkDocCounts($pdo, $sIds);
 $docStatuses = getBulkDocStatus($pdo, $sIds);
 $missingStudents = [];
 foreach ($checkStudents as $cs) {
-    if ($docStatuses[$cs['id']] === 'missing') {
-        $docRow = getOrCreateDocRecord($pdo, $cs['id']);
+    $sid = (int)$cs['id'];
+    if (($docStatuses[$sid] ?? 'missing') === 'missing') {
+        $prog = $docProgress[$sid] ?? ['collected' => 0, 'total' => 0];
+        $reqDone  = $prog['collected'];
+        $reqTotal = $prog['total'];
+        
+        $docRow = getOrCreateDocRecord($pdo, $sid);
         $defs = getDocumentDefinitions();
-        $mDocs = [];
         $firstKey = '';
         foreach ($defs as $k => $d) { 
             if ($d['required'] && empty($docRow[$k.'_status'])) {
-                if (empty($mDocs)) $firstKey = $k;
-                $mDocs[] = $d['label']; 
+                $firstKey = $k;
+                break;
             }
         }
         $missingStudents[] = [
-            'id'    => $cs['id'],
+            'id'    => $sid,
             'name'  => $cs['full_name'],
-            'docs'  => implode(', ', array_slice($mDocs, 0, 2)) . (count($mDocs) > 2 ? '...' : ''),
+            'collected' => $reqDone,
+            'total'     => $reqTotal,
             'first' => $firstKey
         ];
-        if (count($missingStudents) >= 3) break;
+        if (count($missingStudents) >= 4) break;
     }
 }
 ?>
@@ -1251,9 +1257,14 @@ foreach ($checkStudents as $cs) {
          <div class="text-center py-4 text-muted small">No students with missing documents.</div>
        <?php else: ?>
          <?php foreach($missingStudents as $d): ?>
-         <a href="<?= BASE_URL ?>/admin/documents/manage.php?student_id=<?= $d['id'] ?>&highlight=<?= $d['first'] ?>" class="p-3 rounded-4 bg-danger-subtle border-0 text-decoration-none transition-all hover-scale d-block">
-            <div class="fw-800 text-main small mb-1"><?= htmlspecialchars($d['name']) ?></div>
-            <div class="text-danger fw-700" style="font-size:11px;"><i class="fas fa-times-circle me-1"></i> Missing: <?= htmlspecialchars($d['docs']) ?></div>
+         <a href="<?= BASE_URL ?>/admin/documents/manage.php?student_id=<?= $d['id'] ?>&highlight=<?= $d['first'] ?>" class="p-3 rounded-4 bg-danger-subtle border-0 text-decoration-none transition-all hover-scale d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-800 text-main small mb-1"><?= htmlspecialchars($d['name']) ?></div>
+              <div class="text-danger fw-700" style="font-size:11px;"><i class="fas fa-file-circle-xmark me-1"></i> No documents yet</div>
+            </div>
+            <div class="badge bg-danger rounded-pill px-3 py-2 fw-800" style="font-size:10px;">
+              <?= $d['collected'] ?> / <?= $d['total'] ?>
+            </div>
          </a>
          <?php endforeach; ?>
        <?php endif; ?>

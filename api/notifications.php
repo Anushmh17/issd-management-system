@@ -21,11 +21,15 @@ if (!isLoggedIn()) {
 $user = currentUser();
 $userId = $user['id'];
 
-// Trigger sync if admin
+// Trigger sync if admin (Throttled to run only once every 15 minutes to improve performance)
 if (hasRole(ROLE_ADMIN)) {
-    syncOverduePayments($pdo);
-    syncUpcomingPayments($pdo);
-    syncLecturerPaymentAlerts($pdo);
+    $lastSync = $_SESSION['lms_last_payment_sync'] ?? 0;
+    if (time() - $lastSync > 900) { // 900 seconds = 15 minutes
+        syncOverduePayments($pdo);
+        syncUpcomingPayments($pdo);
+        syncLecturerPaymentAlerts($pdo);
+        $_SESSION['lms_last_payment_sync'] = time();
+    }
 }
 
 $action = $_GET['action'] ?? 'list';

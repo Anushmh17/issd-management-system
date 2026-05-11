@@ -30,8 +30,8 @@ $courseEnrollments = $pdo->query("
 ")->fetchAll(PDO::FETCH_KEY_PAIR);
 
 // Quick counts
-$totalStudents  = $pdo->query("SELECT COUNT(*) FROM users WHERE role='student' AND status='active'")->fetchColumn();
-$totalLecturers = $pdo->query("SELECT COUNT(*) FROM users WHERE role='lecturer' AND status='active'")->fetchColumn();
+$totalStudents = $pdo->query("SELECT COUNT(*) FROM students")->fetchColumn();
+$totalLecturers = $pdo->query("SELECT COUNT(*) FROM lecturers")->fetchColumn();
 $totalCourses   = $pdo->query("SELECT COUNT(*) FROM courses WHERE status='active'")->fetchColumn();
 $totalEnrollments = $pdo->query("SELECT COUNT(*) FROM enrollments")->fetchColumn();
 $totalNotices   = $pdo->query("SELECT COUNT(*) FROM notices")->fetchColumn();
@@ -45,25 +45,43 @@ $maxEnrollment = !empty($courseEnrollments) ? max($courseEnrollments) : 1;
 // NEW: Student registration trend (last 6 months)
 $regTrends = $pdo->query("
     SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as cnt
-    FROM users
-    WHERE role = 'student'
+    FROM students
     GROUP BY month
     ORDER BY month DESC
     LIMIT 6
 ")->fetchAll(PDO::FETCH_KEY_PAIR);
 
-// NEW: Recent 5 Transactions
-$recentPayments = $pdo->query("
-    SELECT p.*, u.name as student_name, c.course_name
-    FROM student_payments p
-    JOIN users u ON p.student_id = u.id
-    JOIN courses c ON p.course_id = c.id
-    ORDER BY p.payment_date DESC
-    LIMIT 5
-")->fetchAll(PDO::FETCH_ASSOC);
+// 5. NEW: Comparative Performance Data
+$thisMonthStr = date('Y-m');
+$lastMonthStr = date('Y-m', strtotime('first day of last month'));
+
+$thisMonthRevenue = $pdo->query("SELECT SUM(amount_paid) FROM student_payments WHERE DATE_FORMAT(payment_date, '%Y-%m') = '$thisMonthStr'")->fetchColumn() ?: 0;
+$lastMonthRevenue = $pdo->query("SELECT SUM(amount_paid) FROM student_payments WHERE DATE_FORMAT(payment_date, '%Y-%m') = '$lastMonthStr'")->fetchColumn() ?: 0;
+
+$thisMonthReg = $pdo->query("SELECT COUNT(*) FROM students WHERE DATE_FORMAT(created_at, '%Y-%m') = '$thisMonthStr'")->fetchColumn() ?: 0;
+$lastMonthReg = $pdo->query("SELECT COUNT(*) FROM students WHERE DATE_FORMAT(created_at, '%Y-%m') = '$lastMonthStr'")->fetchColumn() ?: 0;
+
+$totalLecturerPay = $pdo->query("SELECT SUM(amount) FROM lecturer_payments")->fetchColumn() ?: 0;
+$netBalance = $totalRevenue - $totalLecturerPay;
+
+// Trends
+$revTrend = $lastMonthRevenue > 0 ? (($thisMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100 : 0;
+$regTrendVal = $lastMonthReg > 0 ? (($thisMonthReg - $lastMonthReg) / $lastMonthReg) * 100 : 0;
 
 require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
+
+// Prepare Chart Data
+$chartRevenue = array_reverse($monthlyRevenue, true);
+$revenueLabels = array_map(function($m) { return date('M Y', strtotime($m.'-01')); }, array_keys($chartRevenue));
+$revenueValues = array_values($chartRevenue);
+
+$chartReg = array_reverse($regTrends, true);
+$regLabels = array_map(function($m) { return date('M Y', strtotime($m.'-01')); }, array_keys($chartReg));
+$regValues = array_values($chartReg);
+
+$courseLabels = array_keys($courseEnrollments);
+$courseValues = array_values($courseEnrollments);
 ?>
 
 <style>
@@ -136,14 +154,19 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <!-- Print-Only Header (Letterhead) -->
   <div class="print-header-lms d-none d-print-block">
-    <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
-      <div>
-        <h2 class="fw-800 m-0" style="color:#2563eb;">ISSD MANAGEMENT SYSTEM</h2>
-        <p class="text-muted m-0">Institute of Software Skills Development - Analytics Division</p>
+    <div class="d-flex align-items-center justify-content-between border-bottom border-4 pb-4 mb-5" style="border-color: #1e4d4d !important;">
+      <div class="d-flex align-items-center gap-4">
+        <div class="print-logo-insignia" style="width: 65px; height: 65px; background: #1e4d4d; display: flex; align-items: center; justify-content: center; border-radius: 14px; color: #fff; font-weight: 900; font-size: 32px; box-shadow: 0 5px 15px rgba(30, 77, 77, 0.2);">I</div>
+        <div>
+            <h1 class="fw-900 m-0" style="color:#1e4d4d; font-size: 32px; letter-spacing: -1.5px; line-height: 1;">ISSD <span style="font-weight: 400; color: #94a3b8;">SYSTEM</span></h1>
+            <p class="text-muted m-0 fw-700" style="font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px; margin-top: 6px;">Institute of Software Skills Development</p>
+            <div style="display: inline-block; background: #f1f5f9; color: #475569; padding: 3px 12px; border-radius: 50px; font-size: 9px; font-weight: 800; letter-spacing: 1px; margin-top: 8px; border: 1px solid #e2e8f0;">ANALYTICS & REPORTING DIVISION</div>
+        </div>
       </div>
-      <div class="text-end">
-        <div class="fw-700">Monthly Performance Report</div>
-        <div class="text-muted" style="font-size:12px;">Generated: <?= date('F d, Y - h:i A') ?></div>
+      <div class="text-end" style="max-width: 300px;">
+        <h4 class="fw-800 text-uppercase mb-1" style="font-size: 14px; color: #1e4d4d; letter-spacing: 0.5px; line-height: 1.2;">Institutional Performance Report</h4>
+        <div class="text-muted fw-700 mb-1" style="font-size:10px; color: #64748b !important;">REF: ISSD/REP/<?= date('Y/m') ?>/<?= str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT) ?></div>
+        <div class="text-muted" style="font-size:10px;">Generated: <?= date('F d, Y') ?> &bull; <?= date('h:i A') ?></div>
       </div>
     </div>
   </div>
@@ -161,7 +184,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
     <!-- ===================== DESKTOP: original layout ===================== -->
     <div class="reports-desktop">
-      <div class="row g-4 mb-4">
+      <div class="row g-3 mb-3">
         <!-- Highlight Cards -->
         <div class="col-md-3">
           <div class="bento-card text-center shadow-sm">
@@ -205,7 +228,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
       </div>
 
-      <div class="row g-4 mb-4">
+      <div class="row g-3 mb-2">
         <!-- Monthly Revenue Table -->
         <div class="col-md-6">
           <div class="bento-card h-100">
@@ -213,25 +236,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <h3 class="fw-800 m-0" style="font-size:18px;"><i class="fas fa-chart-line text-success me-2"></i> Monthly Revenue</h3>
               <span class="badge bg-success-subtle text-success rounded-pill px-3 d-print-none" style="font-size:10px;">LAST 6 MONTHS</span>
             </div>
-            <div class="p-0">
-              <table class="revenue-table">
-                <thead>
-                  <tr>
-                    <th>Month</th>
-                    <th class="text-end">Revenue</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php if(empty($monthlyRevenue)): ?>
-                    <tr><td colspan="2" class="text-center py-4 text-muted">No data.</td></tr>
-                  <?php else: foreach($monthlyRevenue as $month => $total): ?>
-                    <tr>
-                      <td><div class="fw-700"><?= date('F Y', strtotime($month.'-01')) ?></div></td>
-                      <td class="text-end fw-800 text-success">Rs. <?= number_format($total, 0) ?></td>
-                    </tr>
-                  <?php endforeach; endif; ?>
-                </tbody>
-              </table>
+            <div class="p-0" style="height: 220px; position: relative;">
+               <canvas id="revenueChart"></canvas>
             </div>
           </div>
         </div>
@@ -243,70 +249,100 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <h3 class="fw-800 m-0" style="font-size:18px;"><i class="fas fa-users text-primary me-2"></i> Registration Trends</h3>
               <span class="badge bg-primary-subtle text-primary rounded-pill px-3 d-print-none" style="font-size:10px;">MONTHLY</span>
             </div>
-            <div class="p-0">
-              <table class="revenue-table">
-                <thead>
-                  <tr>
-                    <th style="background:var(--primary);">Month</th>
-                    <th class="text-center" style="background:var(--primary);">New Students</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php if(empty($regTrends)): ?>
-                    <tr><td colspan="2" class="text-center py-4 text-muted">No data.</td></tr>
-                  <?php else: foreach($regTrends as $month => $cnt): ?>
-                    <tr>
-                      <td><div class="fw-600"><?= date('F Y', strtotime($month.'-01')) ?></div></td>
-                      <td class="text-center"><span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-700" style="font-size:11px;"><?= $cnt ?> Enrollments</span></td>
-                    </tr>
-                  <?php endforeach; endif; ?>
-                </tbody>
-              </table>
+            <div class="p-0" style="height: 220px; position: relative;">
+               <canvas id="registrationChart"></canvas>
             </div>
           </div>
         </div>
       </div><!-- /row -->
 
-      <!-- NEW: Detailed Analytics & Recent Transactions -->
-      <div class="row g-4 mb-4">
+      <!-- NEW: Comparative Performance Dashboard -->
+      <div class="row g-3 mb-2">
         <div class="col-md-12">
-           <div class="bento-card">
+           <div class="bento-card" style="background: linear-gradient(135deg, rgba(30, 77, 77, 0.05) 0%, rgba(52, 211, 153, 0.05) 100%);">
               <div class="d-flex align-items-center justify-content-between mb-4">
-                <h3 class="fw-800 m-0" style="font-size:18px;"><i class="fas fa-history text-warning me-2"></i> Recent Financial Transactions</h3>
-                <span class="badge bg-warning-subtle text-warning rounded-pill px-3" style="font-size:10px;">LATEST ACTIVITY</span>
+                <h3 class="fw-800 m-0" style="font-size:18px;"><i class="fas fa-chart-line text-primary me-2"></i> Institutional Growth & Financial Summary</h3>
+                <span class="badge bg-primary-grad text-white rounded-pill px-3 py-1" style="font-size:10px; background:var(--grad-primary);">COMPARATIVE ANALYTICS</span>
               </div>
-              <div class="p-0">
-                <table class="revenue-table">
-                  <thead>
-                    <tr>
-                      <th style="background:#f59e0b;">Payment Date</th>
-                      <th style="background:#f59e0b;">Student Name</th>
-                      <th style="background:#f59e0b;">Enrolled Course</th>
-                      <th style="background:#f59e0b;" class="text-end">Amount Paid</th>
-                      <th style="background:#f59e0b;" class="text-center">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php if(empty($recentPayments)): ?>
-                      <tr><td colspan="5" class="text-center py-4">No recent transactions recorded.</td></tr>
-                    <?php else: foreach($recentPayments as $p): ?>
-                    <tr>
-                      <td><?= date('M d, Y', strtotime($p['payment_date'])) ?></td>
-                      <td class="fw-700"><?= htmlspecialchars($p['student_name']) ?></td>
-                      <td style="font-size:12px;"><?= htmlspecialchars($p['course_name']) ?></td>
-                      <td class="text-end fw-800 text-success">Rs. <?= number_format($p['amount_paid'], 0) ?></td>
-                      <td class="text-center"><span class="badge bg-<?= $p['status'] === 'paid' ? 'success' : 'warning' ?>-subtle text-<?= $p['status'] === 'paid' ? 'success' : 'warning' ?> rounded-pill px-2" style="font-size:10px;"><?= strtoupper($p['status']) ?></span></td>
-                    </tr>
-                    <?php endforeach; endif; ?>
-                  </tbody>
-                </table>
+              
+              <div class="row g-4">
+                  <!-- Revenue Comparison -->
+                  <div class="col-md-4">
+                      <div class="p-3 rounded-4 border shadow-sm h-100" style="background: var(--primary-light); border-color: var(--border-color) !important;">
+                          <div class="text-muted small fw-800 text-uppercase mb-2" style="letter-spacing:1px; font-size: 10px;">Revenue Growth</div>
+                          <div class="d-flex align-items-end gap-2 mb-1">
+                              <h4 class="fw-900 m-0" style="font-size:24px; color: var(--text-main);">Rs. <?= number_format($thisMonthRevenue) ?></h4>
+                              <span class="badge bg-<?= $revTrend >= 0 ? 'success' : 'danger' ?>-subtle text-<?= $revTrend >= 0 ? 'success' : 'danger' ?> rounded-pill" style="font-size:11px; padding: 4px 10px; border: 1px solid currentColor;">
+                                  <i class="fas fa-arrow-<?= $revTrend >= 0 ? 'up' : 'down' ?> me-1"></i><?= round(abs($revTrend), 1) ?>%
+                              </span>
+                          </div>
+                          <div class="text-muted" style="font-size:11px; font-weight:600;">vs Rs. <?= number_format($lastMonthRevenue) ?> prev</div>
+                      </div>
+                  </div>
+
+                  <!-- Registration Comparison -->
+                  <div class="col-md-4">
+                      <div class="p-3 rounded-4 border shadow-sm h-100" style="background: var(--primary-light); border-color: var(--border-color) !important;">
+                          <div class="text-muted small fw-800 text-uppercase mb-2" style="letter-spacing:1px; font-size: 10px;">Student Intake</div>
+                          <div class="d-flex align-items-end gap-2 mb-1">
+                              <h4 class="fw-900 m-0" style="font-size:24px; color: var(--text-main);"><?= $thisMonthReg ?> <small style="font-size:12px; font-weight:700; opacity:0.8;">New</small></h4>
+                              <span class="badge bg-<?= $regTrendVal >= 0 ? 'success' : 'danger' ?>-subtle text-<?= $regTrendVal >= 0 ? 'success' : 'danger' ?> rounded-pill" style="font-size:11px; padding: 4px 10px; border: 1px solid currentColor;">
+                                  <i class="fas fa-arrow-<?= $regTrendVal >= 0 ? 'up' : 'down' ?> me-1"></i><?= round(abs($regTrendVal), 1) ?>%
+                              </span>
+                          </div>
+                          <div class="text-muted" style="font-size:11px; font-weight:600;">vs <?= $lastMonthReg ?> prev month</div>
+                      </div>
+                  </div>
+
+                  <!-- Financial Health -->
+                  <div class="col-md-4">
+                      <div class="p-3 rounded-4 border shadow-sm h-100" style="background: var(--primary-light); border-color: var(--border-color) !important;">
+                          <div class="text-muted small fw-800 text-uppercase mb-2" style="letter-spacing:1px; font-size: 10px;">Lecturer Payouts</div>
+                          <div class="d-flex align-items-end gap-2 mb-1">
+                              <h4 class="fw-900 m-0" style="font-size:22px; color: var(--danger);">Rs. <?= number_format($totalLecturerPay) ?></h4>
+                          </div>
+                          <div class="text-muted" style="font-size:11px; font-weight:600;">System-wide professional fees</div>
+                      </div>
+                  </div>
+
+                  <!-- Summary Stats Row -->
+                  <div class="col-md-6">
+                      <?php 
+                        $isProfit = $netBalance >= 0;
+                        $balanceGrad = $isProfit ? 'linear-gradient(135deg, #059669 0%, #10b981 100%)' : 'linear-gradient(135deg, #be123c 0%, #fb7185 100%)';
+                        $balanceIcon = $isProfit ? 'fa-vault' : 'fa-triangle-exclamation';
+                      ?>
+                      <div class="p-3 rounded-4 shadow-lg d-flex align-items-center justify-content-between" 
+                           style="background: <?= $balanceGrad ?>; border:none; color: #fff;">
+                          <div>
+                              <div class="opacity-75 small fw-800 text-uppercase" style="letter-spacing:1px; font-size:10px;">Net Institutional Balance</div>
+                              <h3 class="fw-900 m-0" style="font-size:28px;">Rs. <?= number_format($netBalance) ?></h3>
+                          </div>
+                          <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                              <i class="fas <?= $balanceIcon ?> fa-xl"></i>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="col-md-6">
+                      <div class="p-3 rounded-4 border shadow-lg d-flex align-items-center justify-content-between" 
+                           style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border:none; color: #fff;">
+                          <div>
+                              <div class="opacity-75 small fw-800 text-uppercase" style="letter-spacing:1px; font-size:10px;">Total System Reach</div>
+                              <h3 class="fw-900 m-0" style="font-size:28px;"><?= number_format($totalStudents + $totalLecturers) ?> <small style="font-size:14px; opacity:0.8;">Active Users</small></h3>
+                          </div>
+                          <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                              <i class="fas fa-globe fa-xl"></i>
+                          </div>
+                      </div>
+                  </div>
               </div>
            </div>
         </div>
       </div>
 
       <!-- Course Distribution -->
-      <div class="row g-4 mb-4">
+      <div class="row g-3 mb-2">
         <div class="col-md-12">
           <div class="bento-card">
             <div class="d-flex align-items-center justify-content-between mb-4">
@@ -314,20 +350,29 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <span class="badge bg-info-subtle text-info rounded-pill px-3" style="font-size:10px;">MARKET SHARE</span>
             </div>
             <div class="p-0">
-               <div class="row">
-                  <?php foreach($courseEnrollments as $course => $cnt): 
-                     $pct = $maxEnrollment > 0 ? round(($cnt / $maxEnrollment) * 100) : 0;
-                  ?>
-                  <div class="col-md-6 mb-3">
-                     <div class="d-flex align-items-center justify-content-between mb-1">
-                        <span class="fw-600" style="font-size:13px;"><?= htmlspecialchars($course) ?></span>
-                        <span class="fw-800 text-info"><?= $cnt ?> Students</span>
-                     </div>
-                     <div class="progress" style="height: 8px; border-radius: 10px; background: #f1f5f9;">
-                        <div class="progress-bar bg-info" style="width: <?= $pct ?>%; border-radius: 10px;"></div>
-                     </div>
+               <div class="row align-items-center">
+                  <div class="col-md-5">
+                      <div style="height: 200px; position: relative;">
+                          <canvas id="courseChart"></canvas>
+                      </div>
                   </div>
-                  <?php endforeach; ?>
+                  <div class="col-md-7">
+                      <div class="row g-2">
+                        <?php 
+                        $colors = ['#5B4EFA','#00C9A7','#4CC9F0','#FF9F43','#FF6B6B'];
+                        $i = 0;
+                        foreach($courseEnrollments as $course => $cnt): 
+                            $color = $colors[$i % count($colors)];
+                        ?>
+                        <div class="col-12 mb-2">
+                            <div class="d-flex align-items-center justify-content-between p-2 rounded" style="background: rgba(0,0,0,0.02); border-left: 4px solid <?= $color ?>;">
+                                <div class="fw-700 small"><?= htmlspecialchars($course) ?></div>
+                                <div class="fw-800 text-info"><?= $cnt ?> <span class="text-muted" style="font-size:9px;">Students</span></div>
+                            </div>
+                        </div>
+                        <?php $i++; endforeach; ?>
+                      </div>
+                  </div>
                </div>
             </div>
           </div>
@@ -336,19 +381,19 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       </div>
  
        <!-- Print-Only Signature Footer -->
-       <div class="print-footer-lms d-none d-print-block mt-5">
-         <div class="row mt-5 pt-4">
+       <div class="print-footer-lms d-none d-print-block mt-2">
+         <div class="row mt-0 pt-0">
             <div class="col-4 text-center">
-               <div style="border-top: 1.5px solid #000; padding-top: 10px; width: 80%; margin: 0 auto; font-weight:700;">Accountant / Prepared By</div>
-               <div class="text-muted mt-1" style="font-size:10px;">Date: ________________</div>
+               <div style="border-top: 1.5px solid #000; padding-top: 5px; width: 80%; margin: 0 auto; font-weight:700;">Accountant / Prepared By</div>
+               <div class="text-muted mt-1" style="font-size:9px;">Date: ________________</div>
             </div>
             <div class="col-4 text-center">
-               <div style="border-top: 1.5px solid #000; padding-top: 10px; width: 80%; margin: 0 auto; font-weight:700;">Director / Approved By</div>
-               <div class="text-muted mt-1" style="font-size:10px;">Date: ________________</div>
+               <div style="border-top: 1.5px solid #000; padding-top: 5px; width: 80%; margin: 0 auto; font-weight:700;">Director / Approved By</div>
+               <div class="text-muted mt-1" style="font-size:9px;">Date: ________________</div>
             </div>
             <div class="col-4 text-center">
-               <div style="border-top: 1.5px solid #000; padding-top: 10px; width: 80%; margin: 0 auto; font-weight:700;">Official Institute Stamp</div>
-               <div class="text-muted mt-1" style="font-size:10px;">(Confidential)</div>
+               <div style="border-top: 1.5px solid #000; padding-top: 5px; width: 80%; margin: 0 auto; font-weight:700;">Official Institute Stamp</div>
+               <div class="text-muted mt-1" style="font-size:9px;">(Confidential)</div>
             </div>
          </div>
       </div>
@@ -782,20 +827,21 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   #sidebar, #top-navbar, .btn-lms, .breadcrumb-custom, .page-header-left p { display: none !important; }
   #page-content { margin: 0 !important; padding: 0 !important; }
   #main-content { margin-left: 0 !important; padding: 0 !important; }
-  body { background: white !important; font-size: 11px; color: #000; }
+  body { background: white !important; font-size: 10px; color: #000; }
   
   .reports-desktop { display: block !important; }
   .reports-mobile { display: none !important; }
   
   /* Grid System for Print */
-  .reports-desktop .row { display: table !important; width: 100% !important; border-spacing: 10px; border-collapse: separate; }
-  .reports-desktop .col-md-3 { display: table-cell !important; width: 25% !important; vertical-align: top; }
-  .reports-desktop .col-md-6 { display: table-cell !important; width: 50% !important; vertical-align: top; }
+  .reports-desktop .row { display: flex !important; flex-wrap: wrap !important; margin: 0 -10px !important; }
+  .reports-desktop .col-md-3 { width: 25% !important; padding: 0 10px !important; }
+  .reports-desktop .col-md-6 { width: 50% !important; padding: 0 10px !important; }
+  .reports-desktop .col-md-12 { width: 100% !important; padding: 0 10px !important; }
   
   .bento-card {
-    padding: 12px !important;
+    padding: 8px !important;
     border: 1px solid #eee !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     background: #fff !important;
     box-shadow: none !important;
     color: #000 !important;
@@ -830,27 +876,178 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .badge { border: 1px solid #ddd !important; background: #fff !important; color: #000 !important; }
   
   @page {
-    margin: 1.5cm;
-    size: A4;
+    margin: 0;
+    size: auto;
+  }
+  html, body {
+    height: 100% !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #app-wrapper, #main-content, #page-content {
+    height: 100% !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+  }
+  #report-printable {
+    zoom: 100% !important;
+    width: 100% !important;
+    max-height: 29cm !important;
+    overflow: hidden !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+  .bento-card {
+    page-break-inside: avoid !important;
+    height: auto !important;
+    margin-bottom: 5px !important;
+  }
+  .row {
+    margin-bottom: 5px !important;
+  }
+  #page-footer, .reports-mobile, .no-print, .toast-container-lms, .modal {
+    display: none !important;
+    height: 0 !important;
+    visibility: hidden !important;
   }
 }
 </style>
 
+<!-- Load Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Animate bars after page load
 document.addEventListener('DOMContentLoaded', function() {
-  // Trigger bar chart animation
-  setTimeout(function() {
-    document.querySelectorAll('.rpt-bar-fill, .rpt-progress-fill').forEach(function(el) {
-      var target = el.style.width;
-      el.style.width = '0';
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          el.style.width = target;
-        });
-      });
+    // Shared Chart Configurations
+    const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+    const ctxReg = document.getElementById('registrationChart').getContext('2d');
+    const ctxCourse = document.getElementById('courseChart').getContext('2d');
+
+    const chartColors = ['#5B4EFA', '#00C9A7', '#4CC9F0', '#FF9F43', '#FF6B6B'];
+
+    // 1. Revenue Bar Chart
+    new Chart(ctxRevenue, {
+        type: 'bar',
+        data: {
+            labels: <?= json_encode($revenueLabels) ?>,
+            datasets: [{
+                label: 'Monthly Revenue',
+                data: <?= json_encode($revenueValues) ?>,
+                backgroundColor: 'rgba(34, 211, 238, 0.7)',
+                borderColor: '#22d3ee',
+                borderWidth: 1,
+                borderRadius: 8,
+                hoverBackgroundColor: '#22d3ee'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                tooltip: { 
+                    backgroundColor: '#0f172a',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    padding: 12, 
+                    displayColors: false
+                }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                    ticks: { color: '#94a3b8', font: { size: 10, weight: '600' } }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { size: 10, weight: '600' } }
+                }
+            }
+        }
     });
-  }, 200);
+
+    // 2. Registration Trend Chart (Line)
+    new Chart(ctxReg, {
+        type: 'line',
+        data: {
+            labels: <?= json_encode($regLabels) ?>,
+            datasets: [{
+                label: 'New Students',
+                data: <?= json_encode($regValues) ?>,
+                borderColor: '#f43f5e',
+                backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                fill: true,
+                tension: 0.5,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                pointBackgroundColor: '#f43f5e',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                tooltip: { backgroundColor: '#0f172a', padding: 12 }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                    ticks: { color: '#94a3b8', font: { size: 10, weight: '600' }, stepSize: 1 }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { size: 10, weight: '600' } }
+                }
+            }
+        }
+    });
+
+    // 3. Course Distribution Doughnut Chart
+    new Chart(ctxCourse, {
+        type: 'doughnut',
+        data: {
+            labels: <?= json_encode($courseLabels) ?>,
+            datasets: [{
+                data: <?= json_encode($courseValues) ?>,
+                backgroundColor: ['#22d3ee', '#34d399', '#f43f5e', '#fbbf24', '#818cf8'],
+                borderWidth: 3,
+                borderColor: 'rgba(255,255,255,0.1)',
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: { 
+                legend: { display: false },
+                tooltip: { backgroundColor: '#0f172a', padding: 12 }
+            }
+        }
+    });
+
+    // Trigger animation for any CSS bars if still present
+    setTimeout(function() {
+        document.querySelectorAll('.rpt-bar-fill, .rpt-progress-fill').forEach(function(el) {
+            var target = el.style.width;
+            el.style.width = '0';
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    el.style.width = target;
+                });
+            });
+        });
+    }, 200);
 });
 </script>
 

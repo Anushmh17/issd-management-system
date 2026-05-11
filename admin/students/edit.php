@@ -49,6 +49,10 @@ $form = [
     'status'                => $student['status'],
 ];
 
+// --- Cropper.js Dependencies ---
+$cropperHead = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">';
+$cropperLib  = '<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Merge posted data
     foreach ($form as $key => $_) {
@@ -72,6 +76,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = updateStudent($pdo, $id, $form);
 
         if ($result['success']) {
+            // Rename if new photo uploaded
+            if (!empty($_FILES['profile_picture']['name']) && !empty($form['profile_picture'])) {
+                $oldPath = BASE_PATH . '/assets/documents/' . $form['profile_picture'];
+                $ext = pathinfo($form['profile_picture'], PATHINFO_EXTENSION);
+                $newFileName = "profile_{$id}." . $ext;
+                $newPath = BASE_PATH . '/assets/documents/' . $newFileName;
+                
+                if (file_exists($oldPath)) {
+                    if (rename($oldPath, $newPath)) {
+                        $pdo->prepare("UPDATE students SET profile_picture = ? WHERE id = ?")->execute([$newFileName, $id]);
+                    }
+                }
+            }
+
             setFlash('success', 'Student <strong>' . htmlspecialchars($student['full_name']) . '</strong> updated successfully.');
             header('Location: index.php');
             exit;
@@ -99,7 +117,7 @@ function renderStatusBadge(string $status): string {
     return '<span class="badge-lms ' . $class . '" style="font-size:11px; padding:4px 10px;"><i class="fas fa-circle-dot" style="margin-right:5px; font-size:8px;"></i>' . $label . '</span>';
 }
 
-$extraCSS = <<<'CSS'
+$extraCSS = $cropperHead . <<<'CSS'
 <style>
 .edit-student-banner {
     border-radius: var(--radius-lg);
@@ -187,12 +205,54 @@ $extraCSS = <<<'CSS'
 @media (max-width: 991px) {
     .form-actions-sticky.is-sticky { left: 20px; right: 20px; }
 }
+
+/* Premium Interactive Avatar in Banner */
+.esb-avatar-wrap {
+    width: 90px; height: 90px; border-radius: 22px;
+    position: relative; overflow: hidden; cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    border: 3.5px solid #fff; flex-shrink: 0;
+    background: #f8fafc;
 }
+.esb-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.esb-avatar-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; color: #fff; }
+.esb-avatar-overlay {
+    position: absolute; inset: 0; background: rgba(30, 77, 77, 0.75);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff; font-size: 11px; font-weight: 800; opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); gap: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.esb-avatar-wrap:hover .esb-avatar-overlay { opacity: 1; }
+.esb-avatar-wrap:hover { transform: scale(1.05); }
+.esb-avatar-wrap { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
 .crop-actions {
   display: flex;
-  gap: 12px;
+  gap: 15px;
   justify-content: flex-end;
 }
+
+/* Cropping Modal */
+.crop-modal {
+  display: none; position: fixed; z-index: 10000;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15,23,42,0.85); backdrop-filter: blur(8px);
+  align-items: center; justify-content: center;
+}
+.crop-modal-content {
+  background: #fff;
+  width: 95%; max-width: 500px;
+  border-radius: 24px; padding: 28px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+  .crop-container { width:100%; height:400px; background:#f8fafc; margin:20px 0; border-radius:16px; overflow:hidden; border: 1px solid #e2e8f0; }
+  /* Ensure Cropper UI is always on top */
+  .cropper-container { z-index: 10005 !important; }
 </style>
 CSS;
 
@@ -221,17 +281,21 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   <!-- Premium Student Banner -->
   <div class="edit-student-banner">
-    <?php if (!empty($student['profile_picture'])): ?>
-      <div class="esb-avatar" style="overflow:hidden; padding:0; background:none;">
+    <div class="esb-avatar-wrap" onclick="document.getElementById('profile_picture').click()" title="Click to change photo">
+      <?php if (!empty($student['profile_picture'])): ?>
         <img src="<?= BASE_URL ?>/assets/documents/<?= htmlspecialchars($student['profile_picture']) ?>" 
-             style="width:100%; height:100%; object-fit:cover;" alt="Profile">
+             id="img-preview" alt="Profile">
+      <?php else: ?>
+        <div class="esb-avatar-placeholder" id="avatar-placeholder" style="background:<?= studentAvatarColor($student['full_name']) ?>">
+          <?= strtoupper(substr($student['full_name'], 0, 1)) ?>
+        </div>
+        <img src="" id="img-preview" style="display:none;" alt="Profile">
+      <?php endif; ?>
+      <div class="esb-avatar-overlay">
+        <i class="fas fa-camera" style="font-size: 20px;"></i>
+        <span>Change</span>
       </div>
-    <?php else: ?>
-      <div class="esb-avatar" style="background:<?= studentAvatarColor($student['full_name']) ?>">
-        <?= strtoupper(substr($student['full_name'], 0, 1)) ?>
-      </div>
-    <?php endif; ?>
-    
+    </div>
     <div class="esb-info">
       <div class="esb-name"><?= htmlspecialchars($student['full_name']) ?></div>
       <div class="esb-meta">
@@ -267,6 +331,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <?php endif; ?>
 
   <form method="POST" action="edit.php?id=<?= $id ?>" id="editStudentForm" enctype="multipart/form-data" novalidate>
+    <!-- Hidden File Input for Banner Interaction -->
+    <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display:none;" onchange="handlePhotoSelect(this)">
 
     <div class="row">
         <!-- LEFT COLUMN -->
@@ -335,28 +401,30 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               </div>
               <div class="card-lms-body">
                 <div class="row g-3">
-                  <div class="col-md-6">
-                    <div class="form-group-lms">
-                      <label for="phone_number">Primary Mobile <span class="req">*</span></label>
-                      <div class="input-icon-wrap">
-                        <i class="fas fa-phone"></i>
-                        <input type="tel" id="phone_number" name="phone_number"
-                               class="form-control-lms with-icon"
-                               value="<?= htmlspecialchars($form['phone_number']) ?>" required>
+                    <div class="col-md-6">
+                      <div class="form-group-lms">
+                        <label for="phone_number">Primary Mobile <span class="req">*</span></label>
+                        <div class="phone-input-group">
+                          <span class="phone-prefix">+94</span>
+                          <input type="tel" id="phone_number" name="phone_number" 
+                                 value="<?= htmlspecialchars(stripSriLankanCountryCode($form['phone_number'])) ?>" required
+                                 maxlength="9" placeholder="7XXXXXXXX" pattern="[0-9]{9}"
+                                 oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.startsWith('0')) this.value = this.value.substring(1);">
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group-lms">
-                      <label for="whatsapp_number">WhatsApp Number</label>
-                      <div class="input-icon-wrap">
-                        <i class="fab fa-whatsapp" style="color:#25d366;"></i>
-                        <input type="tel" id="whatsapp_number" name="whatsapp_number"
-                               class="form-control-lms with-icon"
-                               value="<?= htmlspecialchars($form['whatsapp_number']) ?>">
+                    <div class="col-md-6">
+                      <div class="form-group-lms">
+                        <label for="whatsapp_number">WhatsApp Number</label>
+                        <div class="phone-input-group">
+                          <span class="phone-prefix">+94</span>
+                          <input type="tel" id="whatsapp_number" name="whatsapp_number"
+                                 value="<?= htmlspecialchars(stripSriLankanCountryCode($form['whatsapp_number'])) ?>"
+                                 maxlength="9" placeholder="7XXXXXXXX" pattern="[0-9]{9}"
+                                 oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.startsWith('0')) this.value = this.value.substring(1);">
+                        </div>
                       </div>
                     </div>
-                  </div>
                   <div class="col-md-6">
                     <div class="form-group-lms">
                       <label for="personal_email">Personal Email</label>
@@ -425,28 +493,6 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
         <!-- RIGHT COLUMN -->
         <div class="col-lg-4">
-            <!-- Profile Photo Update -->
-            <div class="card-lms mb-20">
-              <div class="card-lms-header">
-                <div class="card-lms-title">
-                  <i class="fas fa-camera" style="color:var(--accent);"></i> Profile Photo
-                </div>
-              </div>
-              <div class="card-lms-body text-center">
-                <div class="profile-upload-zone" onclick="document.getElementById('profile_picture').click()">
-                    <?php if (!empty($student['profile_picture'])): ?>
-                        <img src="<?= BASE_URL ?>/assets/documents/<?= htmlspecialchars($student['profile_picture']) ?>" class="profile-preview-img" id="img-preview">
-                    <?php else: ?>
-                        <div class="esb-avatar mx-auto mb-15" style="background:<?= studentAvatarColor($student['full_name']) ?>; width:100px; height:100px; border-radius:25px;">
-                            <?= strtoupper(substr($student['full_name'], 0, 1)) ?>
-                        </div>
-                    <?php endif; ?>
-                    <div class="fw-700 color-primary" style="font-size:14px;">Change Photo</div>
-                    <div class="text-muted" style="font-size:12px;">Click to upload JPG/PNG</div>
-                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display:none;" onchange="handlePhotoSelect(this)">
-                </div>
-              </div>
-            </div>
 
             <!-- Guardian Info -->
             <div class="card-lms mb-20">
@@ -463,10 +509,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </div>
                 <div class="form-group-lms mt-15">
                   <label for="guardian_phone">Guardian Phone</label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-phone"></i>
+                  <div class="phone-input-group">
+                    <span class="phone-prefix">+94</span>
                     <input type="tel" id="guardian_phone" name="guardian_phone"
-                           class="form-control-lms with-icon" value="<?= htmlspecialchars($form['guardian_phone']) ?>">
+                           value="<?= htmlspecialchars(stripSriLankanCountryCode($form['guardian_phone'])) ?>"
+                           maxlength="9" placeholder="7XXXXXXXX" pattern="[0-9]{9}"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.startsWith('0')) this.value = this.value.substring(1);">
                   </div>
                 </div>
                 <div class="mt-15">
@@ -506,8 +554,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <div class="text-muted d-none d-md-block" style="font-size:13px;">
                   <i class="fas fa-info-circle"></i> Carefully review all changes before updating.
               </div>
-              <div class="d-flex gap-12">
-                  <a href="index.php" class="btn-lms btn-outline">Cancel Changes</a>
+              <div class="d-flex" style="gap: 20px !important;">
+                  <a href="index.php" class="btn-lms btn-outline" style="margin-right: 10px;">Cancel Changes</a>
                   <button type="submit" class="btn-primary-grad px-40">
                     <i class="fas fa-check-circle"></i> Save Profile Changes
                   </button>
@@ -537,8 +585,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </div>
 </div>
 
-<?php
-$extraJS = <<<'JS'
+<!-- Scripts for Cropping (Defined early for inline events) -->
+<?= $cropperLib ?>
 <script>
 let cropper = null;
 let originalFileName = "";
@@ -550,15 +598,25 @@ function handlePhotoSelect(input) {
         reader.onload = function(e) {
             const modal = document.getElementById('cropModal');
             const cropImg = document.getElementById('cropImage');
-            if (cropper) cropper.destroy();
-            cropImg.src = e.target.result;
+            
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+
             modal.style.display = 'flex';
+            cropImg.src = e.target.result;
+
             cropImg.onload = function() {
+                if (cropper) cropper.destroy();
                 cropper = new Cropper(cropImg, {
                     aspectRatio: 1,
                     viewMode: 1,
                     dragMode: 'move',
                     autoCropArea: 0.8,
+                    responsive: true,
+                    restore: false,
+                    checkOrientation: false
                 });
             };
         };
@@ -568,17 +626,14 @@ function handlePhotoSelect(input) {
 
 function closeCropModal() {
     document.getElementById('cropModal').style.display = 'none';
-    document.getElementById('profile_picture').value = ''; // Reset input
+    document.getElementById('profile_picture').value = ''; 
     if (cropper) cropper.destroy();
 }
 
 function applyCrop() {
     if (!cropper) return;
     
-    const canvas = cropper.getCroppedCanvas({
-        width: 400,
-        height: 400
-    });
+    const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
     
     canvas.toBlob(blob => {
         const file = new File([blob], originalFileName, { type: 'image/jpeg' });
@@ -587,19 +642,25 @@ function applyCrop() {
         document.getElementById('profile_picture').files = container.files;
         
         let preview = document.getElementById('img-preview');
-        if (!preview) {
-            const zone = document.querySelector('.profile-upload-zone');
-            zone.innerHTML = '<img src="' + canvas.toDataURL('image/jpeg') + '" class="profile-preview-img" id="img-preview">' + zone.innerHTML;
-            const avatar = zone.querySelector('.esb-avatar');
-            if (avatar) avatar.remove();
-        } else {
+        let placeholder = document.getElementById('avatar-placeholder');
+        
+        if (preview) {
             preview.src = canvas.toDataURL('image/jpeg');
+            preview.style.display = 'block';
+        }
+        if (placeholder) {
+            placeholder.style.display = 'none';
         }
         
         document.getElementById('cropModal').style.display = 'none';
         if (cropper) cropper.destroy();
     }, 'image/jpeg');
 }
+</script>
+
+<?php
+$extraJS = <<<'JS'
+<script>
 
 function restrictNumbers(e) {
     e.value = e.value.replace(/[^0-9]/g, '');
@@ -659,7 +720,6 @@ document.addEventListener('DOMContentLoaded', function() {
         altInput: true,
         altFormat: "F j, Y"
     });
-});
 
     // Sticky Bar Observer
     const sentinel = document.getElementById('sticky-sentinel');
@@ -669,7 +729,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (entries[0].isIntersecting) {
                 stickyBar.classList.remove('is-sticky');
             } else {
-                // Only make sticky if sentinel is BELOW the viewport
                 const rect = sentinel.getBoundingClientRect();
                 if (rect.top > window.innerHeight) {
                     stickyBar.classList.add('is-sticky');
@@ -680,7 +739,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, { threshold: 0 });
         observer.observe(sentinel);
         
-        // Also handle scroll to re-check if we scroll UP past the sentinel
         window.addEventListener('scroll', () => {
             const rect = sentinel.getBoundingClientRect();
             if (rect.top > window.innerHeight) {

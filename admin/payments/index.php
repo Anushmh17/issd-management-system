@@ -84,6 +84,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <div class="breadcrumb-custom"><i class="fas fa-home"></i> Admin &rsaquo; <span>Finance</span></div>
     </div>
     <div class="d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-light rounded-pill px-4 fw-800 shadow-sm no-print"><i class="fas fa-print me-2"></i>Print Report</button>
         <a href="alerts.php" class="btn btn-warning rounded-pill px-4 fw-800 shadow-sm"><i class="fas fa-bell me-2"></i>Alerts</a>
         <a href="add.php" class="btn-primary-grad px-4"><i class="fas fa-plus"></i> New Payment</a>
     </div>
