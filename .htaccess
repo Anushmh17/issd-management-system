@@ -1,0 +1,10 @@
+# ISSD Management - Security Protection
+# Prevent directory listing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "^\.env|config\.php|db\.php|.*\.log|.*\.sql$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+

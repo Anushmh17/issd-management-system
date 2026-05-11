@@ -21,12 +21,14 @@ if (!$assignment) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submission_id'])) {
+    verifyCsrf();
     $subId = (int)$_POST['submission_id'];
-    $r = gradeSubmission($pdo, $subId, $_POST);
+    $r = gradeSubmission($pdo, $subId, $user['id'], $_POST);
     if ($r['success']) setFlash('success', 'Graded successfully.');
-    else setFlash('danger', 'Failed to save grade.');
+    else setFlash('danger', $r['error'] ?? 'Failed to save grade.');
     header("Location: view_submissions.php?id=$id"); exit;
 }
+
 
 $submissions = getAssignmentSubmissions($pdo, $id);
 
@@ -98,6 +100,7 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
               </td>
               <td style="min-width:300px;">
                 <form method="POST" class="d-flex gap-10" style="align-items:flex-start;">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="submission_id" value="<?= $s['id'] ?>">
                   <div style="flex:1;">
                     <input type="number" step="0.01" name="marks" class="form-control-lms mb-10" 

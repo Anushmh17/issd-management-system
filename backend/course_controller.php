@@ -95,6 +95,14 @@ function updateCourse(PDO $pdo, int $id, array $d): array {
 // -------------------------------------------------------
 function deleteCourse(PDO $pdo, int $id): bool {
     try {
+        // H6: check if there are any student enrollments for this course
+        $check = $pdo->prepare("SELECT id FROM student_courses WHERE course_id = ? LIMIT 1");
+        $check->execute([$id]);
+        if ($check->fetch()) {
+            // Cannot delete course with enrollments
+            return false;
+        }
+
         $pdo->prepare("DELETE FROM courses WHERE id = ?")->execute([$id]);
         return true;
     } catch (PDOException $e) {
@@ -102,6 +110,7 @@ function deleteCourse(PDO $pdo, int $id): bool {
         return false;
     }
 }
+
 
 // -------------------------------------------------------
 // Get single course by ID

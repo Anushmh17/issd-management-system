@@ -314,7 +314,10 @@ body.lms-dark-mode #notice-modal-badge {
         <p class="text-muted mb-4" style="font-size:13.5px;">Are you sure you want to logout?</p>
         <div class="d-flex gap-10">
           <button type="button" class="btn-lms btn-outline w-100" data-bs-dismiss="modal">Keep Me In</button>
-          <a href="<?= BASE_URL ?>/logout.php" class="btn-lms btn-danger w-100">Yes, Logout</a>
+          <form action="<?= BASE_URL ?>/logout.php" method="POST" class="w-100">
+            <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+            <button type="submit" class="btn-lms btn-danger w-100">Yes, Logout</button>
+          </form>
         </div>
       </div>
     </div>

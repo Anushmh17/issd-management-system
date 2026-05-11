@@ -16,7 +16,14 @@ if (!isLoggedIn()) {
 
 $data = json_decode(file_get_contents('php://input'), true);
 $noticeId = isset($data['notice_id']) ? (int)$data['notice_id'] : 0;
+$csrfToken = $data['csrf_token'] ?? '';
 $userId = currentUserId();
+
+// Verify CSRF
+if (!hash_equals($_SESSION['csrf_token'] ?? '', $csrfToken)) {
+    echo json_encode(['success' => false, 'error' => 'Invalid CSRF token']);
+    exit;
+}
 
 if ($noticeId > 0 && $userId) {
     try {

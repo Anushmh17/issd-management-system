@@ -15,6 +15,7 @@ $error = '';
 
 // --- Handle Actions ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     $act = $_POST['act'] ?? '';
 
     if ($act === 'add' || $act === 'edit') {
@@ -170,6 +171,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
         <div class="card-lms-body px-4 pb-4">
             <form method="POST" action="enrollments.php" class="row g-4">
+                <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                 <input type="hidden" name="act" value="<?= $action ?>">
                 <?php if ($action==='edit'): ?><input type="hidden" name="id" value="<?= $editEnrollment['id'] ?>"><?php endif; ?>
 
@@ -345,10 +347,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                                 <a href="?action=edit&id=<?= $e['id'] ?>" class="btn-lms btn-outline btn-sm shadow-sm" title="Modify Enrollment">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
-                                <form method="POST" style="display:inline;" onsubmit="return confirm('Archive this enrollment record?');">
+                                <form method="POST" action="enrollments.php" style="display:inline;" onsubmit="return confirm('Permanently delete this enrollment?');">
+                                    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                                     <input type="hidden" name="act" value="delete">
                                     <input type="hidden" name="id" value="<?= $e['id'] ?>">
-                                    <button type="submit" class="btn-lms btn-danger btn-sm shadow-sm"><i class="fas fa-trash-alt"></i></button>
+                                    <button type="submit" class="btn-lms btn-danger btn-sm shadow-sm">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </form>
                             </div>
                         </td>

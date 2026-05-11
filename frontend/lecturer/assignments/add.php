@@ -24,6 +24,7 @@ $form = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     foreach ($form as $k => $_) $form[$k] = $_POST[$k] ?? '';
 
     $result = addAssignment($pdo, $lecturerId, $form, $_FILES['file'] ?? null);
@@ -60,7 +61,8 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
     </div>
   <?php endif; ?>
 
-  <form method="POST" action="add.php" enctype="multipart/form-data">
+  <form method="POST" action="add.php" id="addAssignmentForm" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
     <div class="glass-card" style="max-width:900px; margin:0 auto;">
       <div class="glass-card-title">
         <span style="display:flex; align-items:center; gap:12px;">

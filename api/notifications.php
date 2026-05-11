@@ -57,6 +57,7 @@ try {
             'urgentCalls' => $urgentCalls
         ]);
     } elseif ($action === 'read') {
+        verifyCsrf();
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
             // I1: ownership check — only mark notifications belonging to this user (or global ones)
@@ -75,10 +76,12 @@ try {
             echo json_encode(['success' => false, 'error' => 'Invalid ID']);
         }
     } elseif ($action === 'read_all') {
+        verifyCsrf();
         markAllAsRead($pdo, $userId);
         ob_clean();
         echo json_encode(['success' => true]);
     } elseif ($action === 'dismiss') {
+        verifyCsrf();
         // I2: sanitize all input before writing to the notifications table
         $type    = in_array($_POST['type'] ?? '', ['call','payment','enrollment','system']) ? ($_POST['type']) : 'system';
         $title   = htmlspecialchars(strip_tags(trim($_POST['title']   ?? 'Alert Closed')), ENT_QUOTES, 'UTF-8');
@@ -95,14 +98,10 @@ try {
             echo json_encode(['success' => false]);
         }
     } elseif ($action === 'clear') {
-        // Mark all read notifications as cleared for this user
-        if (clearReadNotifications($pdo, $userId)) {
-            ob_clean();
-            echo json_encode(['success' => true]);
-        } else {
-            ob_clean();
-            echo json_encode(['success' => false]);
-        }
+        verifyCsrf();
+        $pdo->prepare("UPDATE notifications SET is_cleared = 1 WHERE user_id = ? AND is_read = 1")->execute([$userId]);
+        ob_clean();
+        echo json_encode(['success' => true]);
     }
 } catch (\Throwable $e) {
     http_response_code(500);

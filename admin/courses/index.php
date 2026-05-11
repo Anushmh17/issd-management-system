@@ -12,14 +12,17 @@ require_once dirname(__DIR__, 2) . '/backend/course_controller.php';
 requireRole(ROLE_ADMIN);
 
 // ---- Handle DELETE ----
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'delete') {
-    $cid = (int)($_POST['id'] ?? 0);
-    if (deleteCourse($pdo, $cid)) {
-        setFlash('success', 'Course deleted successfully.');
-    } else {
-        setFlash('danger', 'Failed to delete course.');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
+    if (($_POST['act'] ?? '') === 'delete') {
+        $cid = (int)($_POST['id'] ?? 0);
+        if (deleteCourse($pdo, $cid)) {
+            setFlash('success', 'Course deleted successfully.');
+        } else {
+            setFlash('danger', 'Failed to delete course. Ensure no students are enrolled in this course before deleting.');
+        }
+        header('Location: index.php'); exit;
     }
-    header('Location: index.php'); exit;
 }
 
 // ---- Filters ----
@@ -301,6 +304,7 @@ body.lms-dark-mode .course-fee-badge { background: rgba(16, 185, 129, 0.1) !impo
                   <i class="fas fa-pen-to-square"></i>
                 </a>
                 <form method="POST" action="index.php" style="display:inline;">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="act" value="delete">
                   <input type="hidden" name="id"  value="<?= $c['id'] ?>">
                   <button type="submit"

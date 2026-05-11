@@ -12,12 +12,17 @@ require_once dirname(__DIR__, 2) . '/backend/lecturer_controller.php';
 requireRole(ROLE_ADMIN);
 
 // ---- Handle DELETE ----
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'delete') {
-    $lid = (int)($_POST['id'] ?? 0);
-    if (deleteLecturer($pdo, $lid)) {
-        setFlash('success', 'Lecturer deleted successfully.');
-    } else {
-        setFlash('danger', 'Failed to delete lecturer.');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
+    $act = $_POST['act'] ?? '';
+    if ($act === 'delete') {
+        $lid = (int)($_POST['id'] ?? 0);
+        if (deleteLecturer($pdo, $lid)) {
+            setFlash('success', 'Lecturer deleted successfully.');
+        } else {
+            setFlash('danger', 'Failed to delete lecturer.');
+        }
+        header('Location: index.php'); exit;
     }
     header('Location: index.php'); exit;
 }
@@ -358,6 +363,7 @@ body.lms-dark-mode .table-lms td {
                   <i class="fas fa-pen-to-square"></i>
                 </a>
                 <form method="POST" action="index.php" style="display:inline;">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="act" value="delete">
                   <input type="hidden" name="id"  value="<?= $l['id'] ?>">
                   <button type="submit"

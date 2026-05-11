@@ -33,6 +33,7 @@ $form = [
 $availableCourses = $pdo->query("SELECT id, course_name, course_code, monthly_fee FROM courses WHERE status='active' ORDER BY course_name ASC")->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     foreach ($form as $k => $_) $form[$k] = $_POST[$k] ?? '';
     $result = addLecturer($pdo, $form, $_FILES['photo'] ?? null);
     if ($result['success']) {
@@ -136,7 +137,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
   <?php endif; ?>
 
-  <form method="POST" action="add.php" enctype="multipart/form-data" id="addLecturerForm">
+  <form method="POST" action="add.php" id="addLecturerForm" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
 
     <!-- Card 1: Personal Information with integrated photo banner -->
     <div class="card-lms mb-20">

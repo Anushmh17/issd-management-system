@@ -139,15 +139,30 @@ function getAssignmentSubmissions(PDO $pdo, int $assignmentId): array {
     return $stmt->fetchAll();
 }
 
-function gradeSubmission(PDO $pdo, int $submissionId, array $d): array {
+function gradeSubmission(PDO $pdo, int $submissionId, int $lecturerId, array $d): array {
     try {
+        // H3: verify that the submission belongs to an assignment owned by this lecturer
+        $check = $pdo->prepare("
+            SELECT s.id 
+            FROM assignment_submissions s
+            JOIN assignments a ON s.assignment_id = a.id
+            WHERE s.id = ? AND a.lecturer_id = ?
+            LIMIT 1
+        ");
+        $check->execute([$submissionId, $lecturerId]);
+        if (!$check->fetch()) {
+            return ['success' => false, 'error' => 'Unauthorized: You do not own this assignment.'];
+        }
+
         $pdo->prepare("UPDATE assignment_submissions SET marks = ?, feedback = ? WHERE id = ?")
             ->execute([$d['marks'] ?? null, $d['feedback'] ?? null, $submissionId]);
         return ['success' => true];
     } catch (PDOException $e) {
+        error_log('gradeSubmission: ' . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to grade submission.'];
     }
 }
+
 
 // -------------------------------------------------------
 // Student: Get Assignments
@@ -188,11 +203,24 @@ function getAssignmentForStudent(PDO $pdo, int $assignmentId, int $userId): ?arr
 // -------------------------------------------------------
 function submitAssignment(PDO $pdo, int $studentId, int $assignmentId, array $file): array {
     if (empty($file['name'])) return ['success' => false, 'errors' => ['File is required to submit.']];
-    
-    $up = uploadAssignmentFile($file, 'SUB_' . $studentId);
-    if (!$up['success']) return ['success' => false, 'errors' => [$up['error']]];
 
     try {
+        // H5: verify that the student is actually enrolled in the course that owns this assignment
+        $check = $pdo->prepare("
+            SELECT a.id 
+            FROM assignments a
+            JOIN student_courses sc ON a.course_id = sc.course_id
+            WHERE a.id = ? AND sc.student_id = ? AND sc.status IN ('ongoing', 'completed')
+            LIMIT 1
+        ");
+        $check->execute([$assignmentId, $studentId]);
+        if (!$check->fetch()) {
+            return ['success' => false, 'errors' => ['Unauthorized: You are not enrolled in this course.']];
+        }
+
+        $up = uploadAssignmentFile($file, 'SUB_' . $studentId);
+        if (!$up['success']) return ['success' => false, 'errors' => [$up['error']]];
+
         $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();
 
@@ -217,4 +245,5 @@ function submitAssignment(PDO $pdo, int $studentId, int $assignmentId, array $fi
         return ['success' => false, 'errors' => ['Failed to submit assignment.']];
     }
 }
+
 

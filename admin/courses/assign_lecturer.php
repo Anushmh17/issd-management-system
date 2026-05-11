@@ -20,6 +20,7 @@ $preselectedLecturerId = (int)($_GET['lecturer_id'] ?? 0);
 
 // Handle POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     $act = $_POST['act'] ?? '';
 
     if ($act === 'assign') {
@@ -95,6 +96,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
         <div class="card-lms-body">
           <form method="POST" action="assign_lecturer.php" id="assignLecturerForm">
+            <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
             <input type="hidden" name="act" value="assign">
 
             <div class="form-group-lms">
@@ -210,6 +212,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <i class="fas fa-edit"></i>
                 </button>
                 <form method="POST" action="assign_lecturer.php" style="display:inline;">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="act" value="remove">
                   <input type="hidden" name="course_id" value="<?= $a['course_id'] ?>">
                   <button type="submit"

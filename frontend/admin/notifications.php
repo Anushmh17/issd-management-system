@@ -132,6 +132,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 function markRead(id) {
     const formData = new FormData();
     formData.append('id', id);
+    formData.append('csrf_token', '<?= csrfToken() ?>');
     fetch('<?= BASE_URL ?>/api/notifications.php?action=read', {
         method: 'POST',
         body: formData
@@ -140,7 +141,12 @@ function markRead(id) {
 
 function clearRead() {
     if (!confirm('Are you sure you want to delete all read notifications?')) return;
-    fetch('<?= BASE_URL ?>/api/notifications.php?action=clear')
+    const formData = new FormData();
+    formData.append('csrf_token', '<?= csrfToken() ?>');
+    fetch('<?= BASE_URL ?>/api/notifications.php?action=clear', {
+        method: 'POST',
+        body: formData
+    })
         .then(resp => resp.json())
         .then(data => {
             if (data.success) window.location.reload();

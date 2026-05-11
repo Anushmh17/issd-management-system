@@ -1227,7 +1227,7 @@ foreach ($checkStudents as $cs) {
                 fetch('<?= BASE_URL ?>/api/agenda_action.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `action=snooze&id=${activeSnoozeId}&category=${activeSnoozeCategory}&time=${time}`
+                    body: `action=snooze&id=${activeSnoozeId}&category=${activeSnoozeCategory}&time=${time}&csrf_token=${CSRF_TOKEN}`
                 })
                 .then(res => res.json())
                 .then(data => {

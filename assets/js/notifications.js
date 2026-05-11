@@ -168,6 +168,7 @@ class NotificationManager {
     async markRead(id) {
         const formData = new FormData();
         formData.append('id', id);
+        formData.append('csrf_token', CSRF_TOKEN);
         try {
             await fetch(`${this.baseUrl}/api/notifications.php?action=read`, { method: 'POST', body: formData });
             this.fetchNotifications();
@@ -175,8 +176,10 @@ class NotificationManager {
     }
 
     async markAllRead() {
+        const formData = new FormData();
+        formData.append('csrf_token', CSRF_TOKEN);
         try {
-            await fetch(`${this.baseUrl}/api/notifications.php?action=read_all`);
+            await fetch(`${this.baseUrl}/api/notifications.php?action=read_all`, { method: 'POST', body: formData });
             this.fetchNotifications();
         } catch (err) { console.error('Failed', err); }
     }
@@ -188,7 +191,9 @@ class NotificationManager {
             icon: 'fa-trash-can',
             btnText: 'Clear Now',
             onConfirm: async () => {
-                const resp = await fetch(`${this.baseUrl}/api/notifications.php?action=clear`);
+                const formData = new FormData();
+                formData.append('csrf_token', CSRF_TOKEN);
+                const resp = await fetch(`${this.baseUrl}/api/notifications.php?action=clear`, { method: 'POST', body: formData });
                 const data = await resp.json();
                 if (data.success) this.fetchNotifications();
             }

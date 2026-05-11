@@ -5,8 +5,17 @@
 // =====================================================
 
 // Allow running from CLI directly or via HTTP
+// Allow running from CLI directly or via HTTP with secret key
 if (php_sapi_name() === 'cli' || (isset($_GET['cron']) && $_GET['cron'] == '1')) {
     require_once __DIR__ . '/config.php';
+    
+    // If HTTP, verify secret key
+    if (php_sapi_name() !== 'cli') {
+        if (!isset($_GET['key']) || $_GET['key'] !== CRON_SECRET) {
+            die('Unauthorized: Invalid cron key.');
+        }
+    }
+
     require_once __DIR__ . '/db.php';
     runDailyCron($pdo);
     exit;

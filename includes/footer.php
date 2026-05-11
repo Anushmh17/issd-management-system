@@ -85,7 +85,10 @@ function showToast(type, message, title = '') {
 <!-- Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Custom JS -->
-<script>const BASE_URL = "<?= BASE_URL ?>";</script>
+<script>
+  const BASE_URL = "<?= BASE_URL ?>";
+  const CSRF_TOKEN = "<?= csrfToken() ?>";
+</script>
 <script src="<?= BASE_URL ?>/assets/js/main.js?v=2.1"></script>
 <script src="<?= BASE_URL ?>/assets/js/notifications.js"></script>
 

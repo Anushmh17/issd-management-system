@@ -30,8 +30,9 @@ if (!$assignment) {
 }
 
 // Handle grading
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['act']) && $_POST['act'] === 'grade') {
-    $submission_id = (int)$_POST['submission_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
+    $submission_id = (int)($_POST['submission_id'] ?? 0);
     $marks = (int)$_POST['marks'];
     
     if ($marks < 0 || $marks > $assignment['max_marks']) {
@@ -159,7 +160,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                     <!-- Inline Grading Form -->
                     <div class="collapse mt-2" id="gradeForm<?= $s['submission_id'] ?>">
                         <form method="POST" style="display:flex;gap:5px;align-items:center;">
-                            <input type="hidden" name="act" value="grade">
+                            <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                             <input type="hidden" name="submission_id" value="<?= $s['submission_id'] ?>">
                             <input type="number" name="marks" class="form-control-lms" style="width:70px;padding:5px;" min="0" max="<?= $assignment['max_marks'] ?>" value="<?= $s['marks'] ?? '' ?>" required>
                             <button type="submit" class="btn-lms btn-success btn-sm"><i class="fas fa-check"></i></button>

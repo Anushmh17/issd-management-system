@@ -14,6 +14,7 @@ requireRole(ROLE_ADMIN);
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     $result = addPayment($pdo, $_POST);
     if ($result['success']) {
         setFlash('success', 'Payment recorded successfully.');
@@ -164,6 +165,7 @@ body.lms-dark-mode .danger-tint { background: rgba(239, 68, 68, 0.15); border-co
   <?php endif; ?>
 
   <form method="POST" action="add.php">
+    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
 
     <div class="card-lms" style="max-width:800px;margin:0 auto;">
       <div class="card-lms-header">

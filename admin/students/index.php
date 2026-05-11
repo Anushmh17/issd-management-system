@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // =====================================================
 // ISSD Management - Admin: Students List
 // admin/students/index.php
@@ -332,6 +332,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <i class="fas fa-pen-to-square"></i>
                 </a>
                 <form method="POST" action="index.php" style="display:inline;">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="act"    value="delete">
                   <input type="hidden" name="id"     value="<?= $s['id'] ?>">
                   <input type="hidden" name="search" value="<?= htmlspecialchars($search) ?>">

@@ -22,6 +22,7 @@ if (!$assignment) {
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     $result = submitAssignment($pdo, $user['id'], $id, $_FILES['submission_file'] ?? null);
     if ($result['success']) {
         setFlash('success', 'Assignment submitted successfully.');
@@ -160,7 +161,8 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
 
           <?php if ($assignment['marks'] === null && (!$isOverdue || $hasSubmitted)): ?>
             <form method="POST" enctype="multipart/form-data">
-              <div class="form-group-lms">
+              <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+              <div style="margin-bottom:24px;">
                 <input type="file" name="submission_file" class="form-control-lms" required accept=".pdf,.doc,.docx,.zip,.rar">
                 <small style="font-size:11px;color:#94a3b8;display:block;margin-top:6px;">Allowable: PDF, DOCX, ZIP, RAR (Max: 15MB)</small>
               </div>

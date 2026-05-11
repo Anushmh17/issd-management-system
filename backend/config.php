@@ -19,6 +19,8 @@ define('DB_CHARSET', 'utf8mb4');
 
 // Session configuration
 define('SESSION_TIMEOUT', 3600); // 1 hour
+define('CRON_SECRET', 'issd_secure_cron_9922'); // Secret key for triggering cron jobs
+
 
 // Upload paths
 define('UPLOAD_PATH', BASE_PATH . '/assets/uploads/');
@@ -76,3 +78,4 @@ function stripSriLankanCountryCode($phone) {
     if (strlen($phone) === 9) return $phone;
     return $phone;
 }
+

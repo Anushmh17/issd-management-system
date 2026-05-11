@@ -28,6 +28,7 @@ $form = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     foreach ($form as $k => $_) $form[$k] = $_POST[$k] ?? '';
     $result = updateCourse($pdo, $id, $form);
     if ($result['success']) {
@@ -112,6 +113,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     <!-- Edit Form -->
     <div class="col-lg-8">
       <form method="POST" action="edit.php?id=<?= $id ?>" id="editCourseForm">
+        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
         <div class="card-lms mb-20">
           <div class="card-lms-header">
             <div class="card-lms-title">

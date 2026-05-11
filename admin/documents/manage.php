@@ -37,6 +37,7 @@ $messages = [];
 // Handle POST "" process one document at a time
 // =====================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
 
     // =====================================================
     // Handle Quick Upload (from index.php)
@@ -522,6 +523,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <i class="fas fa-camera"></i>
         </div>
         <form id="profilePicForm" method="POST" enctype="multipart/form-data" style="display:none;">
+            <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
             <input type="hidden" name="update_profile_pic" value="1">
             <input type="file" name="profile_pic" id="profilePicInput" onchange="document.getElementById('profilePicForm').submit();">
         </form>
@@ -613,6 +615,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <?php foreach ($groupDocs as $docKey => $def): ?>
               <?php $formId = "form-" . $docKey; ?>
               <form id="<?= $formId ?>" method="POST" action="manage.php?student_id=<?= $studentId ?>" enctype="multipart/form-data">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="doc_key" value="<?= $docKey ?>">
                   <input type="hidden" name="doc_status" value="<?= !empty($docRow[$docKey . '_status'])?1:0 ?>" id="hidden-status-<?= $docKey ?>">
               </form>
@@ -709,6 +712,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
     <div class="card-lms-body">
       <form method="POST" enctype="multipart/form-data" class="mb-20 p-4" style="border-radius:16px; border:1.5px dashed #cbd5e1;">
+        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
         <div class="row g-3 align-items-end">
           <div class="col-md-5">
             <div class="form-group-lms mb-0">
@@ -753,6 +757,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <div class="d-flex gap-10">
                     <a href="<?= BASE_URL ?>/assets/documents/<?= htmlspecialchars($od['file_path']) ?>" target="_blank" class="btn-lms btn-outline btn-sm"><i class="fas fa-eye"></i> View</a>
                     <form method="POST" onsubmit="return confirm('Remove?')">
+                        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                         <input type="hidden" name="del_other_id" value="<?= $od['id'] ?>">
                         <button type="submit" class="btn-lms btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                     </form>

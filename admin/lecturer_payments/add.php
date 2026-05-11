@@ -46,6 +46,7 @@ foreach ($courseRows as $row) {
 $error = $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     $paymentType = trim($_POST['payment_type'] ?? 'flat');
 
     // Calculate amount for per-student mode
@@ -108,6 +109,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <?php endif; ?>
 
           <form method="POST" id="payoutForm">
+            <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
             <input type="hidden" name="payment_type" id="payment_type_hidden" value="flat">
 
             <!-- Step 1: Lecturer -->

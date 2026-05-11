@@ -14,6 +14,7 @@ $error = '';
 $userId = currentUserId();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     $act = $_POST['act'] ?? '';
 
     if ($act === 'add' || $act === 'edit') {
@@ -222,6 +223,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
     
     <form method="POST" action="notices.php">
+      <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
       <input type="hidden" name="act" value="<?= $action ?>">
       <?php if ($action==='edit'): ?><input type="hidden" name="id" value="<?= $editNotice['id'] ?>"><?php endif; ?>
 
@@ -355,7 +357,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <i class="fas fa-eye"></i>
                 </button>
                 <a href="?action=edit&id=<?= $n['id'] ?>" class="action-btn edit" title="Edit Notice"><i class="fas fa-pen"></i></a>
-                <form method="POST" style="display:inline;" onsubmit="return confirm('Archive this notice?')">
+                <form method="POST" action="notices.php" style="display:inline;" onsubmit="return confirm('Archive this notice?')">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="act" value="delete">
                   <input type="hidden" name="id" value="<?= $n['id'] ?>">
                   <button type="submit" class="action-btn del" title="Delete Permanent"><i class="fas fa-trash-alt"></i></button>

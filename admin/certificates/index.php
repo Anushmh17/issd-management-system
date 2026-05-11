@@ -11,15 +11,17 @@ require_once dirname(__DIR__, 2) . '/backend/certificate_controller.php';
 
 requireRole(ROLE_ADMIN);
 
-// Handle Toggle
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'toggle') {
-    $cId = (int)($_POST['id'] ?? 0);
-    if (toggleCertificateProvided($pdo, $cId)) {
-        setFlash('success', 'Status updated.');
-    } else {
-        setFlash('danger', 'Failed to update status.');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
+    if (($_POST['act'] ?? '') === 'toggle') {
+        $cId = (int)($_POST['id'] ?? 0);
+        if (toggleCertificateProvided($pdo, $cId)) {
+            setFlash('success', 'Status updated.');
+        } else {
+            setFlash('danger', 'Failed to update status.');
+        }
+        header('Location: index.php'); exit;
     }
-    header('Location: index.php'); exit;
 }
 
 $search = trim($_GET['search'] ?? '');
@@ -143,6 +145,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               </td>
               <td style="text-align:center;">
                 <form method="POST" style="display:inline-block;">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="act" value="toggle">
                   <input type="hidden" name="id" value="<?= $c['id'] ?>">
                   <button type="submit" class="btn-primary-grad btn-sm" title="Toggle Provided Status">

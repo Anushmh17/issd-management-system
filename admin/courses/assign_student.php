@@ -15,48 +15,55 @@ $errors = [];
 $preselectedCourseId   = (int)($_GET['course_id']   ?? 0);
 $preselectedStudentId  = (int)($_GET['student_id']  ?? 0);
 
-// Handle status update
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'update_status') {
-    $scId   = (int)($_POST['sc_id'] ?? 0);
-    $newSt  = $_POST['new_status'] ?? '';
-    if ($scId && updateStudentCourseStatus($pdo, $scId, $newSt)) {
-        setFlash('success', 'Enrollment status updated.');
-    } else {
-        setFlash('danger', 'Failed to update status.');
-    }
-    header('Location: assign_student.php'); exit;
-}
+// Handle POST actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
 
-// Handle new enrollment
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'enroll') {
-    $studentId = (int)($_POST['student_id'] ?? 0);
-    $courseId  = (int)($_POST['course_id']  ?? 0);
-    $data = [
-        'start_date' => $_POST['start_date'] ?? '',
-        'end_date'   => $_POST['end_date']   ?? '',
-    ];
-    $result = assignStudentToCourse($pdo, $studentId, $courseId, $data);
-    if ($result['success']) {
-        setFlash('success', 'Student enrolled successfully.');
+    $act = $_POST['act'] ?? '';
+
+    // Handle status update
+    if ($act === 'update_status') {
+        $scId   = (int)($_POST['sc_id'] ?? 0);
+        $newSt  = $_POST['new_status'] ?? '';
+        if ($scId && updateStudentCourseStatus($pdo, $scId, $newSt)) {
+            setFlash('success', 'Enrollment status updated.');
+        } else {
+            setFlash('danger', 'Failed to update status.');
+        }
         header('Location: assign_student.php'); exit;
     }
-    $errors = $result['errors'];
-}
 
-// Handle enrollment update
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'update_enrollment') {
-    $scId = (int)($_POST['sc_id'] ?? 0);
-    $data = [
-        'start_date' => $_POST['start_date'] ?? '',
-        'end_date'   => $_POST['end_date']   ?? '',
-        'status'     => $_POST['status']     ?? 'ongoing'
-    ];
-    $result = updateStudentCourse($pdo, $scId, $data);
-    if ($result['success']) {
-        setFlash('success', 'Enrollment updated successfully.');
-        header('Location: assign_student.php'); exit;
+    // Handle new enrollment
+    if ($act === 'enroll') {
+        $studentId = (int)($_POST['student_id'] ?? 0);
+        $courseId  = (int)($_POST['course_id']  ?? 0);
+        $data = [
+            'start_date' => $_POST['start_date'] ?? '',
+            'end_date'   => $_POST['end_date']   ?? '',
+        ];
+        $result = assignStudentToCourse($pdo, $studentId, $courseId, $data);
+        if ($result['success']) {
+            setFlash('success', 'Student enrolled successfully.');
+            header('Location: assign_student.php'); exit;
+        }
+        $errors = $result['errors'];
     }
-    $errors = $result['errors'];
+
+    // Handle enrollment update
+    if ($act === 'update_enrollment') {
+        $scId = (int)($_POST['sc_id'] ?? 0);
+        $data = [
+            'start_date' => $_POST['start_date'] ?? '',
+            'end_date'   => $_POST['end_date']   ?? '',
+            'status'     => $_POST['status']     ?? 'ongoing'
+        ];
+        $result = updateStudentCourse($pdo, $scId, $data);
+        if ($result['success']) {
+            setFlash('success', 'Enrollment updated successfully.');
+            header('Location: assign_student.php'); exit;
+        }
+        $errors = $result['errors'];
+    }
 }
 
 $students  = getActiveStudentsForCourse($pdo);
@@ -153,6 +160,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
         <div class="card-lms-body">
           <form method="POST" action="assign_student.php" id="enrollForm">
+            <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
             <input type="hidden" name="act" value="enroll" id="form-act">
             <input type="hidden" name="sc_id" value="" id="form-sc-id">
 

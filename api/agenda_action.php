@@ -14,6 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+verifyCsrf(); // CSRF protection
+
+
 $action   = $_POST['action'] ?? '';
 $id       = (int)($_POST['id'] ?? 0);
 $category = $_POST['category'] ?? '';

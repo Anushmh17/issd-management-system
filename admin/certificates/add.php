@@ -20,6 +20,7 @@ $form = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     foreach ($form as $k => $_) $form[$k] = $_POST[$k] ?? '';
 
     $result = addCertificate($pdo, $form, $_FILES['intern_document'] ?? null);
@@ -62,6 +63,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <?php endif; ?>
 
   <form method="POST" action="add.php" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
     <div class="card-lms" style="max-width:800px;margin:0 auto;">
       <div class="card-lms-header">
         <div class="card-lms-title">

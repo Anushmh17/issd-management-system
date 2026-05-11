@@ -34,6 +34,7 @@ $form = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     foreach ($form as $k => $_) $form[$k] = $_POST[$k] ?? '';
     $result = updateLecturer($pdo, $id, $form, $_FILES['photo'] ?? null);
     if ($result['success']) {
@@ -135,6 +136,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <?php endif; ?>
 
   <form method="POST" action="edit.php?id=<?= $id ?>" enctype="multipart/form-data" id="editLecturerForm">
+    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
 
     <!-- Card 1: Personal Information with integrated photo banner -->
     <div class="card-lms mb-20">

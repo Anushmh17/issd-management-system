@@ -43,6 +43,7 @@ $form = [
 $docDefs = getDocumentDefinitions();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     // Merge posted data
     foreach ($form as $key => $_) {
         $form[$key] = $_POST[$key] ?? '';
@@ -199,7 +200,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   </div>
   <?php endif; ?>
 
-  <form method="POST" action="add.php<?= isset($_GET['lead_id']) ? '?lead_id='.(int)$_GET['lead_id'] : '' ?>" id="addStudentForm" enctype="multipart/form-data" novalidate>
+  <form method="POST" action="add.php" enctype="multipart/form-data" id="addStudentForm">
+    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
     <?php if (isset($_GET['lead_id'])): ?>
       <input type="hidden" name="lead_id" value="<?= (int)$_GET['lead_id'] ?>">
     <?php endif; ?>

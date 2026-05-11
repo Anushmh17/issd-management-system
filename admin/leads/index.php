@@ -12,12 +12,16 @@ require_once dirname(__DIR__, 2) . '/backend/leads_controller.php';
 requireRole(ROLE_ADMIN);
 
 // ---- Handle DELETE ----
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'delete') {
-    $lid = (int)($_POST['id'] ?? 0);
-    if (deleteLead($pdo, $lid)) {
-        setFlash('success', 'Lead deleted successfully.');
-    } else {
-        setFlash('danger', 'Failed to delete lead.');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
+    if (($_POST['act'] ?? '') === 'delete') {
+        $lid = (int)($_POST['id'] ?? 0);
+        if (deleteLead($pdo, $lid)) {
+            setFlash('success', 'Lead deleted successfully.');
+        } else {
+            setFlash('danger', 'Failed to delete lead.');
+        }
+        header('Location: index.php'); exit;
     }
     header('Location: index.php'); exit;
 }
@@ -184,6 +188,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <i class="fas fa-pen-to-square"></i>
                 </a>
                 <form method="POST" action="index.php" style="display:inline;">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="act" value="delete">
                   <input type="hidden" name="id"  value="<?= $l['id'] ?>">
                   <button type="submit"

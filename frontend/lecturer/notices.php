@@ -133,7 +133,10 @@ function showNoticeDetails(el) {
                 fetch('../../backend/notice_read.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ notice_id: data.id })
+                    body: JSON.stringify({ 
+                        notice_id: data.id,
+                        csrf_token: CSRF_TOKEN 
+                    })
                 }).then(res => res.json())
                 .then(res => {
                     if(res.success) {

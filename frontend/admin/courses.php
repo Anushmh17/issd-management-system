@@ -13,6 +13,7 @@ $action = $_GET['action'] ?? 'list';
 $error  = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     $act = $_POST['act'] ?? '';
 
     if ($act === 'add' || $act === 'edit') {
@@ -94,6 +95,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
     <div class="card-lms-body">
       <form method="POST" action="courses.php">
+        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
         <input type="hidden" name="act" value="<?= $action ?>">
         <?php if ($action==='edit'): ?><input type="hidden" name="id" value="<?= $editCourse['id'] ?>"><?php endif; ?>
 
@@ -192,7 +194,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <a href="?action=edit&id=<?= $c['id'] ?>" class="btn-lms btn-outline btn-sm" style="flex:1;justify-content:center;">
                 <i class="fas fa-pen"></i> Edit
               </a>
-              <form method="POST" style="flex:1;">
+              <form method="POST" action="courses.php" style="flex:1;">
+                <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                 <input type="hidden" name="act" value="delete">
                 <input type="hidden" name="id" value="<?= $c['id'] ?>">
                 <button type="submit" class="btn-lms btn-danger btn-sm w-100"

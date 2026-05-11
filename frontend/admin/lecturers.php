@@ -13,6 +13,7 @@ $action = $_GET['action'] ?? 'list';
 $error  = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
     $act = $_POST['act'] ?? '';
 
     if ($act === 'add') {
@@ -124,6 +125,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
     <div class="card-lms-body">
       <form method="POST" action="lecturers.php" autocomplete="off">
+        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
         <input type="hidden" name="act" value="<?= $action ?>">
         <?php if ($action==='edit'): ?><input type="hidden" name="id" value="<?= $editLecturer['id'] ?>"><?php endif; ?>
 
@@ -222,7 +224,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <td>
               <div class="d-flex gap-10">
                 <a href="?action=edit&id=<?= $l['id'] ?>" class="btn-lms btn-outline btn-sm"><i class="fas fa-pen"></i></a>
-                <form method="POST" style="display:inline;">
+                <form method="POST" action="lecturers.php" style="display:inline;">
+                  <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                   <input type="hidden" name="act" value="delete">
                   <input type="hidden" name="id" value="<?= $l['id'] ?>">
                   <button type="submit" class="btn-lms btn-danger btn-sm" data-confirm="Delete lecturer '<?= htmlspecialchars($l['name']) ?>'?"><i class="fas fa-trash"></i></button>
