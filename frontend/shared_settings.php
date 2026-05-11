@@ -63,6 +63,20 @@ require_once dirname(__DIR__, 1) . '/includes/header.php';
 require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
 ?>
 
+<style>
+  /* --- PREMIUM BORDER REINFORCEMENT (FORCE APPLIED) --- */
+  body.lms-dark-mode .card-lms,
+  body.lms-dark-mode .stat-card,
+  body.lms-dark-mode .bento-card,
+  body.lms-dark-mode .glass-card {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
+    border-radius: 24px !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+</style>
+
 <?php
 // Fetch Activity Logs
 $stmt = $pdo->prepare("SELECT action, details, ip_address, created_at FROM activity_log WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");

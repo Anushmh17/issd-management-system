@@ -53,6 +53,19 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
 ?>
 
 <style>
+  /* --- PREMIUM BORDER REINFORCEMENT (FORCE APPLIED) --- */
+  body.lms-dark-mode .card-lms,
+  body.lms-dark-mode .stat-card,
+  body.lms-dark-mode .bento-card {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
+    border-radius: 24px !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+</style>
+
+<style>
 @keyframes pulse-highlight {
   0% { background-color: rgba(91, 78, 250, 0.1); }
   50% { background-color: rgba(91, 78, 250, 0.25); }
@@ -107,6 +120,26 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
   .card-lms .row > .col-md-3:nth-child(3) {
     border-right: 1px solid rgba(255,255,255,0.1) !important;
   }
+
+  /* Attached Tables for Mobile */
+  .card-lms { margin-bottom: 25px !important; border-radius: 18px !important; }
+  .card-lms-body { padding: 0 !important; }
+  .table-lms, .table { 
+    width: 100% !important; 
+    margin: 0 !important; 
+    border-collapse: collapse !important; 
+    border: none !important; 
+  }
+  .table-lms td, .table-lms th, .table td, .table th { 
+    border-radius: 0 !important;
+    padding: 12px 10px !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+  
+  #page-content { padding: 15px 10px !important; }
+  .card-lms-header { padding: 12px 15px !important; }
+  .card-lms-title { font-size: 11px !important; }
 }
 </style>
 
@@ -191,7 +224,7 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
                                     <?php foreach (array_slice($upcomingItems, 0, 4) as $item): ?>
                                         <tr class="border-bottom-light">
                                             <td class="ps-3 py-2">
-                                                <div class="fw-600 var-text-main"><?= htmlspecialchars($item['full_name']) ?></div>
+                                                <div class="fw-600 text-main"><?= htmlspecialchars($item['full_name']) ?></div>
                                             </td>
                                             <td><?= date('d M', strtotime($item['next_due_date'])) ?></td>
                                             <td class="text-end pe-3 fw-700">Rs. <?= number_format($item['balance'], 0) ?></td>
@@ -223,7 +256,7 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
                                     <?php foreach ($recentStudentPayments as $p): ?>
                                         <tr class="border-bottom-light">
                                             <td class="ps-3 py-2">
-                                                <div class="fw-600 var-text-main"><?= htmlspecialchars($p['full_name']) ?></div>
+                                                <div class="fw-600 text-main"><?= htmlspecialchars($p['full_name']) ?></div>
                                             </td>
                                             <td class="text-muted"><?= date('d M', strtotime($p['payment_date'])) ?></td>
                                             <td class="text-end pe-3 text-success fw-700">+<?= number_format($p['amount_paid'], 0) ?></td>
@@ -255,7 +288,7 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
                                     <?php foreach ($recentLecturerPayments as $lp): ?>
                                         <tr class="border-bottom-light">
                                             <td class="ps-3 py-2">
-                                                <div class="fw-600 var-text-main"><?= htmlspecialchars($lp['lecturer_name']) ?></div>
+                                                <div class="fw-600 text-main"><?= htmlspecialchars($lp['lecturer_name']) ?></div>
                                             </td>
                                             <td class="text-muted"><?= date('d M', strtotime($lp['payment_date'])) ?></td>
                                             <td class="text-end pe-3 text-danger fw-700">-<?= number_format($lp['amount'], 0) ?></td>

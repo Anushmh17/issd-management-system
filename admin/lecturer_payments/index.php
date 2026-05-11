@@ -68,6 +68,60 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
+<style>
+  /* --- PREMIUM BORDER REINFORCEMENT (FORCE APPLIED) --- */
+  body.lms-dark-mode .card-lms,
+  body.lms-dark-mode .stat-card,
+  body.lms-dark-mode .bento-card {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
+    border-radius: 24px !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+</style>
+
+<style>
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  #page-content { padding: 15px 15px !important; }
+  .page-header { padding: 0 !important; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .page-header h1 { font-size: 20px !important; }
+  .btn.btn-primary.rounded-pill { width: 100% !important; justify-content: center !important; height: 42px !important; display: flex !important; align-items: center !important; }
+  
+  .card-lms { border-radius: 18px !important; }
+  .card-lms-header { padding: 20px !important; gap: 15px !important; }
+  .card-lms-title { font-size: 16px !important; }
+
+  .card-lms-body { padding: 0 !important; overflow-x: hidden !important; }
+  .table-lms { 
+    table-layout: fixed !important; 
+    width: 100% !important; 
+    margin: 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    border: none !important;
+  }
+  .table-lms th, .table-lms td { 
+    padding: 12px 10px !important; 
+    border-radius: 0 !important; 
+    border-left: none !important; 
+    border-right: none !important; 
+  }
+
+  /* Column Visibility */
+  .table-lms th:nth-child(1), .table-lms td:nth-child(1),
+  .table-lms th:nth-child(3), .table-lms td:nth-child(3),
+  .table-lms th:nth-child(5), .table-lms td:nth-child(5) { display: none !important; }
+
+  .table-lms th:nth-child(2), .table-lms td:nth-child(2) { width: auto !important; }
+  .table-lms th:nth-child(4), .table-lms td:nth-child(4) { width: 90px !important; text-align: center !important; }
+  .table-lms th:nth-child(6), .table-lms td:nth-child(6) { width: 70px !important; text-align: center !important; padding-right: 15px !important; }
+
+  .badge-lms { font-size: 9px !important; padding: 3px 6px !important; }
+}
+</style>
+
 <div id="page-content">
   <div class="page-header">
     <div class="page-header-left">

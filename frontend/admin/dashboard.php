@@ -207,7 +207,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     .dashboard-grid {
       display: grid !important;
       grid-template-columns: 1fr 1fr !important;
-      padding: 10px 20px !important;
+      padding: 0 !important;
       gap: 12px !important;
       width: 100% !important;
       box-sizing: border-box !important;
@@ -525,6 +525,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   }
 
   /* --- Quick Actions --- */
+  .quick-actions-container {
+    background: rgba(248, 250, 252, 0.75) !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.04), 0 10px 40px rgba(0, 0, 0, 0.02) !important;
+  }
   .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; height: 100%; }
   /* --- Quick Actions (Premium Glassmorphism) --- */
   .action-grid { 
@@ -535,9 +540,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   }
 
   .action-btn {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: #ffffff;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 1);
     border-radius: 24px;
     padding: 20px 16px;
     display: flex;
@@ -551,7 +556,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-align: center;
     text-decoration: none;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     position: relative;
     overflow: hidden;
   }
@@ -568,8 +573,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   .action-btn:hover {
     transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
     border-color: rgba(255, 255, 255, 1);
   }
 
@@ -609,10 +614,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .btn-course i  { color: #f59e0b; }
   .btn-notice i  { color: #f43f5e; }
 
-  .btn-student:hover { border-bottom: 3px solid #6366f1; }
-  .btn-payment:hover { border-bottom: 3px solid #10b981; }
-  .btn-course:hover  { border-bottom: 3px solid #f59e0b; }
-  .btn-notice:hover  { border-bottom: 3px solid #f43f5e; }
+  .btn-student:hover { border-bottom: 3px solid #6366f1; box-shadow: 0 15px 30px rgba(99, 102, 241, 0.15); }
+  .btn-payment:hover { border-bottom: 3px solid #10b981; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.15); }
+  .btn-course:hover  { border-bottom: 3px solid #f59e0b; box-shadow: 0 15px 30px rgba(245, 158, 11, 0.15); }
+  .btn-notice:hover  { border-bottom: 3px solid #f43f5e; box-shadow: 0 15px 30px rgba(244, 63, 94, 0.15); }
 
   /* --- Schedule List (Redesigned for Cohesion) --- */
   .bento-schedule { display: flex; flex-direction: column; gap: 12px; }
@@ -622,8 +627,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     gap: 8px; 
     padding: 16px 20px 16px 14px; 
     border-radius: 20px;
-    background: rgba(255,255,255,0.4); 
-    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.85); 
+    border: 1px solid rgba(255, 255, 255, 1);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -670,7 +675,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   /* --- Table Custom --- */
   .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-  .modern-table tr { background: rgba(255,255,255,0.3); transition: 0.3s; }
+  .modern-table tr { background: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,1); transition: 0.3s; }
   .modern-table tr:hover { background: rgba(255,255,255,0.8); }
   .modern-table th { text-align: left; padding: 10px 16px; font-size: 11px; color: #64748b; font-weight: 800; }
   .modern-table td { padding: 14px 16px; font-size: 13px; vertical-align: middle; }
@@ -685,7 +690,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   /* --- DARK MODE OVERRIDES --- */
   body.lms-dark-mode {
     --bento-bg: rgba(30, 41, 59, 0.4);
-    --bento-border: rgba(255, 255, 255, 0.05);
+    --bento-border: rgba(255, 255, 255, 0.08);
+  }
+  body.lms-dark-mode .bento-card {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
   }
   body.lms-dark-mode .stat-icon { 
     background: rgba(255, 255, 255, 0.05) !important; 
@@ -700,9 +709,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   
   body.lms-dark-mode .action-btn {
     background: rgba(30, 41, 59, 0.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
     color: #fff !important;
     backdrop-filter: blur(10px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 255, 255, 0.03) !important;
   }
   
   body.lms-dark-mode .btn-student i { color: #818cf8 !important; }

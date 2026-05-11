@@ -39,7 +39,7 @@ if (!defined('BASE_URL'))   define('BASE_URL', '/Webbuilders%20Projects/issd_man
   <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=1.0.3">
 
   <?php if (isset($extraCSS)) echo $extraCSS; ?>
-  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/student-dark.css?v=1.0.4">
+  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/student-dark.css?v=1.0.8">
 
   <script>
     const BASE_URL = '<?= BASE_URL ?>';

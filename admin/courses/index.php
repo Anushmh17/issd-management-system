@@ -47,6 +47,19 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
 <style>
+  /* --- PREMIUM BORDER REINFORCEMENT (FORCE APPLIED) --- */
+  body.lms-dark-mode .card-lms,
+  body.lms-dark-mode .stat-card,
+  body.lms-dark-mode .bento-card {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
+    border-radius: 24px !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+</style>
+
+<style>
 /* Courses Page Mobile Adjustments */
 @media (max-width: 768px) {
   #page-content { padding: 16px 20px; }
@@ -100,8 +113,72 @@ body.lms-dark-mode .table-lms td { color: #e2e8f0; }
 .course-code-badge { background: #f8fafc; color: #475569; border: 1.5px solid #e2e8f0; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: monospace; }
 body.lms-dark-mode .course-code-badge { background: rgba(255, 255, 255, 0.05) !important; color: #cbd5e1 !important; border-color: rgba(255, 255, 255, 0.1) !important; }
 
-.course-fee-badge { background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 800; }
+  .course-fee-badge { background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 800; }
 body.lms-dark-mode .course-fee-badge { background: rgba(16, 185, 129, 0.1) !important; color: #34d399 !important; }
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  #page-content { padding: 15px 15px !important; }
+  .page-header { padding: 0 !important; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .page-header h1 { font-size: 20px !important; }
+  .page-header .d-flex { width: 100% !important; flex-direction: column !important; }
+  .btn-primary-grad { width: 100% !important; justify-content: center !important; }
+  .btn-lms { width: 100% !important; justify-content: center !important; }
+  
+  .card-lms { border-radius: 24px !important; border: 1.5px solid rgba(255, 255, 255, 0.4) !important; }
+  .card-lms-header { padding: 20px !important; gap: 15px !important; }
+  .card-lms-body { padding: 0 !important; overflow-x: auto !important; }
+  .list-legend-title { font-size: 18px !important; }
+  .list-legend-label { font-size: 8px !important; }
+  .search-bar { min-width: 100% !important; }
+  .search-bar input { padding: 8px 0 !important; font-size: 13px !important; }
+  .filter-select { height: 38px !important; font-size: 12px !important; min-width: 120px !important; }
+  .btn-lms.btn-primary { height: 38px !important; padding: 0 20px !important; font-size: 13px !important; }
+  .filter-actions a.btn-lms { height: 38px !important; width: 38px !important; }
+
+  .card-lms-body { padding: 0 !important; overflow-x: hidden !important; }
+  #coursesTable th:nth-child(2), #coursesTable td:nth-child(2) { width: auto !important; }
+  /* Column 9: Actions */
+  #coursesTable th:nth-child(9), #coursesTable td:nth-child(9) { 
+    width: 45px !important; 
+    padding-right: 12px !important;
+    text-align: right !important;
+    display: table-cell !important;
+  }
+  #coursesTable td:nth-child(9) {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+  }
+
+  /* Column Visibility */
+  #coursesTable th:nth-child(3), #coursesTable td:nth-child(3),
+  #coursesTable th:nth-child(4), #coursesTable td:nth-child(4),
+  #coursesTable th:nth-child(6), #coursesTable td:nth-child(6),
+  #coursesTable th:nth-child(7), #coursesTable td:nth-child(7) { display: none !important; }
+
+  /* Column Widths — final values only */
+  #coursesTable th:nth-child(1), #coursesTable td:nth-child(1) { width: 35px !important; padding-left: 10px !important; text-align: center !important; }
+  #coursesTable th:nth-child(2), #coursesTable td:nth-child(2) { width: auto !important; }
+  #coursesTable th:nth-child(5), #coursesTable td:nth-child(5) { width: 100px !important; }
+  #coursesTable th:nth-child(8), #coursesTable td:nth-child(8) { width: 90px !important; text-align: center !important; }
+
+  .btn-action-dots {
+    width: 30px !important; height: 30px !important; border-radius: 8px !important;
+    background: rgba(34, 211, 238, 0.1) !important; color: #0891b2 !important;
+    display: flex !important; align-items: center; justify-content: center; border: none !important;
+  }
+  
+  /* Modal Ultra-Compact */
+  .modal-dialog { margin: 12px !important; max-width: none !important; }
+  .modal-header { padding: 14px 20px !important; }
+  .modal-title { font-size: 16px !important; }
+  .info-grid-lms { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(0,0,0,0.03); padding: 14px; border-radius: 15px; margin-bottom: 12px; }
+  .info-item label { font-size: 9px; opacity: 0.6; text-transform: uppercase; display: block; margin-bottom: 2px; }
+  .info-item span { font-size: 13px; font-weight: 700; color: var(--dark); }
+  .action-menu-item { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); background: #fff; text-decoration: none; color: inherit; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+  .action-menu-item i { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(34, 211, 238, 0.1); color: #0891b2; border-radius: 8px; font-size: 14px; }
+}
 </style>
 
 <div id="page-content">
@@ -243,7 +320,8 @@ body.lms-dark-mode .course-fee-badge { background: rgba(16, 185, 129, 0.1) !impo
             <th style="width: 160px;">Assigned Lecturer</th>
             <th style="width: 100px;">Students</th>
             <th style="width: 100px;">Status</th>
-            <th style="width: 140px; text-align:center;">Actions</th>
+            <th style="width: 140px; text-align:center;" class="d-none d-md-table-cell">Actions</th>
+            <th class="d-table-cell d-md-none" style="text-align:center;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -290,7 +368,7 @@ body.lms-dark-mode .course-fee-badge { background: rgba(16, 185, 129, 0.1) !impo
                 </span>
               <?php endif; ?>
             </td>
-            <td style="text-align:center; vertical-align: middle;">
+            <td class="d-none d-md-table-cell" style="text-align:center; vertical-align: middle;">
               <div class="d-flex gap-2 justify-content-center">
                 <a href="assign_lecturer.php?course_id=<?= $c['id'] ?>"
                    class="btn-lms btn-sm"
@@ -316,6 +394,12 @@ body.lms-dark-mode .course-fee-badge { background: rgba(16, 185, 129, 0.1) !impo
                   </button>
                 </form>
               </div>
+            </td>
+            <td class="d-table-cell d-md-none" style="text-align:center; vertical-align: middle;">
+              <?php $cJson = json_encode(['id'=>$c['id'],'name'=>$c['course_name'],'code'=>$c['course_code'],'duration'=>$c['duration'],'fee'=>'Rs. '.number_format($c['monthly_fee'],0),'lecturer'=>$c['lecturer_name'] ?: 'Not assigned','students'=>$c['student_count'],'status'=>$c['status']]); ?>
+              <button class="btn-action-dots" onclick="openCourseMenu(<?= htmlspecialchars($cJson) ?>, event)">
+                <i class="fas fa-ellipsis-vertical"></i>
+              </button>
             </td>
           </tr>
           <?php endforeach; ?>
@@ -349,6 +433,124 @@ body.lms-dark-mode .course-fee-badge { background: rgba(16, 185, 129, 0.1) !impo
   </div>
 
 </div>
+
+</div>
+
+<!-- Course Actions & Details Modal -->
+<div class="modal fade" id="courseActionsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden; background: #f8fafc;">
+      <div class="modal-header" style="background: var(--grad-primary); border: none; padding: 25px; color: #fff; position: relative;">
+        <div style="position: relative; z-index: 2;">
+          <h5 class="modal-title fw-800 mb-0" id="modalCourseName">Course Name</h5>
+          <div id="modalCourseCode" style="font-size: 13px; opacity: 0.9; font-weight: 500;">CODE123</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="position: absolute; top: 25px; right: 25px; z-index: 3;"></button>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%); z-index: 1;"></div>
+      </div>
+      <div class="modal-body p-4">
+          <div id="courseDetailView" class="animate__animated animate__fadeIn">
+             <div class="info-grid-lms">
+                <div class="info-item">
+                  <label>Duration</label>
+                  <span id="infoDuration">-</span>
+                </div>
+                <div class="info-item">
+                  <label>Monthly Fee</label>
+                  <span id="infoFee">-</span>
+                </div>
+                <div class="info-item">
+                  <label>Students</label>
+                  <span id="infoStudents">0</span>
+                </div>
+                <div class="info-item">
+                  <label>Status</label>
+                  <span id="infoStatus">-</span>
+                </div>
+                <div class="info-item" style="grid-column: span 2;">
+                  <label>Assigned Lecturer</label>
+                  <span id="infoLecturer">-</span>
+                </div>
+             </div>
+             <div class="d-flex flex-column gap-2">
+               <button class="action-menu-item btn-primary-grad text-white" onclick="toggleDetailView(false)" style="background: var(--grad-primary) !important; color: white !important;">
+                  <i class="fas fa-list-check"></i> Manage & Actions
+               </button>
+               <button class="action-menu-item" data-bs-dismiss="modal">
+                  <i class="fas fa-times"></i> Close Details
+               </button>
+             </div>
+          </div>
+
+          <div id="courseActionList" class="action-menu-list" style="display: none;">
+            <button class="action-menu-item" onclick="toggleDetailView(true)">
+              <i class="fas fa-arrow-left" style="color: var(--primary);"></i>
+              <div>
+                Back to Details
+                <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">View course info</div>
+              </div>
+            </button>
+            <a href="#" id="actionEdit" class="action-menu-item">
+              <i class="fas fa-pen-to-square"></i>
+              <div>
+                Edit Course
+                <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">Update information</div>
+              </div>
+            </a>
+            <a href="#" id="actionLecturer" class="action-menu-item">
+              <i class="fas fa-chalkboard-user"></i>
+              <div>
+                Assign Lecturer
+                <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">Manage instructor</div>
+              </div>
+            </a>
+            <form id="deleteForm" method="POST" action="index.php" onsubmit="return confirm('Delete this course?');">
+              <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+              <input type="hidden" name="act" value="delete">
+              <input type="hidden" name="id" id="deleteCourseId" value="">
+              <button type="submit" class="action-menu-item" style="color: #ef4444; width: 100%; text-align: left; border: 1px solid rgba(239, 68, 68, 0.1); background: rgba(239, 68, 68, 0.02);">
+                <i class="fas fa-trash-can" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"></i>
+                <div>
+                  Delete Course
+                  <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">Remove permanently</div>
+                </div>
+              </button>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function openCourseMenu(course, event) {
+  if (event.target.closest('a') || event.target.closest('button:not(.btn-action-dots)')) return;
+  
+  document.getElementById('modalCourseName').textContent = course.name;
+  document.getElementById('modalCourseCode').textContent = course.code;
+  
+  // Update Details
+  document.getElementById('infoDuration').textContent = course.duration || 'N/A';
+  document.getElementById('infoFee').textContent = course.fee;
+  document.getElementById('infoStudents').textContent = course.students;
+  document.getElementById('infoStatus').textContent = course.status.charAt(0).toUpperCase() + course.status.slice(1);
+  document.getElementById('infoLecturer').textContent = course.lecturer;
+  
+  // Update Links
+  document.getElementById('actionEdit').href = `edit.php?id=${course.id}`;
+  document.getElementById('actionLecturer').href = `assign_lecturer.php?course_id=${course.id}`;
+  document.getElementById('deleteCourseId').value = course.id;
+  
+  toggleDetailView(true);
+  const modal = new bootstrap.Modal(document.getElementById('courseActionsModal'));
+  modal.show();
+}
+
+function toggleDetailView(show) {
+  document.getElementById('courseDetailView').style.display = show ? 'block' : 'none';
+  document.getElementById('courseActionList').style.display = show ? 'none' : 'block';
+}
+</script>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
 

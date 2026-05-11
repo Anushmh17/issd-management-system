@@ -142,6 +142,7 @@ $extraCSS = <<<'CSS'
     transition: 0.3s;
     border: 1px solid transparent;
   }
+  
   .legend-pill i { font-size: 14px; }
   .lp-leads { background: #fff1f2; color: #e11d48; border-color: #ffe4e6; }
   .lp-students { background: #eef2ff; color: #4338ca; border-color: #e0e7ff; }
@@ -192,6 +193,27 @@ $extraCSS = <<<'CSS'
   .legend-pill { cursor: pointer; transition: all 0.2s; opacity: 1; }
   .legend-pill.inactive { opacity: 0.35; filter: grayscale(0.5); transform: scale(0.95); }
   .legend-pill:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+  body.lms-dark-mode #calendar-container,
+  body.lms-dark-mode .event-popup,
+  body.lms-dark-mode .day-popup {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+  
+  body.lms-dark-mode .fc .fc-toolbar-title,
+  body.lms-dark-mode .fc-col-header-cell-cushion,
+  body.lms-dark-mode .fc-daygrid-day-number {
+    color: #e2e8f0 !important;
+  }
+
+  body.lms-dark-mode .fc .fc-button-primary {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+  }
 </style>
 CSS;
 

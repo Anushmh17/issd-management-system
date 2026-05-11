@@ -28,6 +28,19 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
 <style>
+  /* --- PREMIUM BORDER REINFORCEMENT (FORCE APPLIED) --- */
+  body.lms-dark-mode .card-lms,
+  body.lms-dark-mode .stat-card,
+  body.lms-dark-mode .bento-card {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
+    border-radius: 24px !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+</style>
+
+<style>
 @keyframes pulse-highlight {
   0% { background-color: rgba(91, 78, 250, 0.1); }
   50% { background-color: rgba(91, 78, 250, 0.25); }
@@ -39,26 +52,32 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 }
 
 @media (max-width: 768px) {
+  #page-content { padding: 15px 15px !important; overflow-x: hidden !important; width: 100% !important; }
   /* Stack page header: title above buttons */
   .page-header {
+    padding: 0 !important;
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 10px !important;
   }
   .page-header .d-flex.gap-2 {
     width: 100% !important;
+    flex-direction: column !important;
     gap: 8px !important;
   }
-  .page-header .d-flex.gap-2 a {
-    flex: 1 !important;
+  .page-header .d-flex.gap-2 a, .page-header .d-flex.gap-2 button {
+    width: 100% !important;
     text-align: center !important;
     justify-content: center !important;
   }
 
   /* Stat cards: 2x2 grid */
+  .row.g-3 { margin-left: -5px !important; margin-right: -5px !important; }
   .row.g-3 > .col-md-3 {
     flex: 0 0 50% !important;
     max-width: 50% !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
   }
   .stat-card {
     padding: 14px 12px !important;
@@ -73,6 +92,45 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   }
   .stat-card .stat-label {
     font-size: 10px !important;
+  }
+
+  /* Table Attachment & Compacting */
+  .card-lms { margin: 0 -10px !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }
+  .card-lms-header { padding: 15px 20px !important; gap: 10px !important; }
+  .list-legend-title { font-size: 18px !important; }
+  .list-legend-label { font-size: 8px !important; }
+  .search-bar { min-width: 100% !important; }
+  .search-bar input { padding: 8px 0 !important; font-size: 13px !important; }
+  .card-lms-header form select { width: 100% !important; height: 38px !important; font-size: 12px !important; }
+  .card-lms-header form button { height: 38px !important; width: 38px !important; }
+
+  .card-lms-body { padding: 0 !important; overflow-x: hidden !important; }
+
+  /* Column Visibility */
+  .table-lms th:nth-child(1), .table-lms td:nth-child(1),
+  .table-lms th:nth-child(3), .table-lms td:nth-child(3),
+  .table-lms th:nth-child(5), .table-lms td:nth-child(5) { display: none !important; }
+
+  .table-lms th:nth-child(2), .table-lms td:nth-child(2) { width: auto !important; }
+  .table-lms th:nth-child(4), .table-lms td:nth-child(4) { width: 90px !important; }
+  .table-lms th:nth-child(6), .table-lms td:nth-child(6) { width: 80px !important; }
+  .table-lms th:nth-child(7), .table-lms td:nth-child(7) { width: 60px !important; text-align: center !important; }
+  /* Column 8: Actions */
+  .table-lms th:nth-child(8), .table-lms td:nth-child(8) { 
+    width: 45px !important; 
+    padding-right: 12px !important;
+    text-align: right !important;
+    display: table-cell !important;
+  }
+  .table-lms td:nth-child(8) {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+  }
+  .btn-action-dots {
+    width: 30px !important; height: 30px !important; border-radius: 8px !important;
+    background: rgba(91, 78, 250, 0.1) !important; color: var(--primary) !important;
+    display: flex !important; align-items: center; justify-content: center; border: none !important;
   }
 }
 </style>
@@ -167,8 +225,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                         <th>Course / Program</th>
                         <th>Amount Paid</th>
                         <th>Balance Due</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th class="d-none d-md-table-cell">Status</th>
+                        <th class="d-table-cell d-md-none" style="text-align:center;">Status</th>
+                        <th style="text-align:center;" class="d-none d-md-table-cell">Actions</th>
+                        <th class="d-table-cell d-md-none" style="text-align:center;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -192,7 +252,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                         </td>
                         <td class="fw-800 text-success">Rs. <?= number_format($p['amount_paid'], 2) ?></td>
                         <td class="fw-800 text-danger">Rs. <?= number_format($p['balance'], 2) ?></td>
-                        <td>
+                        <td class="d-none d-md-table-cell">
                             <?php 
                             $b_class = $p['status'] == 'paid' ? 'accent' : ($p['status'] == 'partial' ? 'warning' : 'danger');
                             ?>
@@ -200,11 +260,25 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                                 <?= $p['status'] ?>
                             </span>
                         </td>
-                        <td>
+                        <td class="d-table-cell d-md-none" style="text-align:center;">
+                             <?php 
+                             $b_class = $p['status'] == 'paid' ? 'accent' : ($p['status'] == 'partial' ? 'warning' : 'danger');
+                             ?>
+                             <span class="badge-lms" style="background:var(--<?= $b_class ?>-light); color:var(--<?= $b_class ?>-dark); padding: 4px 8px; font-size:9px;">
+                                 <?= strtoupper(substr($p['status'], 0, 1)) ?>
+                             </span>
+                        </td>
+                        <td class="d-none d-md-table-cell">
                             <div class="d-flex gap-2">
                                 <a href="receipt.php?id=<?= $p['id'] ?>" class="btn-lms btn-sm" title="Print Receipt"><i class="fas fa-print"></i></a>
                                 <a href="details.php?student_id=<?= $p['student_id'] ?>" class="btn-lms btn-sm btn-outline" title="View Student History"><i class="fas fa-eye"></i></a>
                             </div>
+                        </td>
+                        <td class="d-table-cell d-md-none" style="text-align:center;">
+                          <?php $pJson = json_encode(['id'=>$p['id'],'name'=>$p['full_name'],'reg'=>$p['student_reg'],'course'=>$p['course_name'],'code'=>$p['course_code'],'paid'=>'Rs. '.number_format($p['amount_paid'],2),'balance'=>'Rs. '.number_format($p['balance'],2),'date'=>date('d M Y',strtotime($p['payment_date'])),'status'=>$p['status']]); ?>
+                          <button class="btn-action-dots" onclick="openPaymentMenu(<?= htmlspecialchars($pJson) ?>, event)">
+                            <i class="fas fa-ellipsis-vertical"></i>
+                          </button>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -224,5 +298,108 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     <?php endif; ?>
   </div>
 </div>
+
+<!-- Payment Actions & Details Modal -->
+<div class="modal fade" id="paymentActionsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden; background: #f8fafc;">
+      <div class="modal-header" style="background: var(--grad-primary); border: none; padding: 25px; color: #fff; position: relative;">
+        <div style="position: relative; z-index: 2;">
+          <h5 class="modal-title fw-800 mb-0" id="modalStudentName">Student Name</h5>
+          <div id="modalReceiptID" style="font-size: 13px; opacity: 0.9; font-weight: 500;">Receipt #00000</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="position: absolute; top: 25px; right: 25px; z-index: 3;"></button>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%); z-index: 1;"></div>
+      </div>
+      <div class="modal-body p-4">
+          <div id="paymentDetailView" class="animate__animated animate__fadeIn">
+             <div class="info-grid-lms" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(0,0,0,0.03); padding: 14px; border-radius: 15px; margin-bottom: 12px;">
+                <div class="info-item">
+                  <label style="font-size: 9px; opacity: 0.6; text-transform: uppercase; display: block; margin-bottom: 2px;">Paid Amount</label>
+                  <span id="infoPaid" style="font-size: 13px; font-weight: 700; color: #059669;">-</span>
+                </div>
+                <div class="info-item">
+                  <label style="font-size: 9px; opacity: 0.6; text-transform: uppercase; display: block; margin-bottom: 2px;">Balance Due</label>
+                  <span id="infoBalance" style="font-size: 13px; font-weight: 700; color: #ef4444;">-</span>
+                </div>
+                <div class="info-item" style="grid-column: span 2;">
+                  <label style="font-size: 9px; opacity: 0.6; text-transform: uppercase; display: block; margin-bottom: 2px;">Course</label>
+                  <span id="infoCourse" style="font-size: 13px; font-weight: 700; color: var(--dark);">-</span>
+                </div>
+                <div class="info-item">
+                  <label style="font-size: 9px; opacity: 0.6; text-transform: uppercase; display: block; margin-bottom: 2px;">Date</label>
+                  <span id="infoDate" style="font-size: 13px; font-weight: 700;">-</span>
+                </div>
+                <div class="info-item">
+                  <label style="font-size: 9px; opacity: 0.6; text-transform: uppercase; display: block; margin-bottom: 2px;">Status</label>
+                  <span id="infoStatus" style="font-size: 13px; font-weight: 700;">-</span>
+                </div>
+             </div>
+             <div class="d-flex flex-column gap-2">
+               <button class="action-menu-item btn-primary-grad text-white" onclick="toggleDetailView(false)" style="background: var(--grad-primary) !important; color: white !important; width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); font-size: 14px; font-weight: 600;">
+                  <i class="fas fa-list-check" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); border-radius: 8px;"></i> Manage & Actions
+               </button>
+               <button class="action-menu-item" data-bs-dismiss="modal" style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); background: #fff; font-size: 14px; font-weight: 600;">
+                  <i class="fas fa-times" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); border-radius: 8px;"></i> Close Details
+               </button>
+             </div>
+          </div>
+
+          <div id="paymentActionList" class="action-menu-list" style="display: none;">
+            <button class="action-menu-item" onclick="toggleDetailView(true)" style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); background: #fff; font-size: 14px; font-weight: 600; margin-bottom: 8px;">
+              <i class="fas fa-arrow-left" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(91,78,250,0.1); color: var(--primary); border-radius: 8px;"></i>
+              <div style="text-align: left;">
+                Back to Details
+                <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">View payment info</div>
+              </div>
+            </button>
+            <a href="#" id="actionReceipt" class="action-menu-item" style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); background: #fff; text-decoration: none; color: inherit; margin-bottom: 8px; font-size: 14px; font-weight: 600;">
+              <i class="fas fa-print" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(91,78,250,0.1); color: var(--primary); border-radius: 8px;"></i>
+              <div style="text-align: left;">
+                Print Receipt
+                <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">Download PDF</div>
+              </div>
+            </a>
+            <a href="#" id="actionHistory" class="action-menu-item" style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); background: #fff; text-decoration: none; color: inherit; margin-bottom: 8px; font-size: 14px; font-weight: 600;">
+              <i class="fas fa-history" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(91,78,250,0.1); color: var(--primary); border-radius: 8px;"></i>
+              <div style="text-align: left;">
+                View Student History
+                <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">See all payments</div>
+              </div>
+            </a>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function openPaymentMenu(payment, event) {
+  if (event.target.closest('a') || event.target.closest('button:not(.btn-action-dots)')) return;
+  
+  document.getElementById('modalStudentName').textContent = payment.name;
+  document.getElementById('modalReceiptID').textContent = 'Receipt #RCPT-' + payment.id.toString().padStart(5, '0');
+  
+  // Update Details
+  document.getElementById('infoPaid').textContent = payment.paid;
+  document.getElementById('infoBalance').textContent = payment.balance;
+  document.getElementById('infoCourse').textContent = `${payment.code} - ${payment.course}`;
+  document.getElementById('infoDate').textContent = payment.date;
+  document.getElementById('infoStatus').textContent = payment.status.charAt(0).toUpperCase() + payment.status.slice(1);
+  
+  // Update Links
+  document.getElementById('actionReceipt').href = `receipt.php?id=${payment.id}`;
+  document.getElementById('actionHistory').href = `details.php?student_id=${payment.reg}`;
+  
+  toggleDetailView(true);
+  const modal = new bootstrap.Modal(document.getElementById('paymentActionsModal'));
+  modal.show();
+}
+
+function toggleDetailView(show) {
+  document.getElementById('paymentDetailView').style.display = show ? 'block' : 'none';
+  document.getElementById('paymentActionList').style.display = show ? 'none' : 'block';
+}
+</script>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

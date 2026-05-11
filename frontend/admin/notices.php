@@ -83,6 +83,21 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
 <style>
+  /* --- PREMIUM BORDER REINFORCEMENT (FORCE APPLIED) --- */
+  body.lms-dark-mode .card-lms,
+  body.lms-dark-mode .stat-card,
+  body.lms-dark-mode .bento-card,
+  body.lms-dark-mode .notice-form-card,
+  body.lms-dark-mode .premium-table-card {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
+    border-radius: 24px !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+</style>
+
+<style>
   :root {
     --admin-notice-radius: var(--radius-lg);
     --admin-notice-shadow: var(--shadow-sm);

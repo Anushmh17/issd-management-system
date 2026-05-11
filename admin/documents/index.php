@@ -48,6 +48,82 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
+<style>
+  /* --- PREMIUM BORDER REINFORCEMENT (FORCE APPLIED) --- */
+  body.lms-dark-mode .card-lms,
+  body.lms-dark-mode .stat-card,
+  body.lms-dark-mode .bento-card {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
+    border-radius: 24px !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+</style>
+
+<style>
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  #page-content { padding: 15px 15px !important; overflow-x: hidden !important; width: 100% !important; }
+  .page-header { padding: 0 !important; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .page-header h1 { font-size: 20px !important; }
+  .btn-primary-grad { width: 100% !important; justify-content: center !important; }
+  
+  .card-lms { border-radius: 18px !important; }
+  .card-lms-header { padding: 20px !important; gap: 15px !important; }
+  .list-legend-title { font-size: 18px !important; }
+  .list-legend-label { font-size: 8px !important; }
+  .count-badge { font-size: 11px !important; padding: 2px 8px !important; }
+
+  .search-bar { min-width: 0 !important; width: 100% !important; }
+  .search-bar input { padding: 8px 0 !important; font-size: 13px !important; }
+  .students-filters { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; width: 100% !important; margin: 0 !important; }
+  .filter-select { flex: 1 !important; height: 38px !important; font-size: 12px !important; min-width: 0 !important; }
+  .btn-lms.btn-primary { height: 38px !important; padding: 0 20px !important; font-size: 13px !important; width: 100% !important; }
+
+  .card-lms-body { padding: 0 !important; overflow-x: hidden !important; }
+  /* Column Widths */
+  #docStudentsTable th:nth-child(1), #docStudentsTable td:nth-child(1) { 
+    width: 35px !important; 
+    padding-left: 10px !important; 
+    text-align: center !important; 
+  }
+  #docStudentsTable th:nth-child(2), #docStudentsTable td:nth-child(2) { width: auto !important; }
+  /* Column 9: Actions */
+  #docStudentsTable th:nth-child(9), #docStudentsTable td:nth-child(9) { 
+    width: 45px !important; 
+    padding-right: 12px !important;
+    text-align: right !important;
+    display: table-cell !important;
+  }
+  #docStudentsTable td:nth-child(9) {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+  }
+
+  /* Column Visibility */
+  #docStudentsTable th:nth-child(1), #docStudentsTable td:nth-child(1),
+  #docStudentsTable th:nth-child(2), #docStudentsTable td:nth-child(2),
+  #docStudentsTable th:nth-child(4), #docStudentsTable td:nth-child(4),
+  #docStudentsTable th:nth-child(5), #docStudentsTable td:nth-child(5),
+  #docStudentsTable th:nth-child(7), #docStudentsTable td:nth-child(7) { display: none !important; }
+
+  #docStudentsTable th:nth-child(3), #docStudentsTable td:nth-child(3) { width: auto !important; }
+  #docStudentsTable th:nth-child(6), #docStudentsTable td:nth-child(6) { width: 90px !important; text-align: center !important; }
+  #docStudentsTable th:nth-child(8), #docStudentsTable td:nth-child(8) { width: 60px !important; text-align: center !important; padding-right: 15px !important; }
+
+  .id-badge-lms { font-size: 10px !important; padding: 2px 6px !important; }
+  .badge-lms { font-size: 9px !important; padding: 3px 6px !important; }
+  
+  .btn-action-dots {
+    width: 30px !important; height: 30px !important; border-radius: 8px !important;
+    background: rgba(91, 78, 250, 0.1) !important; color: var(--primary) !important;
+    display: flex !important; align-items: center; justify-content: center; border: none !important;
+  }
+}
+</style>
+
 <div id="page-content">
 
   <!-- Page Header -->
@@ -177,7 +253,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <th>Full Name</th>
             <th style="min-width:100px;">Batch</th>
             <th>Phone</th>
-            <th>Doc Status</th>
+            <th class="d-none d-md-table-cell">Doc Status</th>
+            <th class="d-table-cell d-md-none" style="text-align:center;">Status</th>
             <th style="min-width:150px;">Progress</th>
             <th style="text-align:center;">Action</th>
           </tr>
@@ -220,8 +297,17 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               </span>
             </td>
             <td style="font-size:13px;"><?= htmlspecialchars($s['phone_number']) ?></td>
-            <td><?= renderDocStatusBadge($docSt) ?></td>
-            <td style="min-width:140px;">
+            <td class="d-none d-md-table-cell"><?= renderDocStatusBadge($docSt) ?></td>
+            <td class="d-table-cell d-md-none" style="text-align:center;">
+               <?php 
+                 $st_class = $docSt==='completed'?'success':($docSt==='pending'?'warning':'danger');
+                 $st_icon = $docSt==='completed'?'check':($docSt==='pending'?'clock':'xmark');
+               ?>
+               <span class="badge-lms" style="background:var(--<?= $st_class ?>-light); color:var(--<?= $st_class ?>-dark); padding: 4px 8px; font-size:9px;">
+                  <i class="fas fa-<?= $st_icon ?>"></i>
+               </span>
+            </td>
+            <td>
               <div style="display:flex;align-items:center;gap:8px;">
                 <div class="doc-progress-track">
                   <div class="doc-progress-fill <?= $docSt ?>" style="width:<?= $pct ?>%"></div>
@@ -233,9 +319,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </td>
             <td style="text-align:center;">
               <a href="manage.php?student_id=<?= $s['id'] ?>"
-                 class="btn-primary-grad btn-sm"
+                 class="btn-primary-grad btn-sm d-none d-md-inline-flex"
                  id="btn-manage-docs-<?= $s['id'] ?>">
                 <i class="fas fa-folder-open me-2"></i> Manage Docs
+              </a>
+              <a href="manage.php?student_id=<?= $s['id'] ?>" class="btn-action-dots d-inline-flex d-md-none">
+                <i class="fas fa-folder-open"></i>
               </a>
             </td>
           </tr>

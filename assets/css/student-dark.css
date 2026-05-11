@@ -166,10 +166,10 @@ body.lms-dark-mode .navbar-user .nav-uname { color: #fff !important; font-weight
 /* Bento Cards & Stat Cards Standard */
 body.lms-dark-mode .bento-card,
 body.lms-dark-mode .stat-card {
-  background: rgba(30, 41, 59, 0.5) !important;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  background: rgba(30, 41, 59, 0.6) !important;
+  backdrop-filter: blur(15px);
+  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 255, 255, 0.1) !important;
 }
 
 body.lms-dark-mode .bento-card div[style*="color:#1e293b"],
@@ -212,6 +212,12 @@ body.lms-dark-mode .modal-header .btn-close {
   padding: 10px 10px 40px 10px;
 }
 
+@media (max-width: 768px) {
+  .dark-layout-wrapper {
+    padding: 10px 5px !important;
+  }
+}
+
 .welcome-header { margin-bottom: 25px; }
 .welcome-header h1 { font-size: 28px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px; }
 .welcome-header p { font-size: 14px; margin: 0; }
@@ -235,6 +241,12 @@ body.lms-dark-mode .modal-header .btn-close {
   position: relative;
   overflow: hidden;
   margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .glass-card {
+    padding: 16px !important;
+  }
 }
 .glass-card-title {
   font-size: 16px;
@@ -430,14 +442,13 @@ body:not(.lms-dark-mode) .segment-btn.active { background: #fff; color: #0f172a;
 
 /* Global Override for generic admin classes in LMS Dark Mode */
 body.lms-dark-mode .card-lms {
-  background: rgba(30, 41, 59, 0.4) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.03) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+  background: rgba(30, 41, 59, 0.65) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 255, 255, 0.1) !important;
   color: #e2e8f0 !important;
-  border-radius: 24px !important;
+  border-radius: 28px !important;
 }
 body.lms-dark-mode .card-lms-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
@@ -521,10 +532,10 @@ body.lms-dark-mode .search-clear:hover {
 
 /* Stat Cards Dark Mode */
 body.lms-dark-mode .stat-card {
-  background: rgba(30, 41, 59, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  background: rgba(30, 41, 59, 0.6) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
   color: #fff !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
 }
 body.lms-dark-mode .stat-card .stat-value { color: #fff !important; }
@@ -547,12 +558,13 @@ body.lms-dark-mode .stat-icon.green  { --sc-color: #34d399 !important; }
 
 /* Admin Table Overrides */
 body.lms-dark-mode .table-lms thead th {
-  background: rgba(15, 23, 42, 0.6) !important;
-  color: #94a3b8 !important;
-  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  background: linear-gradient(135deg, #134e4a 0%, #0f172a 100%) !important;
+  color: #fff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
   text-transform: uppercase;
   font-size: 11px;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
+  padding: 14px 15px !important;
 }
 body.lms-dark-mode .table-lms tbody tr:hover {
   background: rgba(255, 255, 255, 0.04) !important;
@@ -569,16 +581,18 @@ body.lms-dark-mode .table-lms tbody tr:hover td:last-child {
 }
 
 body.lms-dark-mode .table-lms td {
-  border-bottom: 1px solid rgba(255,255,255,0.02) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
   color: #e2e8f0 !important;
+  padding: 12px 15px !important;
 }
 
 /* Search Bar & Filters Dark Mode */
 body.lms-dark-mode .search-bar,
 body.lms-dark-mode .filter-select {
   background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   color: #fff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 body.lms-dark-mode .search-bar input {
   background: transparent !important;
@@ -798,6 +812,61 @@ body.lms-dark-mode input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+/* --- FINANCE HUB & GENERIC TABLE DARK MODE FIXES --- */
+body.lms-dark-mode .card-lms {
+    background: rgba(30, 41, 59, 0.4) !important;
+    backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.lms-dark-mode .card-lms-header {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.lms-dark-mode .card-lms-body {
+    background: transparent !important;
+}
+
+body.lms-dark-mode table,
+body.lms-dark-mode .table {
+    background-color: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+body.lms-dark-mode .table > :not(caption) > * > * {
+    background-color: transparent !important;
+    color: inherit !important;
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.lms-dark-mode .table tr,
+body.lms-dark-mode .table td,
+body.lms-dark-mode .table th {
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+body.lms-dark-mode .border-bottom-light {
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+    background: transparent !important;
+}
+
+body.lms-dark-mode .text-main,
+body.lms-dark-mode .var-text-main {
+    color: #f8fafc !important;
+}
+
+body.lms-dark-mode .card-lms-title {
+    color: #ffffff !important;
+}
+
+/* Ensure finance stats cards are also correct */
+body.lms-dark-mode .bento-card .stat-value {
+    color: #fff !important;
+}
+
 body.lms-dark-mode input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;

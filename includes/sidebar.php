@@ -119,10 +119,12 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
   <header id="top-navbar">
     <div class="navbar-left">
       <button id="sidebarToggle" title="Toggle Sidebar">
-        <i class="fas fa-bars"></i>
+        <i class="fas fa-bars-staggered"></i>
       </button>
-      <div class="navbar-title">
-        ISSD <span>Management System</span>
+      <div class="navbar-brand-mobile d-flex align-items-center">
+        <div class="navbar-title">
+          ISSD <span class="d-none d-sm-inline">Management System</span><span class="d-inline d-sm-none">LMS</span>
+        </div>
       </div>
     </div>
     <div class="navbar-right">

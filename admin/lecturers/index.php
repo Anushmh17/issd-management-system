@@ -49,6 +49,19 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
 <style>
+  /* --- PREMIUM BORDER REINFORCEMENT (FORCE APPLIED) --- */
+  body.lms-dark-mode .card-lms,
+  body.lms-dark-mode .stat-card,
+  body.lms-dark-mode .bento-card {
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
+    border-radius: 24px !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+</style>
+
+<style>
 /* Lecturer Table Specific Refinements */
 .lect-avatar-wrap {
   width: 44px;
@@ -164,11 +177,106 @@ body.lms-dark-mode .username-tag {
 }
 
 body.lms-dark-mode .lect-avatar-wrap {
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 body.lms-dark-mode .table-lms td {
   color: #e2e8f0;
+}
+
+.btn-action-dots {
+  width: 30px !important; height: 30px !important; border-radius: 8px !important;
+  background: rgba(91, 78, 250, 0.1) !important; color: var(--primary) !important;
+  display: flex !important; align-items: center; justify-content: center; border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+.btn-action-dots:hover {
+  background: var(--primary) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  #page-content { padding: 15px 15px !important; }
+  .page-header { padding: 0 !important; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .page-header h1 { font-size: 20px !important; }
+  .btn-primary-grad { width: 100% !important; justify-content: center !important; }
+  
+  .card-lms { border-radius: 24px !important; border: 1.5px solid rgba(255, 255, 255, 0.4) !important; }
+  .card-lms-header { padding: 20px !important; gap: 15px !important; }
+  .list-legend-title { font-size: 18px !important; }
+  .list-legend-label { font-size: 8px !important; }
+  .search-bar { min-width: 100% !important; }
+  .search-bar input { padding: 8px 0 !important; font-size: 13px !important; }
+  .filter-select { height: 38px !important; font-size: 12px !important; min-width: 120px !important; }
+  .btn-lms.btn-primary { height: 38px !important; padding: 0 20px !important; font-size: 13px !important; }
+  .filter-actions a.btn-lms { height: 38px !important; width: 38px !important; }
+
+  .card-lms-body { padding: 0 !important; overflow-x: hidden !important; }
+  #lecturersTable { 
+    table-layout: fixed !important; 
+    width: 100% !important; 
+    margin: 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    border: none !important;
+  }
+  #lecturersTable th, #lecturersTable td { 
+    padding: 12px 10px !important; 
+    border-radius: 0 !important; 
+    border-left: none !important; 
+    border-right: none !important; 
+  }
+
+  /* Column Visibility */
+  #lecturersTable th:nth-child(3), #lecturersTable td:nth-child(3),
+  #lecturersTable th:nth-child(4), #lecturersTable td:nth-child(4),
+  #lecturersTable th:nth-child(5), #lecturersTable td:nth-child(5),
+  #lecturersTable th:nth-child(6), #lecturersTable td:nth-child(6),
+  #lecturersTable th:nth-child(8), #lecturersTable td:nth-child(8) { display: none !important; }
+
+  /* Column Widths */
+  #lecturersTable th:nth-child(1), #lecturersTable td:nth-child(1) { 
+    width: 35px !important; 
+    padding-left: 10px !important; 
+    text-align: center !important; 
+  }
+  #lecturersTable th:nth-child(2), #lecturersTable td:nth-child(2) { 
+    width: auto !important; 
+    max-width: none !important; /* Let it grow */
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  #lecturersTable th:nth-child(7), #lecturersTable td:nth-child(7) { 
+    width: 60px !important; 
+    text-align: center !important; 
+  }
+  /* Column 9: Actions */
+  #lecturersTable th:nth-child(9), #lecturersTable td:nth-child(9) { 
+    width: 45px !important; 
+    padding-right: 12px !important;
+    text-align: right !important;
+  }
+  #lecturersTable td:nth-child(9) {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+  }
+
+  }
+  
+  /* Modal Ultra-Compact */
+  .modal-dialog { margin: 12px !important; max-width: none !important; }
+  .modal-header { padding: 14px 20px !important; }
+  .modal-title { font-size: 16px !important; }
+  .info-grid-lms { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(0,0,0,0.03); padding: 14px; border-radius: 15px; margin-bottom: 12px; }
+  .info-item label { font-size: 9px; opacity: 0.6; text-transform: uppercase; display: block; margin-bottom: 2px; }
+  .info-item span { font-size: 13px; font-weight: 700; color: var(--dark); }
+  .action-menu-item { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); background: #fff; text-decoration: none; color: inherit; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+  .action-menu-item i { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(91,78,250,0.1); color: var(--primary); border-radius: 8px; font-size: 14px; }
 }
 </style>
 
@@ -301,7 +409,8 @@ body.lms-dark-mode .table-lms td {
             <th>Courses</th>
             <th>Status</th>
             <th>Joined</th>
-            <th style="text-align:center;">Actions</th>
+            <th style="text-align:center;" class="d-none d-md-table-cell">Actions</th>
+            <th class="d-table-cell d-md-none" style="text-align:center;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -343,19 +452,21 @@ body.lms-dark-mode .table-lms td {
             </td>
             <td>
               <?php if ($l['status'] === 'active'): ?>
-                <span class="badge-lms success">
+                <span class="badge-lms success d-none d-md-inline-flex">
                   <i class="fas fa-circle-dot" style="font-size:8px;"></i> Active
                 </span>
+                <span class="d-md-none" style="display:inline-flex; width:10px; height:10px; background:#10b981; border-radius:50%; box-shadow:0 0 8px rgba(16,185,129,0.5);"></span>
               <?php else: ?>
-                <span class="badge-lms" style="background:rgba(255,255,255,0.05); color:#94a3b8; border:1px solid rgba(255,255,255,0.1);">
+                <span class="badge-lms d-none d-md-inline-flex" style="background:rgba(255,255,255,0.05); color:#94a3b8; border:1px solid rgba(255,255,255,0.1);">
                   <i class="fas fa-circle-dot" style="font-size:8px;"></i> Inactive
                 </span>
+                <span class="d-md-none" style="display:inline-flex; width:10px; height:10px; background:#ef4444; border-radius:50%;"></span>
               <?php endif; ?>
             </td>
             <td style="font-size:13px;color:#64748b;">
               <?= $l['joined_date'] ? date('d M Y', strtotime($l['joined_date'])) : '""' ?>
             </td>
-            <td>
+            <td class="d-none d-md-table-cell">
               <div class="d-flex gap-6" style="justify-content:center;">
                 <a href="edit.php?id=<?= $l['id'] ?>"
                    class="btn-lms btn-outline btn-sm"
@@ -376,6 +487,12 @@ body.lms-dark-mode .table-lms td {
                   </button>
                 </form>
               </div>
+            </td>
+            <td class="d-table-cell d-md-none" style="text-align:center;">
+              <?php $lJson = json_encode(['id'=>$l['id'],'name'=>$l['name'],'email'=>$l['email'],'username'=>$l['username'],'phone'=>$l['phone'],'dept'=>$l['department'],'status'=>$l['status'],'joined'=>date('d M Y',strtotime($l['joined_date']))]); ?>
+              <button class="btn-action-dots" onclick="openLecturerMenu(<?= htmlspecialchars($lJson) ?>, event)">
+                <i class="fas fa-ellipsis-vertical"></i>
+              </button>
             </td>
           </tr>
           <?php endforeach; ?>
@@ -409,6 +526,92 @@ body.lms-dark-mode .table-lms td {
 
 </div>
 
+<!-- Lecturer Actions & Details Modal -->
+<div class="modal fade" id="lecturerActionsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden; background: #f8fafc;">
+      <div class="modal-header" style="background: var(--grad-primary); border: none; padding: 25px; color: #fff; position: relative;">
+        <div style="position: relative; z-index: 2;">
+          <h5 class="modal-title fw-800 mb-0" id="modalLectName">Lecturer Name</h5>
+          <div id="modalLectUser" style="font-size: 13px; opacity: 0.9; font-weight: 500;">@username</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="position: absolute; top: 25px; right: 25px; z-index: 3;"></button>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%); z-index: 1;"></div>
+      </div>
+      <div class="modal-body p-4">
+          <div id="lecturerDetailView" class="animate__animated animate__fadeIn">
+             <div class="info-grid-lms">
+                <div class="info-item">
+                  <label>Department</label>
+                  <span id="infoDept">-</span>
+                </div>
+                <div class="info-item">
+                  <label>Phone</label>
+                  <span id="infoPhone">-</span>
+                </div>
+                <div class="info-item">
+                  <label>Email</label>
+                  <span id="infoEmail">-</span>
+                </div>
+                <div class="info-item">
+                  <label>Joined</label>
+                  <span id="infoJoined">-</span>
+                </div>
+                <div class="info-item" style="grid-column: span 2;">
+                  <label>Status</label>
+                  <span id="infoStatus">-</span>
+                </div>
+             </div>
+             <div class="d-flex flex-column gap-2">
+               <button class="action-menu-item btn-primary-grad text-white" onclick="toggleDetailView(false)" style="background: var(--grad-primary) !important; color: white !important;">
+                  <i class="fas fa-list-check"></i> Manage & Actions
+               </button>
+               <button class="action-menu-item" data-bs-dismiss="modal">
+                  <i class="fas fa-times"></i> Close Details
+               </button>
+             </div>
+          </div>
+
+          <div id="lecturerActionList" class="action-menu-list" style="display: none;">
+            <button class="action-menu-item" onclick="toggleDetailView(true)">
+              <i class="fas fa-arrow-left" style="color: var(--primary);"></i>
+              <div>
+                Back to Details
+                <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">View lecturer info</div>
+              </div>
+            </button>
+            <a href="#" id="actionEdit" class="action-menu-item">
+              <i class="fas fa-pen-to-square"></i>
+              <div>
+                Edit Profile
+                <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">Update information</div>
+              </div>
+            </a>
+            <a href="#" id="actionAssign" class="action-menu-item">
+              <i class="fas fa-chalkboard-user"></i>
+              <div>
+                Assign to Course
+                <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">Manage teaching load</div>
+              </div>
+            </a>
+            <form id="deleteForm" method="POST" action="index.php" onsubmit="return confirm('Delete this lecturer?');">
+              <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+              <input type="hidden" name="act" value="delete">
+              <input type="hidden" name="id" id="deleteLectId" value="">
+              <button type="submit" class="action-menu-item" style="color: #ef4444; width: 100%; text-align: left; border: 1px solid rgba(239, 68, 68, 0.1); background: rgba(239, 68, 68, 0.02);">
+                <i class="fas fa-trash-can" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"></i>
+                <div>
+                  Delete Lecturer
+                  <div style="font-size: 11px; font-weight: 500; opacity: 0.7;">Remove permanently</div>
+                </div>
+              </button>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Photo Preview Modal -->
 <div class="photo-modal" id="photoModal" onclick="closePhotoModal(event)">
   <div class="photo-modal-content">
@@ -424,6 +627,34 @@ function lecturerAvatarColor(string $name): string {
 
 $extraJS = <<<'JS'
 <script>
+function openLecturerMenu(lecturer, event) {
+  if (event.target.closest('a') || event.target.closest('button:not(.btn-action-dots)')) return;
+  
+  document.getElementById('modalLectName').textContent = lecturer.name;
+  document.getElementById('modalLectUser').textContent = '@' + lecturer.username;
+  
+  // Update Details
+  document.getElementById('infoDept').textContent = lecturer.dept || 'N/A';
+  document.getElementById('infoPhone').textContent = lecturer.phone || 'N/A';
+  document.getElementById('infoEmail').textContent = lecturer.email;
+  document.getElementById('infoJoined').textContent = lecturer.joined;
+  document.getElementById('infoStatus').textContent = lecturer.status.charAt(0).toUpperCase() + lecturer.status.slice(1);
+  
+  // Update Links
+  document.getElementById('actionEdit').href = `edit.php?id=${lecturer.id}`;
+  document.getElementById('actionAssign').href = `../courses/assign_lecturer.php?lecturer_id=${lecturer.id}`;
+  document.getElementById('deleteLectId').value = lecturer.id;
+  
+  toggleDetailView(true);
+  const modal = new bootstrap.Modal(document.getElementById('lecturerActionsModal'));
+  modal.show();
+}
+
+function toggleDetailView(show) {
+  document.getElementById('lecturerDetailView').style.display = show ? 'block' : 'none';
+  document.getElementById('lecturerActionList').style.display = show ? 'none' : 'block';
+}
+
 function openPhotoModal(src) {
   const modal = document.getElementById('photoModal');
   const img = document.getElementById('modalImg');
