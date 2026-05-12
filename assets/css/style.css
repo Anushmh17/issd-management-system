@@ -4912,10 +4912,14 @@ body.lms-dark-mode .custom-file-upload label:hover {
    GLOBAL PREMIUM DARK MODE ARCHITECTURE
    ===================================================== */
 body.lms-dark-mode {
-  background-color: #0f172a !important;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(30, 77, 77, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(52, 211, 153, 0.1) 0px, transparent 50%) !important;
+  background-color: #0a1628 !important;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(30, 77, 77, 0.35) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(0, 201, 167, 0.12) 0px, transparent 50%),
+    url('../images/dark-bg.png') !important;
+  background-size: auto, auto, cover !important;
+  background-position: top left, bottom right, center center !important;
+  background-attachment: fixed !important;
   color: #f8fafc !important;
 }
 

@@ -2,10 +2,13 @@
    PREMIUM DARK MODE OVERRIDES (Student Portal)
    ======================================================= */
 body.lms-dark-mode {
-  background-color: #0b1120 !important; /* Deepest Navy */
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(34, 211, 238, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 85% 30%, rgba(192, 132, 252, 0.08) 0%, transparent 40%) !important;
+  background-color: #0a1628 !important; /* Deepest Navy */
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(34, 211, 238, 0.10) 0%, transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(192, 132, 252, 0.10) 0%, transparent 40%),
+    url('../images/dark-bg.png') !important;
+  background-size: auto, auto, cover !important;
+  background-position: top left, bottom right, center center !important;
   background-attachment: fixed !important;
   color: #e2e8f0 !important;
 
