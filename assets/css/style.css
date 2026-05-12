@@ -75,6 +75,8 @@
   padding: 0;
 }
 
+/* Removed GPU hardware hacks to preserve Windows ClearType */
+
 html {
   scroll-behavior: smooth;
   height: 100%;
@@ -724,10 +726,11 @@ img {
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  top: 0;
 }
 
 .card-lms:hover {
-  transform: translateY(-5px);
+  top: -5px;
   border-color: var(--accent);
   box-shadow: 0 8px 24px rgba(30, 77, 77, 0.12), 0 24px 48px rgba(30, 77, 77, 0.12);
 }
@@ -1161,6 +1164,7 @@ img {
   gap: 12px;
   transition: var(--transition);
   position: relative;
+  top: 0;
   overflow: hidden;
 }
 
@@ -1177,7 +1181,7 @@ img {
 }
 
 .stat-card:hover {
-  transform: translateY(-3px);
+  top: -3px;
   box-shadow: var(--shadow-md);
   border-color: var(--sc-color, var(--primary));
 }
@@ -1809,6 +1813,9 @@ img {
   font-family: 'Inter', sans-serif;
   white-space: nowrap;
   text-decoration: none !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 .btn-lms:hover {
@@ -3559,13 +3566,14 @@ body.lms-dark-mode .custom-file-upload label:hover {
   border: 1.5px solid #e2e8f0;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07), 0 8px 28px rgba(15, 23, 42, 0.10);
   position: relative;
+  top: 0;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 1;
 }
 
 .bento-card:hover {
-  transform: translateY(-6px);
+  top: -6px;
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.13), 0 24px 56px rgba(15, 23, 42, 0.10);
   border-color: rgba(91, 78, 250, 0.35);
 }

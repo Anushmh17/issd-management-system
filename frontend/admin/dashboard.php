@@ -15,15 +15,18 @@ require_once dirname(__DIR__, 2) . '/backend/document_controller.php';
 // =====================================================
 // LIVE SYSTEM DATA
 // =====================================================
-// 1. Total Students
-$total_students = (int)$pdo->query("SELECT COUNT(*) FROM students")->fetchColumn();
+// 1-3. Consolidated Counts for Dashboard Stats
+$counts = $pdo->query("SELECT 
+    (SELECT COUNT(*) FROM students) as total_students,
+    (SELECT COUNT(DISTINCT student_id) FROM student_courses WHERE status = 'ongoing') as active_students,
+    (SELECT COUNT(*) FROM student_payments WHERE status = 'overdue') as overdue_count,
+    (SELECT COUNT(*) FROM lecturer_payments WHERE status = 'pending') as lecturer_pending_count
+")->fetch();
 
-// 2. Active Students (Ongoing enrollments)
-$active_students = (int)$pdo->query("SELECT COUNT(DISTINCT student_id) FROM student_courses WHERE status = 'ongoing'")->fetchColumn();
-
-// 3. Payment Alerts (Overdue student payments + Pending lecturer payments)
-$overdue_count = (int)$pdo->query("SELECT COUNT(*) FROM student_payments WHERE status = 'overdue'")->fetchColumn();
-$lecturer_pending_count = (int)$pdo->query("SELECT COUNT(*) FROM lecturer_payments WHERE status = 'pending'")->fetchColumn();
+$total_students = (int)$counts['total_students'];
+$active_students = (int)$counts['active_students'];
+$overdue_count = (int)$counts['overdue_count'];
+$lecturer_pending_count = (int)$counts['lecturer_pending_count'];
 $pending_payments = $overdue_count + $lecturer_pending_count;
 
 // 4. Monthly Revenue (Current Month)
@@ -35,27 +38,27 @@ $monthly_revenue = (float)$stmtRev->fetchColumn();
 // 5. Global Recent Activity Feed (Combined)
 // Fixing "Illegal mix of collations" using CONVERT USING utf8mb4
 $stmtActivity = $pdo->query("
-    (SELECT CONVERT('student' USING utf8mb4) as type, CONVERT(full_name USING utf8mb4) as title, CONVERT('registered' USING utf8mb4) as action, created_at, id as target_id FROM students)
+    (SELECT 'student' as type, CAST(full_name AS CHAR) as title, 'registered' as action, created_at, id as target_id FROM students ORDER BY created_at DESC LIMIT 10)
     UNION ALL
-    (SELECT CONVERT('payment' USING utf8mb4) as type, CONVERT(CONCAT('Rs. ', FORMAT(amount_paid, 0)) USING utf8mb4) as title, CONVERT('payment received' USING utf8mb4) as action, created_at, id as target_id FROM student_payments)
+    (SELECT 'payment' as type, CAST(CONCAT('Rs. ', FORMAT(amount_paid, 0)) AS CHAR) as title, 'payment received' as action, created_at, id as target_id FROM student_payments ORDER BY created_at DESC LIMIT 10)
     UNION ALL
-    (SELECT CONVERT('lead' USING utf8mb4) as type, CONVERT(name USING utf8mb4) as title, CONVERT('new lead added' USING utf8mb4) as action, created_at, id as target_id FROM leads)
+    (SELECT 'lead' as type, CAST(name AS CHAR) as title, 'new lead added' as action, created_at, id as target_id FROM leads ORDER BY created_at DESC LIMIT 10)
     UNION ALL
-    (SELECT CONVERT('lecturer' USING utf8mb4) as type, CONVERT(name USING utf8mb4) as title, CONVERT('joined team' USING utf8mb4) as action, created_at, id as target_id FROM lecturers)
+    (SELECT 'lecturer' as type, CAST(name AS CHAR) as title, 'joined team' as action, created_at, id as target_id FROM lecturers ORDER BY created_at DESC LIMIT 10)
     UNION ALL
     (SELECT 
-        CONVERT(CASE 
+        CASE 
             WHEN action LIKE 'student%' THEN 'student'
             WHEN action LIKE 'lead%' THEN 'lead'
             WHEN action LIKE 'payment%' OR action LIKE 'lecturer_payout' THEN 'payment'
             WHEN action LIKE 'lecturer%' THEN 'lecturer'
             ELSE 'system'
-        END USING utf8mb4) as type,
-        CONVERT(action USING utf8mb4) as title,
-        CONVERT(details USING utf8mb4) as action,
+        END as type,
+        CAST(action AS CHAR) as title,
+        CAST(details AS CHAR) as action,
         created_at,
         id as target_id
-     FROM activity_log)
+     FROM activity_log ORDER BY created_at DESC LIMIT 10)
     ORDER BY created_at DESC
     LIMIT 10
 ");
@@ -184,10 +187,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
+    top: 0;
     overflow: hidden;
   }
   .bento-card:hover {
-    transform: translateY(-4px);
+    top: -4px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     border-color: var(--accent-indigo);
   }
@@ -329,11 +333,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       margin-bottom: 6px !important;
     }
     .hero-sub br { display: block !important; }
-    .hero-sub a {
-      display: block !important;
+    .hero-alert-link {
+      display: flex !important;
       font-size: 11px !important;
-      padding: 4px 10px !important;
-      margin-top: 5px !important;
+      padding: 6px 12px !important;
+      margin-top: 8px !important;
       width: fit-content !important;
       background: rgba(255,255,255,0.18) !important;
       border-color: rgba(251,191,36,0.5) !important;
@@ -504,6 +508,25 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     display: inline-block;
     border: 1px solid rgba(251, 191, 36, 0.2);
   }
+  .hero-alert-link {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 12px;
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    position: relative;
+    top: 0;
+  }
+  .hero-alert-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+    top: -2px;
+    color: #fbbf24;
+  }
   .hero-clock {
     position: absolute;
     top: 30px;
@@ -558,6 +581,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     text-decoration: none;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     position: relative;
+    top: 0;
     overflow: hidden;
   }
 
@@ -572,7 +596,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   }
 
   .action-btn:hover {
-    transform: translateY(-6px) scale(1.02);
+    top: -6px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     background: #ffffff;
     border-color: rgba(255, 255, 255, 1);
@@ -723,7 +747,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   body.lms-dark-mode .action-btn:hover {
     background: rgba(30, 41, 59, 0.8) !important;
     border-color: rgba(255, 255, 255, 0.2) !important;
-    transform: translateY(-6px) scale(1.04) !important;
+    top: -6px !important;
   }
   
   body.lms-dark-mode .action-btn span.action-sub { color: #94a3b8; }
@@ -741,6 +765,16 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   body.lms-dark-mode .bento-card.quick-actions-container {
     background: rgba(15, 23, 42, 0.3) !important;
     border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  }
+
+  body.lms-dark-mode .hero-content {
+    background: rgba(15, 23, 42, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+  }
+  body.lms-dark-mode .hero-alert-link {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(251, 191, 36, 0.3) !important;
   }
 
   /* Dropdown Dark Mode Overrides */
@@ -788,7 +822,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <div class="hero-sub">
         Institute operations are running smoothly today.
         <div class="mt-2">
-          <a href="<?= BASE_URL ?>/admin/finance/index.php" class="text-decoration-none d-inline-flex align-items-center" style="background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 12px; color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); backdrop-filter: blur(10px); transition: all 0.3s;">
+          <a href="<?= BASE_URL ?>/admin/finance/index.php" class="hero-alert-link">
             <i class="fas fa-bell me-2" style="animation: swing 2s infinite;"></i> 
             <span style="font-weight: 700;">You have <?= $pending_payments ?> payment alerts</span>
             <i class="fas fa-chevron-right ms-2" style="font-size: 10px; opacity: 0.6;"></i>
@@ -908,35 +942,49 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
 
 <?php
-// 6. Missing Documents Tracker (Real-time scan) - RESTORED
-$stmtCheck = $pdo->query("SELECT id, full_name FROM students ORDER BY created_at DESC LIMIT 50");
+// 6. Missing Documents Tracker (Optimized)
+$stmtCheck = $pdo->query("SELECT id, full_name FROM students ORDER BY created_at DESC LIMIT 30");
 $checkStudents = $stmtCheck->fetchAll();
 $sIds = array_map('intval', array_column($checkStudents, 'id'));
-$docProgress = getBulkDocCounts($pdo, $sIds);
-$docStatuses = getBulkDocStatus($pdo, $sIds);
+
+// Fetch doc rows in bulk to avoid individual queries
+$docRowsMap = [];
+if (!empty($sIds)) {
+    $in = implode(',', array_fill(0, count($sIds), '?'));
+    $stmtDocs = $pdo->prepare("SELECT * FROM student_documents WHERE student_id IN ($in)");
+    $stmtDocs->execute($sIds);
+    while($r = $stmtDocs->fetch()) {
+        $docRowsMap[(int)$r['student_id']] = $r;
+    }
+}
+
 $missingStudents = [];
+$defs = getDocumentDefinitions();
+$requiredKeys = array_keys(array_filter($defs, fn($d) => $d['required']));
+$totalRequired = count($requiredKeys);
+
 foreach ($checkStudents as $cs) {
     $sid = (int)$cs['id'];
-    if (($docStatuses[$sid] ?? 'missing') === 'missing') {
-        $prog = $docProgress[$sid] ?? ['collected' => 0, 'total' => 0];
-        $reqDone  = $prog['collected'];
-        $reqTotal = $prog['total'];
-        
-        $docRow = getOrCreateDocRecord($pdo, $sid);
-        $defs = getDocumentDefinitions();
-        $firstKey = '';
-        foreach ($defs as $k => $d) { 
-            if ($d['required'] && empty($docRow[$k.'_status'])) {
-                $firstKey = $k;
-                break;
-            }
+    $docRow = $docRowsMap[$sid] ?? null;
+    
+    $collected = 0;
+    $firstMissing = '';
+    
+    foreach ($requiredKeys as $key) {
+        if ($docRow && !empty($docRow[$key . '_status'])) {
+            $collected++;
+        } elseif (!$firstMissing) {
+            $firstMissing = $key;
         }
+    }
+    
+    if ($collected < $totalRequired) {
         $missingStudents[] = [
             'id'    => $sid,
             'name'  => $cs['full_name'],
-            'collected' => $reqDone,
-            'total'     => $reqTotal,
-            'first' => $firstKey
+            'collected' => $collected,
+            'total'     => $totalRequired,
+            'first' => $firstMissing
         ];
         if (count($missingStudents) >= 4) break;
     }
@@ -1042,7 +1090,6 @@ foreach ($checkStudents as $cs) {
   <style>
     .activity-item:hover {
       background: rgba(255,255,255,0.05) !important;
-      transform: scale(1.02);
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-color: var(--accent-indigo) !important;
     }
@@ -1176,14 +1223,16 @@ foreach ($checkStudents as $cs) {
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         display: inline-flex;
         align-items: center;
+        position: relative;
+        top: 0;
     }
     .action-badge:hover {
-        transform: translateY(-2px);
+        top: -2px;
         box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         filter: brightness(1.05);
     }
     .snooze-opt { border: 1px solid transparent !important; transition: all 0.2s; }
-    .snooze-opt:hover { border-color: var(--accent-indigo) !important; transform: scale(1.02); }
+    .snooze-opt:hover { border-color: var(--accent-indigo) !important; background: rgba(91, 78, 250, 0.05); }
   </style>
 
   <script>

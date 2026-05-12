@@ -43,11 +43,13 @@ try {
         $notifications = getRecentNotifications($pdo, $userId, $user['role'], $category, 50, false, $includeCleared);
         $unreadCount   = count(array_filter($notifications, function($n) { return !$n['is_read']; }));
         
-        // Check for urgent follow-ups (Call alerts)
+        // Check for urgent follow-ups (Call alerts) - Disabled as not currently used by UI
         $urgentCalls = [];
+        /*
         if (hasRole(ROLE_ADMIN)) {
             $urgentCalls = getUrgentAlerts($pdo);
         }
+        */
 
         ob_clean();
         echo json_encode([

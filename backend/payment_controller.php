@@ -12,7 +12,7 @@ require_once __DIR__ . '/db.php';
 // -------------------------------------------------------
 function syncOverduePayments(PDO $pdo) {
     try {
-        // 1. Update status to 'overdue' in DB
+        // 1. Update status to 'overdue' in DB (Atomic)
         $pdo->exec("
             UPDATE student_payments 
             SET status = 'overdue' 
@@ -20,44 +20,36 @@ function syncOverduePayments(PDO $pdo) {
               AND status NOT IN ('paid', 'overdue')
         ");
 
-        // 2. Generate Notifications for these overdue students — D1: dedup per student+title
-        $overdue = $pdo->query("
-            SELECT p.id, s.user_id, s.id AS student_db_id, s.full_name, p.balance, p.next_due_date 
+        // 2. Identify students who need a notification but don't have an unread one yet (Anti-Join optimization)
+        $stmt = $pdo->query("
+            SELECT p.id, s.user_id, s.full_name, p.balance, p.next_due_date 
             FROM student_payments p
             JOIN students s ON p.student_id = s.id
-            WHERE p.status = 'overdue'
-        ")->fetchAll();
+            LEFT JOIN notifications n ON (
+                (n.user_id IS NULL AND n.title LIKE CONCAT('%Overdue: ', s.full_name, '%'))
+                OR (n.user_id = s.user_id AND n.title = 'Payment Overdue Notice')
+            ) AND n.status = 'unread'
+            WHERE p.status = 'overdue' AND n.id IS NULL
+            LIMIT 20
+        ");
+        $overdue = $stmt->fetchAll();
 
         foreach ($overdue as $o) {
-            // A. Admin Notification — deduplicate by title+student_db_id
             $adminTitle = "Payment Overdue: " . $o['full_name'];
             $adminMsg = "A payment of Rs. " . number_format($o['balance'], 2) . " was due on " . $o['next_due_date'] . ".";
             $adminLink = BASE_URL . "/admin/payments/index.php?highlight_id=" . $o['id'];
             
             require_once __DIR__ . '/notification_controller.php';
-            // D1: dedup using both title AND the payment record ID to avoid cross-student collisions
-            $checkAdmin = $pdo->prepare("SELECT id FROM notifications WHERE user_id IS NULL AND title = ? AND link LIKE ? AND status = 'unread' LIMIT 1");
-            $checkAdmin->execute([$adminTitle, "%highlight_id=" . $o['id'] . "%"]);
-            if (!$checkAdmin->fetch()) {
-                addNotification($pdo, null, 'payment', $adminTitle, $adminMsg, $adminLink);
-            }
+            addNotification($pdo, null, 'payment', $adminTitle, $adminMsg, $adminLink);
 
-            // B. Student Notification — deduplicate per user+payment record
             if (!empty($o['user_id'])) {
                 $studentTitle = "Payment Overdue Notice";
                 $studentMsg = "Your payment of Rs. " . number_format($o['balance'], 2) . " was due on " . $o['next_due_date'] . ". Please clear it as soon as possible.";
-                
-                require_once __DIR__ . '/notification_controller.php';
-                // D1: dedup per student user_id + overdue date to prevent re-creation on re-read
-                $checkStudent = $pdo->prepare("SELECT id FROM notifications WHERE user_id = ? AND title = ? AND message LIKE ? AND status = 'unread' LIMIT 1");
-                $checkStudent->execute([$o['user_id'], $studentTitle, "%" . $o['next_due_date'] . "%"]);
-                if (!$checkStudent->fetch()) {
-                    addNotification($pdo, (int)$o['user_id'], 'payment', $studentTitle, $studentMsg);
-                }
+                addNotification($pdo, (int)$o['user_id'], 'payment', $studentTitle, $studentMsg);
             }
         }
     } catch (PDOException $e) {
-        error_log('syncOverduePayments: ' . $e->getMessage());
+        error_log('syncOverduePayments optimized error: ' . $e->getMessage());
     }
 }
 
@@ -314,41 +306,33 @@ function syncLecturerPaymentAlerts(PDO $pdo): void {
     $monthName    = date('F Y');
 
     try {
+        // Optimized: Find lecturers who haven't been paid AND don't have an unread notification yet
         $unpaid = $pdo->prepare("
             SELECT l.id, l.name
             FROM lecturers l
+            LEFT JOIN notifications n ON n.title = CONCAT('Lecturer Payout Due: ', l.name) AND n.status = 'unread'
             WHERE l.status = 'active'
+              AND n.id IS NULL
               AND l.id NOT IN (
                   SELECT DISTINCT lecturer_id
                   FROM lecturer_payments
                   WHERE payment_month = ?
               )
+            LIMIT 10
         ");
         $unpaid->execute([$currentMonth]);
-        $unpaid = $unpaid->fetchAll();
+        $lecturers = $unpaid->fetchAll();
 
-        foreach ($unpaid as $l) {
+        foreach ($lecturers as $l) {
             $title = "Lecturer Payout Due: {$l['name']}";
             $msg   = "{$l['name']} has not received their payout for {$monthName}. Please record it before month-end.";
             $link  = BASE_URL . "/admin/lecturer_payments/index.php";
-
-            // Only insert once per month — deduplicate by title + this month
-            $check = $pdo->prepare("
-                SELECT id FROM notifications
-                WHERE title = ?
-                  AND status = 'unread'
-                  AND created_at >= DATE_FORMAT(NOW(), '%Y-%m-01')
-                LIMIT 1
-            ");
-            $check->execute([$title]);
-
-            if (!$check->fetch()) {
-                require_once __DIR__ . '/notification_controller.php';
-                addNotification($pdo, null, 'payment', $title, $msg, $link);
-            }
+            
+            require_once __DIR__ . '/notification_controller.php';
+            addNotification($pdo, null, 'payment', $title, $msg, $link);
         }
     } catch (PDOException $e) {
-        error_log('syncLecturerPaymentAlerts: ' . $e->getMessage());
+        error_log('syncLecturerPaymentAlerts optimized error: ' . $e->getMessage());
     }
 }
 

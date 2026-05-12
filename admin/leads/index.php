@@ -174,39 +174,13 @@ $extraCSS = <<<CSS
       border-right: none !important; 
     }
 
-    /* Column 1: # */
-    #leadsTable th:nth-child(1), #leadsTable td:nth-child(1) { 
-      width: 35px !important; 
-      padding-left: 10px !important; 
-      text-align: center !important;
-    }
-    /* Column 2: Name */
-    #leadsTable th:nth-child(2), #leadsTable td:nth-child(2) { 
-      width: auto !important; 
-      white-space: nowrap !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-    }
-    /* Column 3: Phone — hide on mobile for density */
-    #leadsTable th:nth-child(3), #leadsTable td:nth-child(3) { 
-      display: none !important;
-    }
-    /* Column 4: Actions */
-    #leadsTable th:nth-child(4), #leadsTable td:nth-child(4) { 
-      width: 45px !important; 
-      padding-right: 12px !important;
-      text-align: right !important;
-      display: table-cell !important;
-    }
-    #leadsTable td:nth-child(4) {
-      display: flex !important;
-      justify-content: flex-end !important;
-      align-items: center !important;
-    }
-    /* Column 5: Spacer — hide */
-    #leadsTable th:nth-child(5), #leadsTable td:nth-child(5) { 
-      display: none !important; 
-    }
+    .col-id { width: 35px !important; padding-left: 10px !important; text-align: center !important; }
+    .col-name { width: auto !important; }
+    .col-actions-mobile { width: 45px !important; padding-right: 12px !important; text-align: right !important; display: table-cell !important; }
+    
+    /* Hide extra columns on mobile */
+    .col-phone, .col-source, .col-status, .col-followup, .col-actions-desktop { display: none !important; }
+  }
 
 
     /* Modal Mobile Compact Tweaks */
@@ -218,6 +192,24 @@ $extraCSS = <<<CSS
     .info-item label { font-size: 9px !important; margin-bottom: 2px !important; }
     .info-item span { font-size: 13px !important; }
   }
+
+  /* Dark Mode Specific Overrides for Badges */
+  body.lms-dark-mode .badge.bg-light,
+  body.lms-dark-mode .badge.bg-light.text-dark {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #cbd5e1 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  body.lms-dark-mode .source-badge {
+    background: rgba(15, 23, 42, 0.8) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(8px);
+  }
+  body.lms-dark-mode .bg-info-light { background: rgba(14, 165, 233, 0.15) !important; color: #38bdf8 !important; }
+  body.lms-dark-mode .bg-warning-light { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; }
+  body.lms-dark-mode .bg-success-light { background: rgba(16, 185, 129, 0.15) !important; color: #34d399 !important; }
+  body.lms-dark-mode .bg-danger-light { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
 </style>
 CSS;
 
@@ -325,11 +317,15 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <table class="table-lms no-sticky" id="leadsTable">
         <thead>
           <tr>
-            <th style="width: 60px; padding-left: 20px;">#</th>
-            <th>Lead Name</th>
-            <th style="width: 180px;">Phone Number</th>
-            <th class="d-none d-md-table-cell" style="width: 100px; text-align:center;">Actions</th>
-            <th class="d-table-cell d-md-none" style="width: 60px; text-align:center;"></th>          </tr>
+            <th class="col-id" style="width: 60px; padding-left: 20px;">#</th>
+            <th class="col-name">Lead Name</th>
+            <th class="col-phone d-none d-md-table-cell" style="width: 150px;">Phone</th>
+            <th class="col-source d-none d-lg-table-cell" style="width: 120px;">Source</th>
+            <th class="col-status d-none d-lg-table-cell" style="width: 130px;">Status</th>
+            <th class="col-followup d-none d-xl-table-cell" style="width: 180px;">Next Follow-up</th>
+            <th class="col-actions-desktop d-none d-md-table-cell" style="width: 100px; text-align:center;">Actions</th>
+            <th class="col-actions-mobile d-table-cell d-md-none" style="width: 60px; text-align:center;"></th>
+          </tr>
         </thead>
         <tbody>
           <?php foreach ($leads as $i => $l): 
@@ -351,14 +347,35 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <tr id="row-<?= $l['id'] ?>" 
               class="lead-row <?= $isHighlighted ? 'row-highlight' : '' ?>"
               onclick="openLeadMenu(<?= htmlspecialchars($lJson) ?>, event)">
-            <td style="color:#94a3b8;font-size:13px; padding-left: 20px;"><?= (($page-1)*15)+$i+1 ?></td>
-            <td>
+            <td class="col-id" style="color:#94a3b8;font-size:13px; padding-left: 20px;"><?= (($page-1)*15)+$i+1 ?></td>
+            <td class="col-name">
               <div class="fw-700" style="font-size:14px; color: var(--text-main);"><?= htmlspecialchars($l['name']) ?></div>
+              <div class="d-md-none text-muted" style="font-size: 11px;"><?= htmlspecialchars($l['phone']) ?></div>
             </td>
-            <td style="font-size:14px; font-weight: 600; color: var(--text-muted);">
+            <td class="col-phone d-none d-md-table-cell" style="font-size:13px; font-weight: 600; color: var(--text-muted);">
               <?= htmlspecialchars($l['phone']) ?>
             </td>
-            <td class="d-none d-md-table-cell">
+            <td class="col-source d-none d-lg-table-cell">
+               <span class="badge bg-light text-dark border px-2 py-1 source-badge" style="font-size: 11px;"><?= htmlspecialchars($l['source']) ?></span>
+            </td>
+            <td class="col-status d-none d-lg-table-cell">
+                <?php
+                $s = $l['status'];
+                $sClass = match($s) {
+                    'new' => 'bg-info-light text-info',
+                    'talking' => 'bg-warning-light text-warning',
+                    'converted' => 'bg-success-light text-success',
+                    'not_interested' => 'bg-danger-light text-danger',
+                    default => 'bg-light text-dark'
+                };
+                ?>
+                <span class="badge <?= $sClass ?> px-2 py-1" style="font-size: 11px; text-transform: capitalize;"><?= $s ?></span>
+            </td>
+            <td class="col-followup d-none d-xl-table-cell" style="font-size: 12px; color: <?= $isOverdue ? '#ef4444' : 'var(--text-muted)' ?>;">
+                <i class="fas fa-calendar-day me-1 opacity-50"></i>
+                <?= $l['next_followup_datetime'] ? date('M d, g:i A', $followupTime) : 'Not set' ?>
+            </td>
+            <td class="col-actions-desktop d-none d-md-table-cell">
               <div class="d-flex justify-content-center gap-2">
                 <a href="edit.php?id=<?= $l['id'] ?>" class="btn-lms btn-outline btn-sm" title="Edit">
                   <i class="fas fa-pen"></i>
@@ -371,13 +388,14 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </a>
               </div>
             </td>
-            <td class="d-table-cell d-md-none">
+            <td class="col-actions-mobile d-table-cell d-md-none">
               <div class="d-flex justify-content-center">
                 <button class="btn-action-dots">
                   <i class="fas fa-ellipsis-vertical"></i>
                 </button>
               </div>
-            </td>          </tr>
+            </td>
+          </tr>
           <?php endforeach; ?>
         </tbody>
       </table>
@@ -385,7 +403,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <?php if ($pages > 1): ?>
       <div class="pagination-lms">
         <div class="pagination-info">
-          Showing <?= (($page-1)*15)+1 ?>""<?= min($page*15,$total) ?> of <?= $total ?> leads
+          Showing <?= (($page-1)*15)+1 ?> - <?= min($page*15,$total) ?> of <?= $total ?> leads
         </div>
         <div class="pagination-controls">
           <?php if ($page>1): ?>

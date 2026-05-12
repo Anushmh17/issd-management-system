@@ -105,10 +105,31 @@ body.lms-dark-mode .doc-badge i { font-size: 14px !important; }
 .filter-select { font-size: 13px !important; height: 38px !important; border-radius: 10px !important; padding: 0 12px !important; }
 
 .btn-lms.btn-sm { 
-  font-size: 14px !important; 
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  transform: translateZ(0) !important;
 }
-body.lms-dark-mode .btn-lms.btn-sm i { font-size: 15px !important; }
+.btn-lms.btn-sm i {
+  margin-right: 0 !important;
+  font-size: 14px !important;
+  transform: none !important;
+  transition: none !important;
+}
+.btn-lms.btn-sm:hover,
+.btn-lms.btn-sm:active,
+.btn-lms.btn-sm:focus {
+  transform: none !important;
+  top: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
 
 /* Mobile Action Dots & Modal Styles */
 .btn-action-dots {
@@ -273,6 +294,27 @@ body.lms-dark-mode .btn-back-actions {
     font-size: 13px !important;
   }
 }
+
+/* Desktop-only Table Fixes */
+@media (min-width: 769px) {
+  #studentsTable {
+    width: 100% !important;
+    margin: 0 !important;
+    border-collapse: collapse !important;
+  }
+  .card-lms-body {
+    overflow-x: hidden !important; 
+    padding: 0 !important;
+  }
+  #studentsTable th:first-child, 
+  #studentsTable td:first-child {
+    padding-left: 25px !important;
+  }
+  #studentsTable th:last-child, 
+  #studentsTable td:last-child {
+    padding-right: 25px !important;
+  }
+}
 </style>
 CSS;
 
@@ -414,7 +456,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       </form>
     </div>
 
-    <div class="card-lms-body" style="padding:0;overflow-x:auto;">
+    <div class="card-lms-body" style="padding:0;">
       <?php if (empty($students)): ?>
         <div class="empty-state">
           <i class="fas fa-user-slash"></i>
@@ -429,16 +471,15 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <table class="table-lms no-sticky" id="studentsTable">
         <thead>
           <tr>
-            <th style="width:50px;">#</th>
-            <th class="d-none d-md-table-cell" style="min-width:140px;">Student ID</th>
-            <th>Full Name</th>
-            <th class="d-none d-md-table-cell" style="min-width:100px;">Batch</th>
-            <th class="d-none d-md-table-cell">Phone</th>
-            <th class="d-none d-md-table-cell">Status</th>
-            <th class="d-none d-md-table-cell">Doc Status</th>
-            <th class="d-none d-md-table-cell">Joined</th>
-            <th style="text-align:center;">Actions</th>
-            <th class="d-none d-md-table-cell" style="width: 0;"></th> <!-- Spacer for mobile edge -->
+            <th style="width:60px;">#</th>
+            <th class="d-none d-md-table-cell" style="width:130px;">Student ID</th>
+            <th style="width: auto;">Full Name</th>
+            <th class="d-none d-lg-table-cell" style="width:100px;">Batch</th>
+            <th class="d-none d-md-table-cell" style="width:130px;">Phone</th>
+            <th class="d-none d-md-table-cell" style="width:120px;">Status</th>
+            <th class="d-none d-xl-table-cell" style="width:100px;">Doc Status</th>
+            <th class="d-none d-xl-table-cell" style="width:110px;">Joined</th>
+            <th style="width:150px; text-align:center;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -491,7 +532,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </div>
               </div>
             </td>
-            <td class="d-none d-md-table-cell">
+            <td class="d-none d-lg-table-cell">
               <span class="batch-badge-lms">
                 <?= htmlspecialchars(str_ireplace('BATCH-', '', $s['batch_number'])) ?>
               </span>
@@ -505,15 +546,15 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                ?>
                <span style="display:inline-flex; width:8px; height:8px; background:<?= $st_color ?>; border-radius:50%; box-shadow:<?= $st_shadow ?>;"></span>
             </td>
-            <td class="d-none d-md-table-cell">
+            <td class="d-none d-xl-table-cell">
                <?php echo renderDocCountBadge($dc['collected'], $dc['total']); ?>
             </td>
-            <td class="d-none d-md-table-cell" style="font-size:13px;color:#64748b;">
+            <td class="d-none d-xl-table-cell" style="font-size:12px;color:#64748b;">
               <?= !empty($s['join_date']) ? date('d M Y', strtotime($s['join_date'])) : '—' ?>
             </td>
             <td>
               <!-- Desktop View Buttons -->
-              <div class="d-none d-md-flex gap-6" style="justify-content:center;">
+              <div class="d-none d-md-flex gap-2" style="justify-content:center;">
                 <a href="<?= BASE_URL ?>/admin/payments/add.php?student_id=<?= $s['id'] ?>"
                    class="btn-lms btn-sm"
                    style="background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5;"
@@ -558,7 +599,6 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 </button>
               </div>
             </td>
-            <td class="d-none d-md-table-cell"></td> <!-- Spacer -->
           </tr>
           <?php endforeach; ?>
         </tbody>
@@ -568,7 +608,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <?php if ($pages > 1): ?>
       <div class="pagination-lms">
         <div class="pagination-info">
-          Showing <?= (($page - 1) * 15) + 1 ?>""<?= min($page * 15, $total) ?> of <?= $total ?> students
+          Showing <?= (($page - 1) * 15) + 1 ?> - <?= min($page * 15, $total) ?> of <?= $total ?> students
         </div>
         <div class="pagination-controls">
           <?php if ($page > 1): ?>

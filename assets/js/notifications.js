@@ -5,7 +5,7 @@
 class NotificationManager {
     constructor() {
         this.baseUrl = typeof BASE_URL !== 'undefined' ? BASE_URL : '';
-        this.pollInterval = 5000;
+        this.pollInterval = 12000;
         this.notifList = document.querySelector('#notif-items-list');
         this.notifBadge = document.querySelector('#notif-badge');
         this.notifCountText = document.querySelector('#notif-count-text');

@@ -165,6 +165,21 @@ $courseValues = array_values($courseEnrollments);
     background: rgba(255, 255, 255, 0.05) !important;
   }
 
+  /* ── Fix: Institutional Growth & Financial Summary inner cards (dark mode) ── */
+  body.lms-dark-mode .inst-summary-card {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+  body.lms-dark-mode .inst-summary-card .inst-card-label {
+    color: #94a3b8 !important;
+  }
+  body.lms-dark-mode .inst-summary-card .inst-card-value {
+    color: #f1f5f9 !important;
+  }
+  body.lms-dark-mode .inst-summary-card .text-muted {
+    color: #64748b !important;
+  }
+
 
 </style>
 
@@ -286,10 +301,10 @@ $courseValues = array_values($courseEnrollments);
               <div class="row g-4">
                   <!-- Revenue Comparison -->
                   <div class="col-md-4">
-                      <div class="p-3 rounded-4 border shadow-sm h-100" style="background: var(--primary-light); border-color: var(--border-color) !important;">
-                          <div class="text-muted small fw-800 text-uppercase mb-2" style="letter-spacing:1px; font-size: 10px;">Revenue Growth</div>
+                      <div class="inst-summary-card p-3 rounded-4 border shadow-sm h-100" style="background: var(--primary-light); border-color: var(--border-color) !important;">
+                          <div class="inst-card-label text-muted small fw-800 text-uppercase mb-2" style="letter-spacing:1px; font-size: 10px;">Revenue Growth</div>
                           <div class="d-flex align-items-end gap-2 mb-1">
-                              <h4 class="fw-900 m-0" style="font-size:24px; color: var(--text-main);">Rs. <?= number_format($thisMonthRevenue) ?></h4>
+                              <h4 class="inst-card-value fw-900 m-0" style="font-size:24px; color: var(--text-main);">Rs. <?= number_format($thisMonthRevenue) ?></h4>
                               <span class="badge bg-<?= $revTrend >= 0 ? 'success' : 'danger' ?>-subtle text-<?= $revTrend >= 0 ? 'success' : 'danger' ?> rounded-pill" style="font-size:11px; padding: 4px 10px; border: 1px solid currentColor;">
                                   <i class="fas fa-arrow-<?= $revTrend >= 0 ? 'up' : 'down' ?> me-1"></i><?= round(abs($revTrend), 1) ?>%
                               </span>
@@ -300,10 +315,10 @@ $courseValues = array_values($courseEnrollments);
 
                   <!-- Registration Comparison -->
                   <div class="col-md-4">
-                      <div class="p-3 rounded-4 border shadow-sm h-100" style="background: var(--primary-light); border-color: var(--border-color) !important;">
-                          <div class="text-muted small fw-800 text-uppercase mb-2" style="letter-spacing:1px; font-size: 10px;">Student Intake</div>
+                      <div class="inst-summary-card p-3 rounded-4 border shadow-sm h-100" style="background: var(--primary-light); border-color: var(--border-color) !important;">
+                          <div class="inst-card-label text-muted small fw-800 text-uppercase mb-2" style="letter-spacing:1px; font-size: 10px;">Student Intake</div>
                           <div class="d-flex align-items-end gap-2 mb-1">
-                              <h4 class="fw-900 m-0" style="font-size:24px; color: var(--text-main);"><?= $thisMonthReg ?> <small style="font-size:12px; font-weight:700; opacity:0.8;">New</small></h4>
+                              <h4 class="inst-card-value fw-900 m-0" style="font-size:24px; color: var(--text-main);"><?= $thisMonthReg ?> <small style="font-size:12px; font-weight:700; opacity:0.8;">New</small></h4>
                               <span class="badge bg-<?= $regTrendVal >= 0 ? 'success' : 'danger' ?>-subtle text-<?= $regTrendVal >= 0 ? 'success' : 'danger' ?> rounded-pill" style="font-size:11px; padding: 4px 10px; border: 1px solid currentColor;">
                                   <i class="fas fa-arrow-<?= $regTrendVal >= 0 ? 'up' : 'down' ?> me-1"></i><?= round(abs($regTrendVal), 1) ?>%
                               </span>
@@ -314,10 +329,10 @@ $courseValues = array_values($courseEnrollments);
 
                   <!-- Financial Health -->
                   <div class="col-md-4">
-                      <div class="p-3 rounded-4 border shadow-sm h-100" style="background: var(--primary-light); border-color: var(--border-color) !important;">
-                          <div class="text-muted small fw-800 text-uppercase mb-2" style="letter-spacing:1px; font-size: 10px;">Lecturer Payouts</div>
+                      <div class="inst-summary-card p-3 rounded-4 border shadow-sm h-100" style="background: var(--primary-light); border-color: var(--border-color) !important;">
+                          <div class="inst-card-label text-muted small fw-800 text-uppercase mb-2" style="letter-spacing:1px; font-size: 10px;">Lecturer Payouts</div>
                           <div class="d-flex align-items-end gap-2 mb-1">
-                              <h4 class="fw-900 m-0" style="font-size:22px; color: var(--danger);">Rs. <?= number_format($totalLecturerPay) ?></h4>
+                              <h4 class="inst-card-value fw-900 m-0" style="font-size:22px; color: var(--danger);">Rs. <?= number_format($totalLecturerPay) ?></h4>
                           </div>
                           <div class="text-muted" style="font-size:11px; font-weight:600;">System-wide professional fees</div>
                       </div>
