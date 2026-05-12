@@ -60,12 +60,15 @@ if ($action === 'edit' && isset($_GET['id'])) {
 $search = trim($_GET['q'] ?? '');
 $sql = "SELECT n.*, u.name AS posted_by_name,
                (SELECT COUNT(*) FROM read_notices rn WHERE rn.notice_id = n.id AND rn.user_id LIKE 'L%') as lecturer_read_count,
-               (SELECT COUNT(*) FROM read_notices rn WHERE rn.notice_id = n.id AND rn.user_id NOT LIKE 'L%') as student_read_count,
-               (SELECT COUNT(*) FROM read_notices rn WHERE rn.notice_id = n.id) as read_count,
+               (SELECT COUNT(*) FROM read_notices rn LEFT JOIN users u2 ON u2.id = rn.user_id WHERE rn.notice_id = n.id AND rn.user_id NOT LIKE 'L%' AND (u2.role = 'student' OR u2.role IS NULL)) as student_read_count,
+               (SELECT COUNT(*) FROM read_notices rn LEFT JOIN users u3 ON u3.id = rn.user_id WHERE rn.notice_id = n.id AND (u3.role != 'admin' OR u3.role IS NULL)) as read_count,
                (CASE 
-                   WHEN n.target_role = 'all' THEN (SELECT COUNT(*) FROM users WHERE role != 'admin')
+                   WHEN n.target_role = 'all' THEN 
+                       (SELECT COUNT(*) FROM users WHERE role = 'student') + (SELECT COUNT(*) FROM lecturers WHERE status='active')
+                   WHEN n.target_role = 'lecturer' THEN (SELECT COUNT(*) FROM lecturers WHERE status='active')
                    ELSE (SELECT COUNT(*) FROM users u2 WHERE u2.role = n.target_role)
-               END) as total_target
+               END) as total_target,
+               (SELECT COUNT(*) FROM read_notices rn LEFT JOIN users u4 ON u4.id = rn.user_id WHERE rn.notice_id = n.id AND (u4.role != 'admin' OR u4.role IS NULL)) as total_read_count
         FROM notices n 
         JOIN users u ON u.id = n.posted_by";
 $params = [];
@@ -136,19 +139,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   .form-header h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 10px; font-family: 'Poppins', sans-serif; }
 
   /* Table Styles */
-  .premium-table-card {
-    border: 1.5px solid var(--border-color);
-    border-radius: var(--admin-notice-radius);
-    overflow: hidden;
-  }
-  .table-header { padding: 24px 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; border-bottom: 1px solid var(--border-light); }
-  .table-header h3 { font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 10px; }
 
-  .notice-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-  .notice-table th { padding: 14px 24px; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-light); }
-  .notice-table td { padding: 18px 24px; font-size: 13.5px; vertical-align: middle; border-bottom: 1px solid var(--border-light); }
-  .notice-table tr:last-child td { border-bottom: none; }
-  .notice-table tr:hover td { }
+
+
+
 
   .title-cell { display: flex; flex-direction: column; gap: 4px; }
   .title-cell strong { font-size: 15px; color: #0f172a; }
@@ -281,9 +275,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <?php endif; ?>
 
   <!-- Notices List -->
-  <div class="premium-table-card">
-    <div class="table-header">
-      <h3><i class="fas fa-list-ul" style="color:var(--primary);"></i> Announcement History</h3>
+  <div class="card-lms">
+    <div class="card-lms-header">
+      <h3 style="color:var(--text-main); font-weight:800;"><i class="fas fa-list-ul" style="color:var(--primary);"></i> Announcement History</h3>
       
       <form method="GET" class="premium-search-box" style="display:flex; gap:10px; max-width:400px; width:100%;">
         <div style="position:relative; flex:1;">
@@ -302,21 +296,21 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <p style="color:#64748b; max-width:400px; margin:0 auto;">There are no active notices matching your current search criteria.</p>
         </div>
       <?php else: ?>
-      <table class="notice-table">
+      <table class="table-lms no-sticky">
         <thead>
           <tr>
-            <th>Published At</th>
+            <th style="padding-left:30px;">Published At</th>
             <th>Announcement Details</th>
             <th>Audience</th>
             <th>Read Status</th>
             <th>Author</th>
-            <th style="text-align:right;">Actions</th>
+            <th style="text-align:right; padding-right:30px;">Actions</th>
           </tr>
         </thead>
         <tbody>
           <?php foreach ($notices as $n): ?>
           <tr>
-            <td style="color:#64748b; font-weight:600; font-size:12px;">
+            <td style="padding-left:30px; color:#64748b; font-weight:600; font-size:12px;">
               <?= date('M d, Y', strtotime($n['created_at'])) ?><br>
               <span style="font-weight:400; font-size:11px;"><?= date('h:i A', strtotime($n['created_at'])) ?></span>
             </td>
@@ -349,7 +343,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <span style="color:#94a3b8; font-weight:400; margin:0 4px;">|</span>
                 <span class="text-success" title="Students Read"><i class="fas fa-user-graduate"></i> <?= $n['student_read_count'] ?></span>
                 <span style="color:#94a3b8; font-weight:400; margin:0 4px;">/</span>
-                <span style="color:#ef4444;" title="Total Target"><i class="fas fa-bullseye"></i> <?= $n['total_target'] ?></span>
+                <span style="color:#64748b;" title="Total Target Audience"><i class="fas fa-users-viewfinder"></i> <?= $n['total_target'] ?></span>
               </div>
               <div class="progress" style="height:4px; width:80px; margin-top:6px; background:#f1f5f9; border-radius:10px;">
                 <div class="progress-bar bg-success" style="width: <?= ($n['total_target'] > 0) ? ($n['read_count'] / $n['total_target'] * 100) : 0 ?>%; border-radius:10px;"></div>
@@ -357,12 +351,12 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             </td>
             <td>
               <div class="d-flex align-items-center gap-2">
-                <div class="avatar-initials" style="width:28px; height:28px; font-size:11px;"><?= strtoupper(substr($n['posted_by_name'], 0, 1)) ?></div>
+                <div class="avatar-initials" style="width:32px; height:32px; font-size:13px;"><?= strtoupper(substr($n['posted_by_name'], 0, 1)) ?></div>
                 <span class="fw-600" style="color:#475569;"><?= htmlspecialchars($n['posted_by_name']) ?></span>
               </div>
             </td>
             <td>
-              <div class="action-btns" style="justify-content:flex-end;">
+              <div class="action-btns" style="justify-content:flex-end; padding-right:30px;">
                 <button type="button" class="action-btn view notice-card-clickable" title="Quick View"
                         data-real-id="<?= $n['id'] ?>"
                         data-title="<?= htmlspecialchars($n['title']) ?>"
@@ -411,7 +405,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                 <div class="row g-4">
                     <!-- Lecturers Column -->
                     <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-4 h-100">
+                        <div class="p-4 bg-light rounded-4 h-100 border border-info border-opacity-10">
                             <h6 class="fw-800 mb-3 d-flex align-items-center gap-2" style="color:var(--primary);">
                                 <i class="fas fa-chalkboard-user"></i> Lecturers
                                 <span id="lecturer-read-badge" class="badge bg-primary rounded-pill" style="font-size:10px;">0</span>
@@ -423,7 +417,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                     </div>
                     <!-- Students Column -->
                     <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-4 h-100">
+                        <div class="p-4 bg-light rounded-4 h-100 border border-success border-opacity-10">
                             <h6 class="fw-800 mb-3 d-flex align-items-center gap-2" style="color:var(--accent-dark);">
                                 <i class="fas fa-user-graduate"></i> Students
                                 <span id="student-read-badge" class="badge bg-success rounded-pill" style="font-size:10px;">0</span>
@@ -493,7 +487,7 @@ function viewNoticeReaders(id, title) {
                     if(r.role === 'lecturer') {
                         document.getElementById('lecturer-readers-list').innerHTML += item;
                         lCount++;
-                    } else if(r.role === 'student') {
+                    } else {
                         document.getElementById('student-readers-list').innerHTML += item;
                         sCount++;
                     }

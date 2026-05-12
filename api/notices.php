@@ -17,10 +17,15 @@ $id = (int)($_GET['id'] ?? 0);
 if ($action === 'readers' && $id > 0) {
     try {
         $stmt = $pdo->prepare("
-            SELECT u.name, u.role, u.avatar, rn.read_at
+            SELECT COALESCE(u.name, 'Unknown User') as name, 
+                   COALESCE(u.role, 'student') as role, 
+                   u.avatar, 
+                   rn.read_at
             FROM read_notices rn
-            JOIN users u ON u.id = rn.user_id
-            WHERE rn.notice_id = ? AND rn.user_id NOT LIKE 'L%'
+            LEFT JOIN users u ON u.id = rn.user_id
+            WHERE rn.notice_id = ? 
+              AND rn.user_id NOT LIKE 'L%' 
+              AND (u.role != 'admin' OR u.role IS NULL)
             UNION ALL
             SELECT l.name, 'lecturer' as role, l.photo as avatar, rn.read_at
             FROM read_notices rn

@@ -578,7 +578,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     font-size: 13px;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-align: center;
-    text-decoration: none;
+    text-decoration: none !important;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     position: relative;
     top: 0;

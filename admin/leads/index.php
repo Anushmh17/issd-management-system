@@ -193,42 +193,12 @@ $extraCSS = <<<CSS
     .info-item span { font-size: 13px !important; }
   }
 
-  /* Dark Mode Specific Overrides for Badges */
-  body.lms-dark-mode .badge.bg-light,
-  body.lms-dark-mode .badge.bg-light.text-dark {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: #cbd5e1 !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-  }
-  body.lms-dark-mode .source-badge {
-    background: rgba(15, 23, 42, 0.8) !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    backdrop-filter: blur(8px);
-  }
-  body.lms-dark-mode .bg-info-light { background: rgba(14, 165, 233, 0.15) !important; color: #38bdf8 !important; }
-  body.lms-dark-mode .bg-warning-light { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; }
-  body.lms-dark-mode .bg-success-light { background: rgba(16, 185, 129, 0.15) !important; color: #34d399 !important; }
-  body.lms-dark-mode .bg-danger-light { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
 </style>
 CSS;
 
 require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
-
-<style>
-  /* --- PREMIUM BORDER REINFORCEMENT (FORCE APPLIED) --- */
-  body.lms-dark-mode .card-lms,
-  body.lms-dark-mode .stat-card,
-  body.lms-dark-mode .bento-card {
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.03) !important;
-    border-radius: 24px !important;
-    background: rgba(30, 41, 59, 0.5) !important;
-    backdrop-filter: blur(20px) !important;
-  }
-</style>
 
 <div id="page-content">
 
@@ -253,7 +223,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <div class="list-legend-label">Lead Generation</div>
           <div class="list-legend-title" style="font-size: 24px;">
             <span>All Leads</span>
-            <span class="count-badge" style="background: var(--primary-light); color: var(--primary); padding: 4px 14px; border-radius: 30px; font-size: 14px;"><?= $total ?></span>
+            <span class="count-badge"><?= $total ?></span>
           </div>
         </div>
       </div>

@@ -286,7 +286,10 @@ document.addEventListener('DOMContentLoaded', function () {
       fetch(BASE_URL + '/backend/notice_read.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notice_id: noticeId })
+        body: JSON.stringify({ 
+          notice_id: noticeId,
+          csrf_token: CSRF_TOKEN
+        })
       })
       .then(res => res.json())
       .then(data => {

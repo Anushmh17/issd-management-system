@@ -96,6 +96,19 @@ function showToast(type, message, title = '') {
 
 <?php require_once __DIR__ . '/modals.php'; ?>
 
+<!-- Cursor Torch Effect -->
+<div class="cursor-torch" id="cursorTorch"></div>
+
+<script>
+document.addEventListener('mousemove', (e) => {
+  const torch = document.getElementById('cursorTorch');
+  if (torch) {
+    torch.style.setProperty('--x', e.clientX + 'px');
+    torch.style.setProperty('--y', e.clientY + 'px');
+  }
+});
+</script>
+
 </body>
 </html>
 
