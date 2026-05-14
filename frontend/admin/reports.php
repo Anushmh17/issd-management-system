@@ -134,7 +134,7 @@ $courseValues = array_values($courseEnrollments);
     justify-content: center;
     font-size: 20px;
     margin-bottom: 16px;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s ease;
     background: var(--bg-input, #f8fafc);
     color: var(--text-muted, #64748b);
   }

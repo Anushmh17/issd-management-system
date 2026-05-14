@@ -68,7 +68,6 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           <i class="fas fa-trash-can me-1"></i> Clear All Read
         </button>
         <a href="<?= BASE_URL ?>/frontend/admin/notifications.php?category=all" class="btn-lms <?= $category === 'all' ? 'btn-primary' : 'btn-outline' ?>">All</a>
-        <a href="<?= BASE_URL ?>/frontend/admin/notifications.php?category=call" class="btn-lms <?= $category === 'call' ? 'btn-primary' : 'btn-outline' ?>">Calls</a>
         <a href="<?= BASE_URL ?>/frontend/admin/notifications.php?category=payment" class="btn-lms <?= $category === 'payment' ? 'btn-primary' : 'btn-outline' ?>">Payments</a>
         <a href="<?= BASE_URL ?>/frontend/admin/notifications.php?category=system" class="btn-lms <?= $category === 'system' ? 'btn-primary' : 'btn-outline' ?>">System</a>
       </div>

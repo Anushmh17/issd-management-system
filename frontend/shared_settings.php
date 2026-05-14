@@ -3,9 +3,9 @@
 // ISSD Management - Shared Settings Page
 // =====================================================
 define('PAGE_TITLE', 'Settings');
-require_once dirname(__DIR__, 1) . '/backend/config.php';
-require_once dirname(__DIR__, 1) . '/backend/db.php';
-require_once dirname(__DIR__, 1) . '/includes/auth.php';
+require_once dirname(__DIR__) . '/backend/config.php';
+require_once dirname(__DIR__) . '/backend/db.php';
+require_once dirname(__DIR__) . '/includes/auth.php';
 
 requireLogin();
 
@@ -59,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-require_once dirname(__DIR__, 1) . '/includes/header.php';
-require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
+require_once dirname(__DIR__) . '/includes/header.php';
+require_once dirname(__DIR__) . '/includes/sidebar.php';
 ?>
 
 <style>
@@ -298,7 +298,5 @@ $logs = $stmt->fetchAll();
 
     </div>
   </div>
-</div><!-- /#page-content -->
-
-1'; ?>
-
+</div><!-- /#page-content-restored -->
+<?php require_once dirname(__DIR__) . '/includes/footer.php'; ?>

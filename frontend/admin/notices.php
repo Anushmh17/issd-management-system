@@ -399,9 +399,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <?php endif; ?>
     </div>
   </div>
-</div><!-- /#page-content -->
 
-1'; ?>
+
+
 
 <!-- Readers List Modal -->
 <div class="modal fade" id="readersListModal" tabindex="-1" aria-hidden="true">
@@ -523,3 +523,5 @@ function viewNoticeReaders(id, title) {
         });
 }
 </script>
+</div><!-- /#page-content-restored -->
+<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

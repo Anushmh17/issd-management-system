@@ -191,7 +191,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     overflow: hidden;
   }
   .bento-card:hover {
-    transform: translateY(-5px);
+    top: -4px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     border-color: var(--accent-indigo);
   }

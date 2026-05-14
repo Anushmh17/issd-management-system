@@ -358,7 +358,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
   </div>
 
-</div><!-- /#page-content -->
+
 
 <!-- Quick Upload Modal -->
 <div class="modal fade" id="quickUploadModal" tabindex="-1" aria-hidden="true">
@@ -474,6 +474,8 @@ function updateQuickFileName(input) {
 }
 </script>
 
+</div><!-- /#page-content -->
+
 <?php
 function studentAvatarColor(string $name): string {
     $colors = ['#5b4efa','#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4'];
@@ -482,4 +484,3 @@ function studentAvatarColor(string $name): string {
 
 require_once dirname(__DIR__, 2) . '/includes/footer.php';
 ?>
-

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head><title>Notification Debug</title></head>
+<body>
+<h3>Notification API Debug</h3>
+<p>Results will appear below after clicking each button.</p>
+<button onclick="testList()">Test List (GET)</button>
+<button onclick="testMarkAll()">Test Mark All (POST)</button>
+<button onclick="testClear()">Test Clear (POST)</button>
+<pre id="out" style="background:#f5f5f5;padding:10px;margin-top:10px;white-space:pre-wrap;"></pre>
+<script>
+const BASE_URL = '/Webbuilders%20Projects/issd_management';
+const out = document.getElementById('out');
+function log(msg) { out.textContent += msg + '\n'; }
+
+async function testList() {
+    out.textContent = '';
+    const resp = await fetch(`${BASE_URL}/api/notifications.php?action=list`, { credentials: 'same-origin' });
+    const data = await resp.json();
+    log('Status: ' + resp.status);
+    log(JSON.stringify(data, null, 2));
+}
+
+async function testMarkAll() {
+    out.textContent = '';
+    // Get CSRF from the page meta (if available) or try without
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content || 'MISSING';
+    log('CSRF from meta: ' + csrf);
+    
+    const fd = new FormData();
+    fd.append('csrf_token', csrf);
+    const resp = await fetch(`${BASE_URL}/api/notifications.php?action=read_all`, { method: 'POST', body: fd, credentials: 'same-origin' });
+    const text = await resp.text();
+    log('Status: ' + resp.status);
+    log('Raw response: ' + text);
+}
+
+async function testClear() {
+    out.textContent = '';
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content || 'MISSING';
+    const fd = new FormData();
+    fd.append('csrf_token', csrf);
+    const resp = await fetch(`${BASE_URL}/api/notifications.php?action=clear`, { method: 'POST', body: fd, credentials: 'same-origin' });
+    const text = await resp.text();
+    log('Status: ' + resp.status);
+    log('Raw response: ' + text);
+}
+</script>
+</body>
+</html>

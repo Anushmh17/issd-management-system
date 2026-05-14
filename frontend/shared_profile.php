@@ -3,9 +3,9 @@
 // ISSD Management - Shared Profile Page Template
 // =====================================================
 define('PAGE_TITLE', 'My Profile');
-require_once dirname(__DIR__, 1) . '/backend/config.php';
-require_once dirname(__DIR__, 1) . '/backend/db.php';
-require_once dirname(__DIR__, 1) . '/includes/auth.php';
+require_once dirname(__DIR__) . '/backend/config.php';
+require_once dirname(__DIR__) . '/backend/db.php';
+require_once dirname(__DIR__) . '/includes/auth.php';
 
 requireLogin();
 
@@ -55,8 +55,8 @@ if (!isset($userDetails['role'])) {
     $userDetails['role'] = $role;
 }
 
-require_once dirname(__DIR__, 1) . '/includes/header.php';
-require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
+require_once dirname(__DIR__) . '/includes/header.php';
+require_once dirname(__DIR__) . '/includes/sidebar.php';
 ?>
 
 <style>
@@ -274,7 +274,5 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
     </div>
   </div>
 </div>
-</div><!-- /#page-content -->
-
-1'; ?>
-
+</div><!-- /#page-content-restored -->
+<?php require_once dirname(__DIR__) . '/includes/footer.php'; ?>

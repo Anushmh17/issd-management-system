@@ -447,6 +447,8 @@ $('#enrollForm').on('submit', function() {
 </script>
 JS;
 
-require_once dirname(__DIR__, 2) . '/includes/footer.php';
+
 ?>
 
+
+<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

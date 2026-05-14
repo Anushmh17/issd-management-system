@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // =====================================================
 // ISSD Management - Student: My Courses (Soft UI)
 // =====================================================
@@ -10,13 +10,17 @@ require_once dirname(__DIR__, 2) . '/includes/auth.php';
 requireRole(ROLE_STUDENT);
 $userId = currentUserId();
 
-$sql = "SELECT c.*, e.status AS enrollment_status, e.enrolled_at,
-               u.name AS lecturer_name, u.email AS lecturer_email
-        FROM enrollments e
-        JOIN courses c ON c.id = e.course_id
-        LEFT JOIN users u ON u.id = e.lecturer_id
-        WHERE e.student_id = ?
-        ORDER BY e.enrolled_at DESC";
+$sql = "SELECT c.course_name AS title, c.course_code AS code, c.description,
+               c.duration, c.monthly_fee,
+               sc.status AS enrollment_status, sc.start_date AS enrolled_at,
+               l.name AS lecturer_name, l.email AS lecturer_email
+        FROM student_courses sc
+        JOIN courses c ON c.id = sc.course_id
+        JOIN students s ON s.id = sc.student_id
+        LEFT JOIN course_assignments ca ON c.id = ca.course_id
+        LEFT JOIN lecturers l ON ca.lecturer_id = l.id
+        WHERE s.user_id = ?
+        ORDER BY sc.start_date DESC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$userId]);
@@ -47,11 +51,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
           </div>
       <?php else: ?>
           <?php foreach($courses as $c): ?>
-          <div class="glass-card" style="display:flex; flex-direction:column; padding: 24px;">
+          <div class="glass-card" style="display:flex; flex-direction:column; padding: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: default;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(34,211,238,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.2)';">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
                   <span class="dark-badge db-blue"><?= htmlspecialchars($c['code']) ?></span>
-                  <span class="dark-badge <?= $c['enrollment_status']==='active'?'db-green':($c['enrollment_status']==='completed'?'db-purple':'db-red') ?>">
-                      <?= $c['enrollment_status'] ?>
+                  <span class="dark-badge <?= $c['enrollment_status']==='ongoing'?'db-green':($c['enrollment_status']==='completed'?'db-purple':'db-red') ?>">
+                      <?= strtoupper($c['enrollment_status']) ?>
                   </span>
               </div>
 
@@ -61,8 +65,8 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               </div>
               
               <div style="display:flex; align-items:center; gap:12px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05); margin-bottom:20px;">
-                  <?php if($c['lecturer_name']): ?>
-                      <div style="width:36px; height:36px; border-radius:10px; background:rgba(34,211,238,0.1); color:#22d3ee; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;">
+                  <?php if(!empty($c['lecturer_name'])): ?>
+                      <div style="width:36px; height:36px; border-radius:10px; background:rgba(34,211,238,0.1); color:#22d3ee; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; box-shadow: inset 0 0 0 1px rgba(34,211,238,0.2);">
                           <?= strtoupper(substr($c['lecturer_name'],0,1)) ?>
                       </div>
                       <div>
@@ -85,11 +89,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
                   <span style="display:flex; align-items:center; gap:6px;"><i class="far fa-calendar-alt"></i> <?= date('M Y', strtotime($c['enrolled_at'])) ?></span>
               </div>
               
-              <a href="#" style="display:block; width:100%; text-align:center; background:rgba(255,255,255,0.05); color:inherit; padding:12px; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none; transition:0.2s; margin-top:24px; border:1px solid rgba(255,255,255,0.1);" onmouseover="this.style.background='rgba(34,211,238,0.2)'; this.style.borderColor='rgba(34,211,238,0.4)';" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='rgba(255,255,255,0.1)';">Access Materials</a>
+              <a href="assignments/index.php" style="display:block; width:100%; text-align:center; background:rgba(255,255,255,0.05); color:inherit; padding:12px; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none; transition:0.2s; margin-top:24px; border:1px solid rgba(255,255,255,0.1);" onmouseover="this.style.background='rgba(34,211,238,0.2)'; this.style.borderColor='rgba(34,211,238,0.4)';" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='rgba(255,255,255,0.1)';">Access Materials</a>
           </div>
           <?php endforeach; ?>
       <?php endif; ?>
     </div>
 
   </div>
+</div><!-- /#page-content -->
+
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

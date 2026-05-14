@@ -30,7 +30,7 @@ body.lms-dark-mode::before {
 body.lms-dark-mode {
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.2);
   --border-light: rgba(255, 255, 255, 0.03);
   --bg-card: rgba(30, 41, 59, 0.4);
   --bg-page: #0b1120;
@@ -145,7 +145,7 @@ body.lms-dark-mode .sidebar-brand .brand-text span {
 /* User Card */
 body.lms-dark-mode .sidebar-user {
   background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8)) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   margin-top: 24px !important;
   border-radius: 16px !important;
 }
@@ -215,34 +215,52 @@ body.lms-dark-mode #top-navbar::before {
 }
 
 body.lms-dark-mode .navbar-title {
-  color: #f8fafc !important;
-  font-size: 18px !important;
+  color: #ffffff !important;
+  font-size: 19px !important;
+  font-weight: 800 !important;
   letter-spacing: -0.5px !important;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 body.lms-dark-mode .navbar-title span {
-  color: #22d3ee !important;
+  background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
 }
 
 body.lms-dark-mode .navbar-icon-btn,
 body.lms-dark-mode #sidebarToggle {
   color: #94a3b8 !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
 }
 
 body.lms-dark-mode .navbar-icon-btn:hover,
 body.lms-dark-mode #sidebarToggle:hover {
   color: #fff !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+  transform: translateY(-1px) !important;
 }
 
 body.lms-dark-mode .navbar-user {
   border-color: rgba(255, 255, 255, 0.1) !important;
   background: rgba(255, 255, 255, 0.03) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
 }
 
 body.lms-dark-mode .navbar-user:hover {
-  border-color: #c084fc !important;
-  background: rgba(192, 132, 252, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+body.lms-dark-mode .navbar-user .nav-avatar {
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .navbar-user .nav-uname {
@@ -259,8 +277,8 @@ body.lms-dark-mode .bento-card,
 body.lms-dark-mode .stat-card {
   background: rgba(30, 41, 59, 0.6) !important;
   backdrop-filter: blur(15px);
-  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.03) !important;
 }
 
 body.lms-dark-mode .bento-card div[style*="color:#1e293b"],
@@ -285,7 +303,7 @@ body.lms-dark-mode .bento-card div[style*="color: #94a3b8"] {
 /* Modal Content Dark Mode */
 body.lms-dark-mode .modal-content {
   background: #0f172a !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   color: #f8fafc !important;
 }
 
@@ -449,7 +467,7 @@ body.lms-dark-mode .glass-card {
   background: rgba(30, 41, 59, 0.4);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   color: #fff;
@@ -633,7 +651,7 @@ body:not(.lms-dark-mode) .segment-btn.active {
 /* Dark Mode Segmented Control */
 body.lms-dark-mode .segmented-control {
   background: rgba(11, 17, 32, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .segment-btn {
@@ -648,7 +666,7 @@ body.lms-dark-mode .segment-btn.active {
   background: #1e293b;
   color: #22d3ee;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Special Highlight Cards (Latest Notice) */
@@ -859,7 +877,7 @@ body.lms-dark-mode .card-lms-title i {
 
 body.lms-dark-mode .notice-item-lms {
   background: rgba(15, 23, 42, 0.6) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .notice-item-lms:hover {
@@ -871,7 +889,7 @@ body.lms-dark-mode .notice-premium-card {
   background: rgba(30, 41, 59, 0.4) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .notice-premium-card:hover {
@@ -904,7 +922,7 @@ body.lms-dark-mode .unread-indicator::after {
 /* Premium Search Dark Mode */
 body.lms-dark-mode .search-input-group {
   background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .search-input-group i {
@@ -932,7 +950,7 @@ body.lms-dark-mode .search-clear:hover {
 /* Stat Cards Dark Mode */
 body.lms-dark-mode .stat-card {
   background: rgba(30, 41, 59, 0.6) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
@@ -1026,7 +1044,7 @@ body.lms-dark-mode .search-bar input::placeholder {
 body.lms-dark-mode .id-badge-lms {
   background: rgba(255, 255, 255, 0.05) !important;
   color: #cbd5e1 !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   white-space: nowrap !important;
   display: inline-block !important;
 }
@@ -1090,7 +1108,7 @@ body.lms-dark-mode .doc-badge i {
 body.lms-dark-mode .badge-lms {
   background: rgba(30, 41, 59, 0.6) !important;
   backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
   padding: 5px 14px !important;
   font-size: 10px !important;
@@ -1170,7 +1188,7 @@ body.lms-dark-mode .btn-lms.btn-sm {
   gap: 10px;
   border-radius: 12px !important;
   background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   color: #94a3b8 !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   line-height: 1 !important;
@@ -1269,7 +1287,7 @@ body.lms-dark-mode .btn-lms.btn-danger.btn-sm:hover {
 body.lms-dark-mode .form-control-lms,
 body.lms-dark-mode .form-select-lms {
   background: rgba(15, 23, 42, 0.5) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
 }
 
@@ -1291,7 +1309,7 @@ body.lms-dark-mode input[type="number"]::-webkit-outer-spin-button {
 body.lms-dark-mode .card-lms {
   background: rgba(30, 41, 59, 0.4) !important;
   backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .card-lms-header {
@@ -1365,7 +1383,8 @@ body.lms-dark-mode .empty-state {
 
 /* Footer Fix */
 body.lms-dark-mode #page-footer {
-  background: transparent;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.4);
   margin-top: auto !important;
@@ -1378,7 +1397,7 @@ body.lms-dark-mode #page-footer a {
 /* Modal Dark Mode Overrides */
 body.lms-dark-mode .lms-modal {
   background: #0f172a !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5) !important;
 }
 
@@ -1388,7 +1407,7 @@ body.lms-dark-mode .lms-modal .modal-body {
 
 body.lms-dark-mode .author-box {
   background: rgba(15, 23, 42, 0.5) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode #notice-modal-author {
@@ -1482,7 +1501,7 @@ body.lms-dark-mode .table-lms th {
 /* Enrollment Filter Fixes */
 body.lms-dark-mode .input-group-lms {
   background: rgba(15, 23, 42, 0.5) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .input-group-lms .form-control-lms {
@@ -1503,7 +1522,7 @@ body.lms-dark-mode select.form-control-lms {
 /* Course Premium Header Dark Mode */
 body.lms-dark-mode .course-premium-header {
   background: rgba(30, 41, 59, 0.4) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(24px) !important;
 }
 
@@ -1586,7 +1605,7 @@ body.lms-dark-mode .assignment-date-tag i {
 /* Fix Select2 in Dark Mode */
 body.lms-dark-mode .select2-container--default .select2-selection--single {
   background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   height: 42px !important;
   border-radius: 12px !important;
 }
@@ -1602,7 +1621,7 @@ body.lms-dark-mode .select2-container--default .select2-selection--single .selec
 
 body.lms-dark-mode .select2-dropdown {
   background: #1e293b !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5) !important;
 }
@@ -1619,7 +1638,7 @@ body.lms-dark-mode .lms-modal-overlay {
 
 body.lms-dark-mode .lms-modal-box {
   background: #1e293b !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
 }
 
@@ -1630,6 +1649,48 @@ body.lms-dark-mode .lms-modal-text {
 body.lms-dark-mode .lms-modal-icon.icon-danger {
   background: rgba(239, 68, 68, 0.15) !important;
   color: #f87171 !important;
+}
+
+/* Lecturer Assignment Review Dark Mode */
+body.lms-dark-mode .assignment-hero {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(24px) !important;
+}
+
+body.lms-dark-mode .hero-title {
+  color: #fff !important;
+}
+
+body.lms-dark-mode .meta-pill {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #94a3b8 !important;
+}
+
+body.lms-dark-mode .meta-pill i {
+  color: #38bdf8 !important;
+}
+
+body.lms-dark-mode .meta-pill.deadline {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #f87171 !important;
+}
+
+body.lms-dark-mode .meta-pill.deadline i {
+  color: #f87171 !important;
+}
+
+body.lms-dark-mode .grade-input-group {
+  background: rgba(15, 23, 42, 0.4) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+body.lms-dark-mode .grade-input-group:focus-within {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Premium Upload Control Styles */
@@ -1687,7 +1748,7 @@ body.lms-dark-mode .lms-modal-icon.icon-danger {
 
 body.lms-dark-mode .upload-btn {
   background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Standard Sri Lankan Phone Input */
@@ -1695,7 +1756,7 @@ body.lms-dark-mode .phone-input-group {
   display: flex;
   align-items: stretch;
   background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.2s ease;
@@ -1714,7 +1775,7 @@ body.lms-dark-mode .phone-prefix {
   align-items: center;
   font-weight: 700;
   font-size: 13px;
-  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   user-select: none;
 }
 
@@ -1741,7 +1802,7 @@ body.lms-dark-mode .lms-modal-icon.icon-confirm {
 body.lms-dark-mode .lms-modal-btn-cancel {
   background: rgba(255, 255, 255, 0.05) !important;
   color: #fff !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .lms-modal-btn-cancel:hover {
@@ -1763,7 +1824,7 @@ body.lms-dark-mode .lms-modal-btn-confirm {
 /* Bootstrap Modal Dark Mode Fixes */
 body.lms-dark-mode .modal-content {
   background: #1e293b !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
 }
 
@@ -1793,7 +1854,7 @@ body.lms-dark-mode .btn-link.text-muted {
 body.lms-dark-mode .edit-student-banner,
 body.lms-dark-mode .profile-banner {
   background: rgba(30, 41, 59, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(12px) !important;
 }
 
@@ -1826,7 +1887,7 @@ body.lms-dark-mode .payment-mode-option:has(input:checked) .payment-mode-card {
 
 body.lms-dark-mode .form-actions-sticky {
   background: #1e293b !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3) !important;
 }
 
@@ -1854,7 +1915,7 @@ body.lms-dark-mode .filter-select {
 body.lms-dark-mode .photo-modal-content,
 body.lms-dark-mode .crop-modal-content {
   background: #1e293b !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
   color: #fff !important;
 }
@@ -1925,7 +1986,7 @@ body.lms-dark-mode .notice-form-card,
 body.lms-dark-mode .premium-table-card {
   background: rgba(30, 41, 59, 0.4) !important;
   backdrop-filter: blur(12px) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
   color: #f8fafc !important;
 }
 
@@ -1940,12 +2001,12 @@ body.lms-dark-mode .revenue-table tr:hover td {
 
 body.lms-dark-mode .rpt-kpi {
   background: rgba(30, 41, 59, 0.6) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .rpt-card {
   background: rgba(30, 41, 59, 0.4) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .rpt-bar-track,
@@ -1955,7 +2016,7 @@ body.lms-dark-mode .rpt-progress-track {
 
 body.lms-dark-mode .rpt-insight {
   background: rgba(15, 23, 42, 0.4) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .stat-icon {
@@ -1979,7 +2040,7 @@ body.lms-dark-mode .aud-admin {
 
 body.lms-dark-mode .action-btn {
   background: rgba(255, 255, 255, 0.03) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
   color: #94a3b8 !important;
 }
 
@@ -2052,7 +2113,7 @@ body.lms-dark-mode .section-badge {
   letter-spacing: 0.5px;
   background: rgba(255, 255, 255, 0.05) !important;
   color: #94a3b8 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   line-height: 1;
 }
 
@@ -2079,7 +2140,7 @@ body.lms-dark-mode .section-badge.badge-payroll {
 body.lms-dark-mode .status-pill.status-optional {
   background: rgba(255, 255, 255, 0.05) !important;
   color: #94a3b8 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 
@@ -2087,7 +2148,7 @@ body.lms-dark-mode .status-pill.status-optional {
 body.lms-dark-mode .course-premium-header {
   background: rgba(30, 41, 59, 0.4) !important;
   backdrop-filter: blur(12px) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
 }
 
@@ -2135,7 +2196,7 @@ body.lms-dark-mode .btn-primary-grad {
 
 /* Alerts Design System */
 body.lms-dark-mode .alert-lms {
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(8px);
   border-radius: 12px !important;
   display: flex;
@@ -2182,7 +2243,7 @@ body.lms-dark-mode .form-select,
 body.lms-dark-mode .form-control,
 body.lms-dark-mode .form-control-lms {
   background-color: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
 }
 
@@ -2253,7 +2314,7 @@ body.lms-dark-mode .modern-table {
   background: rgba(15, 23, 42, 0.4) !important;
   border-radius: 16px !important;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .modern-table th {
@@ -2344,7 +2405,7 @@ body.lms-dark-mode .modal-footer {
 
 /* Global Stat-Icon Standardization */
 body.lms-dark-mode .stat-icon {
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow: none !important;
   display: flex !important;
   align-items: center !important;
@@ -2562,7 +2623,7 @@ body.lms-dark-mode .notif-unread {
 }
 
 body.lms-dark-mode .notif-icon-box {
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
 }
 
 body.lms-dark-mode .notif-icon-box i {
@@ -2670,7 +2731,7 @@ body.lms-dark-mode .notif-item-enhanced span[style*="color:#2563eb"] {
 /* Dark Mode Overrides for User Dropdown */
 body.lms-dark-mode .user-dropdown-menu {
   background: #1e293b !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
 }
 
@@ -2697,7 +2758,7 @@ body.lms-dark-mode .user-dropdown-menu .dropdown-item.text-danger i {
 }
 
 body.lms-dark-mode .user-dropdown-menu .dropdown-divider {
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .skeleton-loader {
@@ -2844,7 +2905,7 @@ body.lms-dark-mode .stat-icon.rose {
 /* --- Glass Card Dark Mode --- */
 body.lms-dark-mode .glass-card {
   background: rgba(30, 41, 59, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(12px) !important;
 }
 
@@ -2891,7 +2952,7 @@ body.lms-dark-mode .db-gray {
 /* --- Premium Search Dark Mode --- */
 body.lms-dark-mode .search-input-group {
   background: rgba(15, 23, 42, 0.4) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body.lms-dark-mode .search-input-group:focus-within {
@@ -2925,7 +2986,7 @@ body.lms-dark-mode input[type="datetime-local"] {
 /* --- Premium Stat Cards Dark Mode --- */
 body.lms-dark-mode .stat-card {
   background: rgba(30, 41, 59, 0.4) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(12px);
 }
 
@@ -2940,7 +3001,7 @@ body.lms-dark-mode .stat-card .stat-label {
 /* --- Glass Card Dark Mode --- */
 body.lms-dark-mode .glass-card {
   background: rgba(30, 41, 59, 0.4) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(15px);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
 }
@@ -2955,3 +3016,25 @@ body.lms-dark-mode .cursor-torch {
   background: radial-gradient(circle 50px at var(--x, 50%) var(--y, 50%), rgba(34, 211, 238, 0.08), transparent 100%);
   mix-blend-mode: screen;
 }
+
+/* --- Toast & Notification Dark Mode Overrides --- */
+body.lms-dark-mode .notif-toast-content {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6) !important;
+}
+body.lms-dark-mode .notif-toast-icon {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #fff !important;
+}
+body.lms-dark-mode .notif-toast-title { color: #fff !important; }
+body.lms-dark-mode .notif-toast-text { color: #94a3b8 !important; }
+
+body.lms-dark-mode .lms-toast {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+}
+body.lms-dark-mode .lms-toast-success { background: rgba(16, 185, 129, 0.15) !important; color: #4ade80 !important; }
+body.lms-dark-mode .lms-toast-error { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+body.lms-dark-mode .lms-toast-warning { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; }
+body.lms-dark-mode .lms-toast-info { background: rgba(59, 130, 246, 0.15) !important; color: #60a5fa !important; }
+

@@ -83,7 +83,7 @@ class NotificationManager {
 
         try {
             const url = `${this.baseUrl}/api/notifications.php?action=list&category=${category}&t=${Date.now()}`;
-            const resp = await fetch(url);
+            const resp = await fetch(url, { credentials: 'same-origin' });
             const data = await resp.json();
             
             if (data.success) {
@@ -166,38 +166,58 @@ class NotificationManager {
     }
 
     async markRead(id) {
-        const formData = new FormData();
-        formData.append('id', id);
-        formData.append('csrf_token', CSRF_TOKEN);
         try {
-            await fetch(`${this.baseUrl}/api/notifications.php?action=read`, { method: 'POST', body: formData });
-            this.fetchNotifications();
-        } catch (err) { console.error('Failed', err); }
+            const resp = await fetch(`${this.baseUrl}/api/notifications.php?action=read`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `id=${id}`,
+                credentials: 'same-origin'
+            });
+            const data = await resp.json();
+            if (data.success) this.fetchNotifications();
+        } catch (err) { console.error('markRead error:', err); }
     }
 
     async markAllRead() {
-        const formData = new FormData();
-        formData.append('csrf_token', CSRF_TOKEN);
+        // Immediate visual update
+        this.updateBadge(0);
+        document.querySelectorAll('.notif-item-enhanced.notif-unread').forEach(el => {
+            el.classList.remove('notif-unread');
+            el.classList.add('notif-read');
+        });
         try {
-            await fetch(`${this.baseUrl}/api/notifications.php?action=read_all`, { method: 'POST', body: formData });
-            this.fetchNotifications();
-        } catch (err) { console.error('Failed', err); }
+            const resp = await fetch(`${this.baseUrl}/api/notifications.php?action=read_all`, {
+                method: 'POST',
+                credentials: 'same-origin'
+            });
+            const data = await resp.json();
+            if (data.success) {
+                this.fetchNotifications();
+            }
+        } catch (err) { console.error('markAllRead error:', err); }
     }
 
     async clearRead() {
-        this.confirmAction({
-            title: 'Clear History?',
-            message: 'All read items will be archived. You can still see them in Full History.',
-            icon: 'fa-trash-can',
-            btnText: 'Clear Now',
-            onConfirm: async () => {
-                const formData = new FormData();
-                formData.append('csrf_token', CSRF_TOKEN);
-                const resp = await fetch(`${this.baseUrl}/api/notifications.php?action=clear`, { method: 'POST', body: formData });
-                const data = await resp.json();
-                if (data.success) this.fetchNotifications();
-            }
+        const confirmed = await lmsConfirm('This will remove all read notifications from the dropdown. You can still view them in Full History.', {
+            title: 'Clear Read Notifications',
+            confirmText: 'Clear Now',
+            cancelText: 'Cancel',
+            type: 'danger',
+            icon: 'fa-trash-can'
         });
+        if (!confirmed) return;
+
+        try {
+            const resp = await fetch(`${this.baseUrl}/api/notifications.php?action=clear`, {
+                method: 'POST',
+                credentials: 'same-origin'
+            });
+            const data = await resp.json();
+            if (data.success) {
+                document.querySelectorAll('.notif-item-enhanced.notif-read').forEach(el => el.remove());
+                this.fetchNotifications();
+            }
+        } catch (err) { console.error('clearRead error:', err); }
     }
 
     confirmAction({ title, message, icon, btnText, onConfirm }) {
@@ -231,13 +251,13 @@ class NotificationManager {
         const toast = document.createElement('div');
         toast.className = 'premium-toast new-notif animate__animated animate__fadeInUp';
         toast.innerHTML = `
-            <div style="display:flex; align-items:center; gap:15px; padding:18px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border-radius:22px; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #fff;">
-                <div style="width:50px; height:50px; border-radius:15px; background:var(--primary)15; color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:22px;">
+            <div class="notif-toast-content">
+                <div class="notif-toast-icon">
                     <i class="fas ${notif.icon}"></i>
                 </div>
-                <div>
-                    <div style="font-weight:800; font-size:15px; color:#1e293b;">${notif.title}</div>
-                    <div style="font-size:12px; color:#64748b;">${notif.body}</div>
+                <div class="notif-toast-body">
+                    <div class="notif-toast-title">${notif.title}</div>
+                    <div class="notif-toast-text">${notif.body}</div>
                 </div>
             </div>`;
         this.toastContainer.appendChild(toast);

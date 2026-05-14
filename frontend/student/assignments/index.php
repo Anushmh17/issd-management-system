@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // =====================================================
 // ISSD Management - Student: Assignments List (Premium UI)
 // frontend/student/assignments/index.php
@@ -109,4 +109,6 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
       <?php endif; ?>
     </div>
   </div>
+</div><!-- /#page-content -->
+
 <?php require_once dirname(__DIR__, 3) . '/includes/footer.php'; ?>

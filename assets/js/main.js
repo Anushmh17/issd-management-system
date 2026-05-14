@@ -68,16 +68,15 @@ function showToast(message, type = 'success') {
   const toast = document.createElement('div');
   toast.className = `lms-toast lms-toast-${type}`;
   const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
-  toast.innerHTML = `<i class="fas ${icons[type] || 'fa-info-circle'}"></i> <span>${message}</span>`;
+  toast.innerHTML = `<div class="toast-lms-icon"><i class="fas ${icons[type] || 'fa-info-circle'}"></i></div> 
+                   <div class="toast-lms-body"><span>${message}</span></div>`;
+  // Minimal core positioning, styles move to CSS
   toast.style.cssText = `
-    display:flex;align-items:center;gap:10px;
-    padding:12px 18px;border-radius:10px;margin-bottom:10px;
-    font-size:13.5px;font-weight:500;
-    box-shadow:0 4px 20px rgba(0,0,0,0.15);
-    animation:slideInRight 0.3s ease;
-    background:${type === 'success' ? '#e0faf4' : type === 'error' ? '#ffe8e8' : type === 'warning' ? '#fff3e3' : '#e6f6ff'};
-    color:${type === 'success' ? '#006b58' : type === 'error' ? '#b03030' : type === 'warning' ? '#8a5900' : '#0e6fa5'};
-    border-left:4px solid ${type === 'success' ? '#00C9A7' : type === 'error' ? '#FF6B6B' : type === 'warning' ? '#FF9F43' : '#4CC9F0'};
+    display:flex; align-items:center; gap:12px;
+    padding:14px 20px; border-radius:12px; margin-bottom:12px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.1);
+    animation:slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.4s ease;
   `;
   container.appendChild(toast);
   setTimeout(() => {

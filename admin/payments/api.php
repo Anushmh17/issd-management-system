@@ -36,3 +36,4 @@ if ($action === 'courses') {
     echo json_encode(['error' => 'Invalid API action']);
 }
 exit;
+

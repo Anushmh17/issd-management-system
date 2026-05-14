@@ -154,7 +154,6 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
           <!-- Categorization Tabs -->
           <div class="notif-tabs">
             <div class="notif-tab active" data-category="all">All</div>
-            <div class="notif-tab" data-category="call">Calls</div>
             <div class="notif-tab" data-category="payment">Payments</div>
             <div class="notif-tab" data-category="system">System</div>
           </div>

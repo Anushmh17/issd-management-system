@@ -66,108 +66,280 @@ require_once dirname(__DIR__, 2) . '/includes/header.php';
 require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 ?>
 
+<<style>
+  .assignment-hero {
+    background: #fff;
+    border-radius: 24px;
+    padding: 25px 30px;
+    border: 1.5px solid rgba(30, 77, 77, 0.08);
+    box-shadow: 0 10px 40px rgba(30, 77, 77, 0.03);
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+  }
+  .assignment-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background: radial-gradient(circle at top right, rgba(52, 211, 153, 0.05), transparent);
+    pointer-events: none;
+  }
+  .hero-tag {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--primary);
+    opacity: 0.5;
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--primary);
+    line-height: 1.2;
+    margin-bottom: 18px;
+    letter-spacing: -0.3px;
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(0,0,0,0.04);
+  }
+  .meta-pill {
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1.2px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    transition: all 0.3s;
+  }
+  .meta-pill i { font-size: 14px; color: var(--primary); opacity: 0.6; }
+  .meta-pill:hover { transform: translateY(-2px); border-color: var(--primary); background: #fff; }
+  
+  .meta-pill.deadline { background: #fff1f2; border-color: #fecdd3; color: #e11d48; }
+  .meta-pill.deadline i { color: #e11d48; }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  /* Student Avatar */
+  .stu-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .grade-input-group {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 12px 18px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .grade-input-group:focus-within {
+    background: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px rgba(30, 77, 77, 0.08);
+  }
+</style>
+
 <div id="page-content">
   <div class="page-header">
     <div class="page-header-left">
-      <h1>View Submissions</h1>
+      <h1>Submissions Review</h1>
       <div class="breadcrumb-custom">
-          <i class="fas fa-home"></i> Lecturer &rsaquo; 
-          <a href="assignments/index.php">Assignments</a> &rsaquo; 
-          <span>Submissions</span>
+        <i class="fas fa-home"></i> Lecturer &rsaquo; 
+        <a href="assignments/index.php">Assignments</a> &rsaquo; 
+        <span>Grade Submissions</span>
       </div>
     </div>
-    <a href="assignments/index.php" class="btn-lms btn-outline"><i class="fas fa-arrow-left"></i> Back to Assignments</a>
+    <a href="assignments/index.php" class="btn-lms btn-outline">
+      <i class="fas fa-arrow-left me-2"></i> Back to List
+    </a>
   </div>
 
   <?php if ($error): ?>
     <div class="alert-lms danger auto-dismiss"><i class="fas fa-times-circle"></i> <?= htmlspecialchars($error) ?></div>
   <?php endif; ?>
 
-  <div class="card-lms mb-4">
-      <div class="card-lms-body" style="background:var(--primary-light);border-radius:var(--radius-lg);">
-          <div class="d-flex justify-between align-center mb-2">
-              <h2 class="fw-700 m-0" style="color:var(--primary);font-size:20px;"><?= htmlspecialchars($assignment['title']) ?></h2>
-              <span class="badge-lms primary"><?= htmlspecialchars($assignment['course_code']) ?> - <?= htmlspecialchars($assignment['course_name']) ?></span>
-          </div>
-          <div class="d-flex justify-between align-center" style="font-size:13px;">
-              <div><strong>Due:</strong> <?= $assignment['due_date'] ? date('M d, Y h:i A', strtotime($assignment['due_date'])) : 'N/A' ?></div>
-              <div><strong>Max Marks:</strong> <span class="badge-lms info"><?= $assignment['max_marks'] ?></span></div>
-          </div>
+  <!-- Quick Stats Logic -->
+  <?php
+    $totalEnrolled = count($students);
+    $submittedCount = count(array_filter($students, fn($s) => !empty($s['submission_id'])));
+    $gradedSubmissions = array_filter($students, fn($s) => !empty($s['submission_id']) && $s['marks'] !== null);
+    $gradedCount = count($gradedSubmissions);
+    $pendingCount = $submittedCount - $gradedCount;
+    
+    // Calculate Average Score
+    $avgScore = 0;
+    if ($gradedCount > 0) {
+        $totalMarks = array_sum(array_column($gradedSubmissions, 'marks'));
+        $avgScore = round($totalMarks / $gradedCount, 1);
+    }
+  ?>
+
+  <!-- Assignment Hero Card -->
+  <div class="assignment-hero">
+    <div class="hero-tag">Active Assignment</div>
+    <div class="hero-title"><?= htmlspecialchars($assignment['title']) ?></div>
+    <div class="hero-meta">
+      <div class="meta-pill">
+        <i class="fas fa-book"></i>
+        <?= htmlspecialchars($assignment['course_code']) ?> - <?= htmlspecialchars($assignment['course_name']) ?>
       </div>
+      <div class="meta-pill deadline">
+        <i class="fas fa-clock"></i>
+        Due: <?= $assignment['due_date'] ? date('M d, Y | h:i A', strtotime($assignment['due_date'])) : 'N/A' ?>
+      </div>
+      <div class="meta-pill" style="background: #f0fdf4; border-color: #bbf7d0; color: #166534;">
+        <i class="fas fa-chart-line" style="color:#16a34a;"></i>
+        Avg Score: <?= $avgScore ?> / <?= (int)$assignment['max_marks'] ?>
+      </div>
+    </div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card" style="--sc-color:#5b4efa;">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+      <div class="stat-body">
+        <div class="stat-value"><?= $totalEnrolled ?></div>
+        <div class="stat-label">Total Students</div>
+      </div>
+    </div>
+    <div class="stat-card" style="--sc-color:#06b6d4;">
+      <div class="stat-icon"><i class="fas fa-file-import"></i></div>
+      <div class="stat-body">
+        <div class="stat-value"><?= $submittedCount ?></div>
+        <div class="stat-label">Submissions Received</div>
+      </div>
+    </div>
+    <div class="stat-card" style="--sc-color:#10b981;">
+      <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="stat-body">
+        <div class="stat-value"><?= $gradedCount ?></div>
+        <div class="stat-label">Graded</div>
+      </div>
+    </div>
+    <div class="stat-card" style="--sc-color:#f59e0b;">
+      <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+      <div class="stat-body">
+        <div class="stat-value"><?= $pendingCount ?></div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+    </div>
   </div>
 
   <div class="card-lms">
-    <div class="card-lms-header">
-      <div class="card-lms-title"><i class="fas fa-check-square"></i> Student Submissions (<?= count($students) ?>)</div>
+    <div class="card-lms-header d-flex justify-content-between align-items-center">
+      <div class="list-legend">
+        <div class="list-legend-label">Review Panel</div>
+        <div class="list-legend-title">Submission Tracking</div>
+      </div>
+      <div class="count-badge"><?= $totalEnrolled ?> Enrolled</div>
     </div>
     <div class="card-lms-body" style="padding:0;overflow-x:auto;">
       <table class="table-lms">
         <thead>
           <tr>
-            <th>Student</th>
+            <th style="padding-left:30px;">Student</th>
             <th>Submission Status</th>
             <th>File / Remarks</th>
-            <th>Marks</th>
-            <th>Action</th>
+            <th style="width:300px; padding-right:30px;">Grading</th>
           </tr>
         </thead>
         <tbody>
           <?php foreach ($students as $s): 
                 $hasSubmitted = !empty($s['submission_id']);
                 $isGraded = $hasSubmitted && $s['marks'] !== null;
+                $initials = strtoupper(substr($s['student_name'], 0, 1));
+                $avatarColor = studentAvatarColor($s['student_name']);
           ?>
           <tr>
-            <td>
-              <div>
-                <div class="fw-600"><?= htmlspecialchars($s['student_name']) ?></div>
-                <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars($s['s_id'] ?? '') ?></div>
+            <td style="padding-left:30px;">
+              <div class="d-flex align-items-center gap-12">
+                <div class="stu-avatar" style="background:<?= $avatarColor ?>"><?= $initials ?></div>
+                <div>
+                  <div class="fw-700 text-main" style="font-size:14px;"><?= htmlspecialchars($s['student_name']) ?></div>
+                  <div class="text-muted" style="font-size:11px;"><?= htmlspecialchars($s['s_id'] ?? '') ?></div>
+                </div>
               </div>
             </td>
             <td>
               <?php if($hasSubmitted): ?>
-                  <span class="badge-lms success">Submitted</span>
-                  <div style="font-size:11px;color:var(--text-muted);margin-top:4px;"><?= date('M d, y h:iA', strtotime($s['submitted_at'])) ?></div>
+                  <span class="badge-lms success">
+                    <i class="fas fa-check-circle me-1"></i> Submitted
+                  </span>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">
+                    <i class="fas fa-clock me-1"></i> <?= date('M d, Y h:i A', strtotime($s['submitted_at'])) ?>
+                  </div>
               <?php else: ?>
-                  <span class="badge-lms danger">Not Submitted</span>
+                  <span class="badge-lms danger">
+                    <i class="fas fa-times-circle me-1"></i> Not Submitted
+                  </span>
               <?php endif; ?>
             </td>
             <td>
                 <?php if($hasSubmitted): ?>
-                    <?php if($s['file_path']): ?>
-                        <a href="<?= BASE_URL ?>/assets/uploads/submissions/<?= htmlspecialchars($s['file_path']) ?>" target="_blank" class="btn-lms btn-outline btn-sm mb-1" title="Download File"><i class="fas fa-download"></i> Download File</a>
-                    <?php endif; ?>
-                    <?php if($s['remarks']): ?>
-                        <div style="font-size:12px;background:var(--bg-page);padding:6px;border-radius:4px;border:1px solid var(--border-color);max-height:80px;overflow-y:auto;"><?= nl2br(htmlspecialchars($s['remarks'])) ?></div>
-                    <?php endif; ?>
-                <?php else: ?>
-                    <span class="text-muted">""</span>
-                <?php endif; ?>
-            </td>
-            <td>
-                <?php if($isGraded): ?>
-                    <span class="fw-700" style="color:var(--accent);font-size:15px;"><?= $s['marks'] ?></span> <span class="text-muted">/ <?= $assignment['max_marks'] ?></span>
-                <?php elseif($hasSubmitted): ?>
-                    <span class="badge-lms warning">Needs Grading</span>
-                <?php else: ?>
-                    <span class="text-muted">""</span>
-                <?php endif; ?>
-            </td>
-            <td>
-                <?php if($hasSubmitted): ?>
-                    <button class="btn-lms btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#gradeForm<?= $s['submission_id'] ?>">
-                        <i class="fas fa-star"></i> <?= $isGraded ? 'Edit Grade' : 'Grade' ?>
-                    </button>
-                    <!-- Inline Grading Form -->
-                    <div class="collapse mt-2" id="gradeForm<?= $s['submission_id'] ?>">
-                        <form method="POST" style="display:flex;gap:5px;align-items:center;">
-                            <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
-                            <input type="hidden" name="submission_id" value="<?= $s['submission_id'] ?>">
-                            <input type="number" name="marks" class="form-control-lms" style="width:70px;padding:5px;" min="0" max="<?= $assignment['max_marks'] ?>" value="<?= $s['marks'] ?? '' ?>" required>
-                            <button type="submit" class="btn-lms btn-success btn-sm"><i class="fas fa-check"></i></button>
-                        </form>
+                    <div class="d-flex flex-column gap-2">
+                        <?php if($s['file_path']): ?>
+                            <a href="<?= BASE_URL ?>/assets/uploads/submissions/<?= htmlspecialchars($s['file_path']) ?>" 
+                               target="_blank" class="btn-lms btn-sm btn-outline text-primary" style="width:fit-content;">
+                               <i class="fas fa-file-pdf me-2"></i> Download File
+                            </a>
+                        <?php endif; ?>
+                        <?php if($s['remarks']): ?>
+                            <div style="font-size:12px; color:#64748b; line-height:1.4; background:#f1f5f9; padding:8px 12px; border-radius:8px; border-left:3px solid var(--primary);">
+                              <?= nl2br(htmlspecialchars($s['remarks'])) ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php else: ?>
-                    <span class="text-muted">""</span>
+                    <span class="text-muted">—</span>
+                <?php endif; ?>
+            </td>
+            <td style="padding-right:30px;">
+                <?php if($hasSubmitted): ?>
+                    <form method="POST" class="grade-input-group">
+                        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                        <input type="hidden" name="submission_id" value="<?= $s['submission_id'] ?>">
+                        <div style="flex:1;">
+                          <div style="font-size:10px; font-weight:800; text-transform:uppercase; color:#94a3b8; margin-bottom:4px;">Marks</div>
+                          <input type="number" name="marks" class="form-control-lms" 
+                                 style="height:38px; font-weight:700; font-size:14px;" 
+                                 min="0" max="<?= $assignment['max_marks'] ?>" 
+                                 value="<?= $s['marks'] ?? '' ?>" required>
+                        </div>
+                        <button type="submit" class="btn-lms btn-primary" style="height:38px; margin-top:14px;">
+                          <i class="fas fa-check"></i>
+                        </button>
+                    </form>
+                <?php else: ?>
+                    <span class="text-muted">—</span>
                 <?php endif; ?>
             </td>
           </tr>
@@ -176,7 +348,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       </table>
     </div>
   </div>
-</div><!-- /#page-content -->
+</div>
 
-1'; ?>
+<?php
+function studentAvatarColor(string $name): string {
+    $colors = ['#5b4efa','#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4'];
+    return $colors[ord($name[0]) % count($colors)];
+}
 
+require_once dirname(__DIR__, 2) . '/includes/footer.php'; 
+?>

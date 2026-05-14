@@ -182,6 +182,5 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       </div>
     </div>
   </div>
-</div><!-- /#page-content -->
-
-1'; ?>
+</div><!-- /#page-content-restored -->
+<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

@@ -29,11 +29,12 @@ function markAsRead(PDO $pdo, int $id) {
  */
 function markAllAsRead(PDO $pdo, ?string $userId, string $role = 'student') {
     if ($role === 'admin') {
-        $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE (user_id = ? OR user_id IS NULL) AND status = 'unread'");
+        $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE (user_id = ? OR user_id IS NULL) AND status != 'read'");
     } else {
-        $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE user_id = ? AND status = 'unread'");
+        $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE user_id = ? AND status != 'read'");
     }
-    return $stmt->execute([$userId]);
+    $stmt->execute([$userId]);
+    return $stmt->rowCount();
 }
 
 /**

@@ -185,11 +185,11 @@ ob_start();
     }
   });
 </script>
-</div><!-- /#page-content -->
+
 
 <?php
 $extraJS = ob_get_clean();
-require_once dirname(__DIR__, 3) . '/includes/footer.php';
+
 ?>
-
-
+</div><!-- /#page-content-restored -->
+<?php require_once dirname(__DIR__, 3) . '/includes/footer.php'; ?>
