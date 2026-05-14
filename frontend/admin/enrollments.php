@@ -139,36 +139,33 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
     </div>
 
-    <!-- Stats Section -->
+    <!-- Stats Section (Compact Horizontal) -->
     <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="bento-card">
-                <div class="stat-header">
-                    <div class="stat-icon indigo"><i class="fas fa-user-clock"></i></div>
-                    <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> Live</div>
+            <div class="stat-card" style="--sc-color: var(--primary);">
+                <div class="stat-icon"><i class="fas fa-user-clock"></i></div>
+                <div class="stat-body">
+                    <div class="stat-value"><?= number_format($stats['ongoing'] ?? 0) ?></div>
+                    <div class="stat-label">Ongoing Students</div>
                 </div>
-                <div class="stat-value"><?= number_format($stats['ongoing'] ?? 0) ?></div>
-                <div class="stat-label">Ongoing Students</div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="bento-card">
-                <div class="stat-header">
-                    <div class="stat-icon emerald"><i class="fas fa-graduation-cap"></i></div>
-                    <div class="stat-trend trend-up"><i class="fas fa-check-circle"></i> Success</div>
+            <div class="stat-card" style="--sc-color: var(--accent);">
+                <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="stat-body">
+                    <div class="stat-value"><?= number_format($stats['completed'] ?? 0) ?></div>
+                    <div class="stat-label">Completions</div>
                 </div>
-                <div class="stat-value"><?= number_format($stats['completed'] ?? 0) ?></div>
-                <div class="stat-label">Completions</div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="bento-card">
-                <div class="stat-header">
-                    <div class="stat-icon amber"><i class="fas fa-rocket"></i></div>
-                    <div class="stat-trend trend-up"><i class="fas fa-bolt"></i> New</div>
+            <div class="stat-card" style="--sc-color: var(--warning);">
+                <div class="stat-icon"><i class="fas fa-rocket"></i></div>
+                <div class="stat-body">
+                    <div class="stat-value"><?= number_format($stats['new_30'] ?? 0) ?></div>
+                    <div class="stat-label">New (Last 30 Days)</div>
                 </div>
-                <div class="stat-value"><?= number_format($stats['new_30'] ?? 0) ?></div>
-                <div class="stat-label">New (Last 30 Days)</div>
             </div>
         </div>
     </div>

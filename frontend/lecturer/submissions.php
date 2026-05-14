@@ -72,11 +72,11 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <h1>View Submissions</h1>
       <div class="breadcrumb-custom">
           <i class="fas fa-home"></i> Lecturer &rsaquo; 
-          <a href="assignments.php">Assignments</a> &rsaquo; 
+          <a href="assignments/index.php">Assignments</a> &rsaquo; 
           <span>Submissions</span>
       </div>
     </div>
-    <a href="assignments.php" class="btn-lms btn-outline"><i class="fas fa-arrow-left"></i> Back to Assignments</a>
+    <a href="assignments/index.php" class="btn-lms btn-outline"><i class="fas fa-arrow-left"></i> Back to Assignments</a>
   </div>
 
   <?php if ($error): ?>
@@ -176,7 +176,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       </table>
     </div>
   </div>
-</div>
+</div><!-- /#page-content -->
 
-<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+1'; ?>
 

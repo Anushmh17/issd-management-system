@@ -63,7 +63,6 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <div class="notice-grid-premium">
                 <?php foreach($notices as $n): ?>
                 <div class="notice-premium-card <?= $n['is_read'] ? 'is-read' : 'is-unread' ?>" 
-                     onclick="showNoticeDetails(this)"
                      data-id="<?= $n['id'] ?>"
                      data-is-read="<?= $n['is_read'] ?>"
                      data-title="<?= htmlspecialchars($n['title']) ?>"
@@ -105,62 +104,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <?php endif; ?>
     </div>
   </div>
-</div>
+</div><!-- /#page-content -->
 
-<script>
-function showNoticeDetails(el) {
-    const data = el.dataset;
-    const modal = document.getElementById('viewNoticeModal');
-    if(!modal) return;
-    
-    document.getElementById('notice-modal-title').innerText = data.title;
-    document.getElementById('notice-modal-content').innerText = data.content;
-    document.getElementById('notice-modal-author').innerText = data.author;
-    document.getElementById('notice-modal-date').innerText = data.date;
-    document.getElementById('notice-modal-avatar').innerText = data.author.charAt(0).toUpperCase();
-    
-    // Handle "Mark as Read" button
-    const readBtn = document.getElementById('btn-mark-notice-read');
-    if(readBtn) {
-        if(data.isRead == '1') {
-            readBtn.style.display = 'none';
-        } else {
-            readBtn.style.display = 'block';
-            const newBtn = readBtn.cloneNode(true);
-            readBtn.parentNode.replaceChild(newBtn, readBtn);
-            
-            newBtn.onclick = () => {
-                fetch('../../backend/notice_read.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        notice_id: data.id,
-                        csrf_token: CSRF_TOKEN 
-                    })
-                }).then(res => res.json())
-                .then(res => {
-                    if(res.success) {
-                        el.classList.add('is-read');
-                        el.classList.remove('is-unread');
-                        const indicator = el.querySelector('.unread-indicator');
-                        if(indicator) {
-                            const readBadge = document.createElement('span');
-                            readBadge.className = 'badge-lms success outline';
-                            readBadge.style = 'font-size:9px; padding:2px 8px; border-radius:100px; font-weight:800; letter-spacing:0.5px;';
-                            readBadge.innerText = 'READ';
-                            indicator.parentNode.replaceChild(readBadge, indicator);
-                        }
-                        newBtn.style.display = 'none';
-                    }
-                });
-            };
-        }
-    }
-    
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-}
-</script>
-
-<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+1'; ?>
 

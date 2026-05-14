@@ -130,13 +130,31 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
 
   /* Premium Form */
   .notice-form-card {
+    background: #ffffff !important;
     border: 1.5px solid var(--border-color);
     border-radius: var(--admin-notice-radius);
     padding: 32px;
     margin-bottom: 32px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 5;
   }
   .form-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-light); }
   .form-header h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 10px; font-family: 'Poppins', sans-serif; }
+
+  .form-control-lms {
+    background: #ffffff !important;
+    border: 1.5px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    transition: all 0.3s ease !important;
+  }
+  .form-control-lms:focus {
+    background: #ffffff !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px var(--primary-glow) !important;
+    outline: none !important;
+  }
+
 
   /* Table Styles */
 
@@ -239,26 +257,26 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <div class="row g-4">
         <div class="col-md-8">
           <div class="form-group-lms">
-            <label class="fw-800 text-uppercase mb-2" style="font-size:11px; letter-spacing:1px; color:#64748b;">Notice Title <span class="text-danger">*</span></label>
+            <label class="fw-800 text-uppercase mb-2" style="font-size:11px; letter-spacing:1px; color:var(--primary);">Notice Title <span class="text-danger">*</span></label>
             <input type="text" name="title" class="form-control-lms" placeholder="e.g. System Maintenance Scheduled" value="<?= htmlspecialchars($editNotice['title']??'') ?>" required style="height:50px; font-size:15px; font-weight:600; border-radius:12px;">
           </div>
         </div>
         
         <div class="col-md-4">
           <div class="form-group-lms">
-            <label class="fw-800 text-uppercase mb-2" style="font-size:11px; letter-spacing:1px; color:#64748b;">Target Audience</label>
+            <label class="fw-800 text-uppercase mb-2" style="font-size:11px; letter-spacing:1px; color:var(--primary);">Target Audience</label>
             <select name="target_role" class="form-control-lms" style="height:50px; border-radius:12px; font-weight:600;">
-              <option value="all" <?= ($editNotice['target_role']??'')==='all'?'selected':'' ?>>🌍 Everyone</option>
-              <option value="student" <?= ($editNotice['target_role']??'')==='student'?'selected':'' ?>>🎓 Students Only</option>
-              <option value="lecturer" <?= ($editNotice['target_role']??'')==='lecturer'?'selected':'' ?>>👨‍🏫 Lecturers Only</option>
-              <option value="admin" <?= ($editNotice['target_role']??'')==='admin'?'selected':'' ?>>🛡️ Admins Only</option>
+              <option value="all" <?= ($editNotice['target_role']??'')==='all'?'selected':'' ?>>Everyone (All Roles)</option>
+              <option value="student" <?= ($editNotice['target_role']??'')==='student'?'selected':'' ?>>Students Only</option>
+              <option value="lecturer" <?= ($editNotice['target_role']??'')==='lecturer'?'selected':'' ?>>Lecturers Only</option>
+              <option value="admin" <?= ($editNotice['target_role']??'')==='admin'?'selected':'' ?>>Admins Only</option>
             </select>
           </div>
         </div>
 
         <div class="col-12">
           <div class="form-group-lms">
-            <label class="fw-800 text-uppercase mb-2" style="font-size:11px; letter-spacing:1px; color:#64748b;">Detailed Announcement <span class="text-danger">*</span></label>
+            <label class="fw-800 text-uppercase mb-2" style="font-size:11px; letter-spacing:1px; color:var(--primary);">Detailed Announcement <span class="text-danger">*</span></label>
             <textarea name="content" class="form-control-lms" rows="8" placeholder="Type your message here..." required style="border-radius:16px; padding:20px; font-size:14.5px;"><?= htmlspecialchars($editNotice['content']??'') ?></textarea>
           </div>
         </div>
@@ -381,9 +399,9 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <?php endif; ?>
     </div>
   </div>
-</div>
+</div><!-- /#page-content -->
 
-<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+1'; ?>
 
 <!-- Readers List Modal -->
 <div class="modal fade" id="readersListModal" tabindex="-1" aria-hidden="true">

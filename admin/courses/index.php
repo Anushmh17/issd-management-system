@@ -434,8 +434,6 @@ body.lms-dark-mode .course-fee-badge { background: rgba(16, 185, 129, 0.1) !impo
 
 </div>
 
-</div>
-
 <!-- Course Actions & Details Modal -->
 <div class="modal fade" id="courseActionsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">

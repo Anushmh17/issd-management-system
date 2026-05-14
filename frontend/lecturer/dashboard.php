@@ -97,7 +97,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       <h1>Lecturer Dashboard</h1>
       <div class="breadcrumb-custom"><i class="fas fa-home"></i> Home &rsaquo; <span>Dashboard</span></div>
     </div>
-    <a href="<?= BASE_URL ?>/frontend/lecturer/assignments.php?action=add" class="btn-primary-grad">
+    <a href="<?= BASE_URL ?>/frontend/lecturer/assignments/add.php" class="btn-primary-grad">
       <i class="fas fa-plus"></i> New Assignment
     </a>
   </div>

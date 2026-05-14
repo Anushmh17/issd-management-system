@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // =====================================================
 // ISSD Management - Student: Payments History (Premium UI)
 // frontend/student/payments.php
@@ -97,6 +97,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <?php endif; ?>
     </div>
   </div>
-</div>
-
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

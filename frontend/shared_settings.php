@@ -298,7 +298,7 @@ $logs = $stmt->fetchAll();
 
     </div>
   </div>
-</div>
+</div><!-- /#page-content -->
 
-<?php require_once dirname(__DIR__, 1) . '/includes/footer.php'; ?>
+1'; ?>
 

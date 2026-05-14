@@ -77,7 +77,7 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
   <div class="page-header">
     <div class="page-header-left">
       <h1>My Profile</h1>
-      <div class="breadcrumb-custom"><i class="fas fa-home"></i> Home &rsaquo; <span>Profile</span></div>
+      <div class="breadcrumb-custom"><i class="fas fa-home"></i> Home <span>/ Profile</span></div>
     </div>
   </div>
 
@@ -167,7 +167,7 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
   }
 </style>
 
-<<div class="card-lms overflow-hidden shadow-premium" style="background: var(--bg-card); border: 1px solid var(--border-color); backdrop-filter: blur(20px);">
+<div class="card-lms overflow-hidden shadow-premium" style="max-width: 950px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-color); backdrop-filter: blur(20px);">
   <div class="row g-0">
     <!-- Profile Info Column -->
     <div class="col-lg-4" style="background: rgba(var(--primary-rgb), 0.02); border-right: 1px solid var(--border-color);">
@@ -274,7 +274,7 @@ require_once dirname(__DIR__, 1) . '/includes/sidebar.php';
     </div>
   </div>
 </div>
-</div>
+</div><!-- /#page-content -->
 
-<?php require_once dirname(__DIR__, 1) . '/includes/footer.php'; ?>
+1'; ?>
 

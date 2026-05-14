@@ -156,6 +156,25 @@ function gradeSubmission(PDO $pdo, int $submissionId, int $lecturerId, array $d)
 
         $pdo->prepare("UPDATE assignment_submissions SET marks = ?, feedback = ? WHERE id = ?")
             ->execute([$d['marks'] ?? null, $d['feedback'] ?? null, $submissionId]);
+
+        // --- Notification Sync (Student) ---
+        $info = $pdo->prepare("
+            SELECT a.title, st.user_id 
+            FROM assignment_submissions s
+            JOIN assignments a ON s.assignment_id = a.id
+            JOIN students st ON s.student_id = st.id
+            WHERE s.id = ?
+        ");
+        $info->execute([$submissionId]);
+        $subInfo = $info->fetch();
+        if ($subInfo && $subInfo['user_id']) {
+            require_once __DIR__ . '/notification_controller.php';
+            $title = "Assignment Graded: " . $subInfo['title'];
+            $msg = "Your assignment has been graded. Marks: " . ($d['marks'] ?? 'N/A');
+            $link = BASE_URL . "/frontend/student/assignments/index.php";
+            addNotification($pdo, (string)$subInfo['user_id'], 'system', $title, $msg, $link);
+        }
+
         return ['success' => true];
     } catch (PDOException $e) {
         error_log('gradeSubmission: ' . $e->getMessage());
@@ -237,6 +256,24 @@ function submitAssignment(PDO $pdo, int $studentId, int $assignmentId, array $fi
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE submission_file = VALUES(submission_file), submitted_at = CURRENT_TIMESTAMP
         ")->execute([$assignmentId, $studentId, $up['path']]);
+
+        // --- Notification Sync (Lecturer) ---
+        $info = $pdo->prepare("
+            SELECT a.title, a.lecturer_id, st.full_name
+            FROM assignments a
+            JOIN students st ON st.id = ?
+            WHERE a.id = ?
+        ");
+        $info->execute([$studentId, $assignmentId]);
+        $assignInfo = $info->fetch();
+        if ($assignInfo) {
+            require_once __DIR__ . '/notification_controller.php';
+            $title = "New Submission: " . $assignInfo['title'];
+            $msg = $assignInfo['full_name'] . " has submitted their assignment.";
+            $link = BASE_URL . "/frontend/lecturer/assignments/view.php?id=" . $assignmentId;
+            addNotification($pdo, 'L' . $assignInfo['lecturer_id'], 'system', $title, $msg, $link);
+        }
+
         if (!$inTransaction) $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {

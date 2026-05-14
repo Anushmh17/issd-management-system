@@ -14,7 +14,8 @@ if (!isset($role)) {
     <div class="modal-content lms-modal" style="border:none; border-radius:24px; overflow:hidden;">
       <div class="modal-body p-0">
         <div class="row g-0">
-          <!-- Sidebar Nav for Modal -->
+          <?php if ($role === 'admin'): ?>
+          <!-- Admin Guide Nav -->
           <div class="col-md-3" style="background: #0f172a; border-right: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; height: 560px; overflow-y: auto;">
              <div class="text-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <div style="width:64px; height:64px; background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-radius:20px; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:28px; box-shadow:0 10px 25px rgba(16, 185, 129, 0.3);">
@@ -23,7 +24,6 @@ if (!isset($role)) {
                 <h5 class="fw-800" style="color:#fff; font-size:17px; margin:0;">Admin Guide</h5>
                 <p class="text-muted" style="font-size:11px; opacity:0.6;">Version 1.1.0</p>
              </div>
-             
              <div class="nav flex-column nav-pills help-nav" id="v-pills-tab" role="tablist">
                 <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-leads" type="button"><i class="fas fa-headset"></i> Leads</button>
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-students" type="button"><i class="fas fa-user-graduate"></i> Students</button>
@@ -32,13 +32,9 @@ if (!isset($role)) {
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-finance" type="button"><i class="fas fa-wallet"></i> Finance Hub</button>
              </div>
           </div>
-
-          
-          <!-- Content Area -->
+          <!-- Admin Content Area -->
           <div class="col-md-9 help-content-area" style="padding: 45px 50px; position:relative; height: 560px; overflow-y: auto; background: #fff;">
              <button type="button" class="btn-close" data-bs-dismiss="modal" style="position:absolute; top:25px; right:25px; opacity: 0.5; transition: 0.3s;"></button>
-
-             
              <div class="tab-content" id="v-pills-tabContent">
                 <!-- LEADS SECTION -->
                 <div class="tab-pane fade show active" id="help-leads">
@@ -59,7 +55,6 @@ if (!isset($role)) {
                       <p>Once a lead is ready to join, click <strong>"Convert to Student"</strong> on their profile. This pre-fills 80% of the registration form automatically.</p>
                    </div>
                 </div>
-
                 <!-- STUDENTS SECTION -->
                 <div class="tab-pane fade" id="help-students">
                    <h4 class="fw-800 mb-4" style="color:var(--primary);">Student Onboarding</h4>
@@ -80,7 +75,6 @@ if (!isset($role)) {
                       <p>Track NIC, O/L, and A/L results. Use the <strong>"Collected"</strong> checkbox and specify which office branch holds the physical copy.</p>
                    </div>
                 </div>
-
                 <!-- COURSES SECTION -->
                 <div class="tab-pane fade" id="help-courses">
                    <h4 class="fw-800 mb-4" style="color:var(--primary);">Courses & Academic Management</h4>
@@ -101,8 +95,7 @@ if (!isset($role)) {
                       <p>Once a student completes a course, issue a certificate via <strong>Certificates > Issue Certificate</strong>. This automatically marks their enrollment as Completed.</p>
                    </div>
                 </div>
-
-                <!-- PAYROLL SECTION (NEW) -->
+                <!-- PAYROLL SECTION -->
                 <div class="tab-pane fade" id="help-payroll">
                    <h4 class="fw-800 mb-4" style="color:var(--primary);">Lecturer Payroll</h4>
                    <div class="help-section">
@@ -132,7 +125,6 @@ if (!isset($role)) {
                       <p>From the <strong>20th of each month</strong>, the system generates a notification for every unpaid active lecturer. These appear in the <strong>Payments</strong> tab of the notification bell and clear automatically once a payout is recorded.</p>
                    </div>
                 </div>
-
                 <!-- FINANCE SECTION -->
                 <div class="tab-pane fade" id="help-finance">
                    <h4 class="fw-800 mb-4" style="color:var(--primary);">Finance & Notifications</h4>
@@ -160,11 +152,169 @@ if (!isset($role)) {
                    </div>
                 </div>
              </div>
-             
              <div class="mt-4 pt-4 text-center" style="border-top:1px solid #f1f5f9;">
                 <p class="text-muted mb-0" style="font-size:12px;">Need deeper assistance? Email <span style="color:var(--primary); font-weight:700;">support@issd.com</span></p>
              </div>
           </div>
+
+          <?php elseif ($role === 'lecturer'): ?>
+          <!-- Lecturer Guide Nav -->
+          <div class="col-md-3" style="background: #0f172a; border-right: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; height: 560px; overflow-y: auto;">
+             <div class="text-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <div style="width:64px; height:64px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius:20px; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:28px; box-shadow:0 10px 25px rgba(245, 158, 11, 0.3);">
+                   <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h5 class="fw-800" style="color:#fff; font-size:17px; margin:0;">Lecturer Guide</h5>
+                <p class="text-muted" style="font-size:11px; opacity:0.6;">Version 1.0.0</p>
+             </div>
+             <div class="nav flex-column nav-pills help-nav" id="v-pills-tab" role="tablist">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-lec-courses" type="button"><i class="fas fa-book-open"></i> My Courses</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-lec-assignments" type="button"><i class="fas fa-file-alt"></i> Assignments</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-lec-students" type="button"><i class="fas fa-users"></i> Students</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-lec-payroll" type="button"><i class="fas fa-sack-dollar"></i> Finance & Payouts</button>
+             </div>
+          </div>
+          <!-- Lecturer Content Area -->
+          <div class="col-md-9 help-content-area" style="padding: 45px 50px; position:relative; height: 560px; overflow-y: auto; background: #fff;">
+             <button type="button" class="btn-close" data-bs-dismiss="modal" style="position:absolute; top:25px; right:25px; opacity: 0.5; transition: 0.3s;"></button>
+             <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="help-lec-courses">
+                   <h4 class="fw-800 mb-4" style="color:var(--primary);">My Courses</h4>
+                   <div class="help-section">
+                      <h6>1. Course Dashboard</h6>
+                      <p>Navigate to the <strong>My Courses</strong> tab to view all academic modules assigned to you by the administration. Clicking on a course provides an overview of the syllabus and the total student count.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>2. Student Engagement</h6>
+                      <p>Monitor the real-time active or completed status of your assigned batches. This helps in tailoring your lecture pace and identifying groups that need extra attention.</p>
+                   </div>
+                </div>
+                <div class="tab-pane fade" id="help-lec-assignments">
+                   <h4 class="fw-800 mb-4" style="color:var(--primary);">Assignments & Grading</h4>
+                   <div class="help-section">
+                      <h6>1. Creating Assignments</h6>
+                      <p>Go to <strong>Assignments > Add Assignment</strong>. You must select the target course, write comprehensive instructions, and attach any required reference materials (PDF, DOCX, ZIP files under 15MB).</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>2. Strict Deadlines</h6>
+                      <p>Always set a firm <strong>Due Date</strong>. The LMS automatically enforces this deadline, restricting late submissions to maintain academic discipline.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>3. Grading & Feedback Loops</h6>
+                      <p>When students submit their work, you will receive an instant dashboard notification. Navigate to <strong>Submissions</strong>, download their files, and enter a numerical mark alongside constructive feedback. Once saved, your feedback is immediately pushed to the student's personal portal.</p>
+                   </div>
+                </div>
+                <div class="tab-pane fade" id="help-lec-students">
+                   <h4 class="fw-800 mb-4" style="color:var(--primary);">Student Management</h4>
+                   <div class="help-section">
+                      <h6>1. Student Directory</h6>
+                      <p>Click <strong>My Students</strong> to access a complete, filterable roster of every student enrolled under your active courses. You can view their basic contact info to facilitate academic communication.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>2. Announcements</h6>
+                      <p>Utilize the <strong>Notice Board</strong> to post global announcements. This is the fastest way to communicate class rescheduling, exam tips, or resource links to your batches.</p>
+                   </div>
+                </div>
+                <div class="tab-pane fade" id="help-lec-payroll">
+                   <h4 class="fw-800 mb-4" style="color:var(--primary);">Finance & Payouts</h4>
+                   <div class="help-section">
+                      <h6>1. Payout Receipts</h6>
+                      <p>The system transparently tracks all compensation issued by the Admin. Whenever a payout is recorded to your account, you will receive an instant notification detailing the exact amount and the cleared month.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>2. Automated Reminders</h6>
+                      <p>You do not need to manually request payments. If the 20th of the month passes without a recorded payout, the LMS automatically alerts the Administrator to process your payroll.</p>
+                   </div>
+                </div>
+             </div>
+             <div class="mt-4 pt-4 text-center" style="border-top:1px solid #f1f5f9;">
+                <p class="text-muted mb-0" style="font-size:12px;">Need deeper assistance? Email <span style="color:var(--primary); font-weight:700;">support@issd.com</span></p>
+             </div>
+          </div>
+
+          <?php else: ?>
+          <!-- Student Guide Nav -->
+          <div class="col-md-3" style="background: #0f172a; border-right: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; height: 560px; overflow-y: auto;">
+             <div class="text-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <div style="width:64px; height:64px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius:20px; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:28px; box-shadow:0 10px 25px rgba(59, 130, 246, 0.3);">
+                   <i class="fas fa-user-graduate"></i>
+                </div>
+                <h5 class="fw-800" style="color:#fff; font-size:17px; margin:0;">Student Guide</h5>
+                <p class="text-muted" style="font-size:11px; opacity:0.6;">Version 1.0.0</p>
+             </div>
+             <div class="nav flex-column nav-pills help-nav" id="v-pills-tab" role="tablist">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#help-stu-courses" type="button"><i class="fas fa-book-open"></i> Courses</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-stu-assignments" type="button"><i class="fas fa-file-alt"></i> Assignments</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-stu-payments" type="button"><i class="fas fa-money-bill-wave"></i> Payments</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#help-stu-notices" type="button"><i class="fas fa-bell"></i> Alerts & Notices</button>
+             </div>
+          </div>
+          <!-- Student Content Area -->
+          <div class="col-md-9 help-content-area" style="padding: 45px 50px; position:relative; height: 560px; overflow-y: auto; background: #fff;">
+             <button type="button" class="btn-close" data-bs-dismiss="modal" style="position:absolute; top:25px; right:25px; opacity: 0.5; transition: 0.3s;"></button>
+             <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="help-stu-courses">
+                   <h4 class="fw-800 mb-4" style="color:var(--primary);">My Courses</h4>
+                   <div class="help-section">
+                      <h6>1. Course Library</h6>
+                      <p>Navigate to the <strong>My Courses</strong> tab to view your enrolled programs. Here you can find details about the curriculum and your assigned lecturers.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>2. Lecturer Information</h6>
+                      <p>Each active course explicitly lists your assigned lecturer. You can await their specific module announcements on the Notice Board.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>3. Completion Status</h6>
+                      <p>Track your academic progression. Once you fulfill all coursework requirements, your status will transition from "Ongoing" to "Completed", and a digital Certificate of Completion will be logged by the Admin.</p>
+                   </div>
+                </div>
+                <div class="tab-pane fade" id="help-stu-assignments">
+                   <h4 class="fw-800 mb-4" style="color:var(--primary);">Assignments</h4>
+                   <div class="help-section">
+                      <h6>1. Viewing Tasks</h6>
+                      <p>Go to the <strong>Assignments</strong> section to see pending homework. Pay close attention to the <strong>Due Date</strong>; the system enforces strict deadlines and may block late submissions.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>2. Submitting Work</h6>
+                      <p>Click "Submit", upload your completed digital file (PDF, DOCX, ZIP formats up to 15MB are supported), and wait for the green confirmation toast.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>3. Grades & Feedback</h6>
+                      <p>The moment your Lecturer grades your work, an alert triggers in your notification bell. Click it to review your lecturer's comments, pinpoint areas for improvement, and see your final marks.</p>
+                   </div>
+                </div>
+                <div class="tab-pane fade" id="help-stu-payments">
+                   <h4 class="fw-800 mb-4" style="color:var(--primary);">Payments</h4>
+                   <div class="help-section">
+                      <h6>1. Payment Ledger</h6>
+                      <p>The <strong>Payments</strong> tab acts as a secure financial ledger. It tracks all your past tuition receipts, allowing you to verify your historical payment status at any time.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>2. Real-Time Balances</h6>
+                      <p>Your outstanding balance is calculated automatically based on your initial course fee and your payment history, ensuring complete financial transparency.</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>3. Automated Reminders</h6>
+                      <p>The system proactively sends you an alert <strong>5 days before</strong> a monthly installment is due, and another alert on the exact due date. Please do not ignore these alerts to avoid late penalties or account locks.</p>
+                   </div>
+                </div>
+                <div class="tab-pane fade" id="help-stu-notices">
+                   <h4 class="fw-800 mb-4" style="color:var(--primary);">Alerts & Notices</h4>
+                   <div class="help-section">
+                      <h6>1. Global Announcements</h6>
+                      <p>The dashboard <strong>Notice Board</strong> highlights critical, urgent alerts from the Administration or your Lecturers (e.g., holiday declarations, class cancellations, or schedule changes).</p>
+                   </div>
+                   <div class="help-section">
+                      <h6>2. The Notification Bell</h6>
+                      <p>Always check the 🔔 bell icon in the top right. It categorizes your personal alerts into tabs (All, Payments, System) so you instantly know when you've received a payment receipt, assignment grade, or new course enrollment.</p>
+                   </div>
+                </div>
+             </div>
+             <div class="mt-4 pt-4 text-center" style="border-top:1px solid #f1f5f9;">
+                <p class="text-muted mb-0" style="font-size:12px;">Need deeper assistance? Email <span style="color:var(--primary); font-weight:700;">support@issd.com</span></p>
+             </div>
+          </div>
+          <?php endif; ?>
         </div>
       </div>
     </div>
@@ -294,10 +444,107 @@ body.lms-dark-mode #notice-modal-badge {
         </div>
 
         <div class="modal-footer border-0 p-35 pt-0" style="padding:35px; padding-top:0;">
-            <button type="button" class="btn-lms btn-primary w-100 shadow-premium" data-bs-dismiss="modal" style="border-radius:16px; padding:14px; font-weight:800; letter-spacing:0.5px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(255,255,255,0.05);">
+            <button type="button" class="btn-lms btn-primary w-100 shadow-premium" onclick="markNoticeAsReadGlobal()" style="border-radius:16px; padding:14px; font-weight:800; letter-spacing:0.5px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(255,255,255,0.05);">
                 Acknowledge & Close
             </button>
         </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function markNoticeAsReadGlobal() {
+    const modalEl = document.getElementById('viewNoticeModal');
+    if (!modalEl) return;
+    
+    // Hide modal manually first for snappy feel
+    if (typeof bootstrap !== 'undefined') {
+        const bsModal = bootstrap.Modal.getInstance(modalEl);
+        if (bsModal) bsModal.hide();
+    }
+
+    // Prevent admins from accidentally marking notices as read during preview
+    if (window.location.pathname.includes('/admin/')) {
+        return;
+    }
+
+    const noticeId = modalEl.dataset.noticeId;
+    const isRead = modalEl.dataset.isRead === '1';
+
+    if (!noticeId || isRead) {
+        return;
+    }
+
+    // Immediately update UI to feel responsive
+    const premiumItem = document.querySelector(`.notice-premium-card[data-id="${noticeId}"]`);
+    if (premiumItem) {
+        premiumItem.dataset.isRead = '1';
+        premiumItem.classList.replace('is-unread', 'is-read');
+        const indicator = premiumItem.querySelector('.unread-indicator');
+        if (indicator) {
+            const readBadge = document.createElement('span');
+            readBadge.className = 'badge-lms success outline';
+            readBadge.style.cssText = 'font-size:9px; padding:2px 8px; border-radius:100px; font-weight:800; letter-spacing:0.5px;';
+            readBadge.textContent = 'READ';
+            indicator.parentNode.replaceChild(readBadge, indicator);
+        }
+    }
+
+    const dashItem = document.querySelector(`.notice-item-lms[data-id="${noticeId}"]`);
+    if (dashItem) {
+        dashItem.dataset.isRead = '1';
+        dashItem.classList.replace('is-unread', 'is-read');
+        const indicator = dashItem.querySelector('.unread-indicator');
+        if (indicator) {
+            indicator.outerHTML = `<span class="badge-lms success outline" style="font-size:8px; padding:1px 6px; border-radius:100px;">READ</span>`;
+        }
+    }
+
+    // Update Student Notices Card
+    const studentCard = document.querySelector(`.notice-card-clickable[data-real-id="${noticeId}"]`);
+    if (studentCard) {
+        studentCard.dataset.isRead = '1';
+        studentCard.classList.add('is-read');
+        studentCard.style.opacity = '0.6';
+        const header = studentCard.querySelector('div:first-child');
+        if (header && !header.querySelector('.db-green')) {
+            const badge = document.createElement('span');
+            badge.className = 'dark-badge db-green';
+            badge.style.background = 'rgba(34,197,94,0.1)';
+            badge.style.color = '#4ade80';
+            badge.innerHTML = '<i class="fas fa-check-circle"></i> READ';
+            const indicator = header.querySelector('.unread-indicator');
+            if (indicator) indicator.remove();
+            const newBadge = header.querySelector('.db-red');
+            if (newBadge) newBadge.remove();
+            header.insertBefore(badge, header.children[1]);
+        }
+    }
+
+    // Now send the fetch
+    const url = '<?= BASE_URL ?>/backend/notice_read.php';
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          notice_id: noticeId,
+          csrf_token: "<?= csrfToken() ?>"
+        })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('HTTP error ' + res.status);
+        return res.json();
+    })
+    .then(data => {
+        if (!data.success) {
+            alert("Backend Error: " + data.error);
+        }
+    })
+    .catch(err => {
+        alert("Fetch Failed! Please tell me this error: " + err.message + " | URL: " + url);
+    });
+}
+</script>
     </div>
   </div>
 </div>

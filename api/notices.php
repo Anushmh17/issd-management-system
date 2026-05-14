@@ -20,14 +20,14 @@ if ($action === 'readers' && $id > 0) {
             SELECT COALESCE(u.name, 'Unknown User') as name, 
                    COALESCE(u.role, 'student') as role, 
                    u.avatar, 
-                   rn.read_at
+                   DATE_FORMAT(rn.read_at, '%d %b, %h:%i %p') as read_at
             FROM read_notices rn
             LEFT JOIN users u ON u.id = rn.user_id
             WHERE rn.notice_id = ? 
               AND rn.user_id NOT LIKE 'L%' 
               AND (u.role != 'admin' OR u.role IS NULL)
             UNION ALL
-            SELECT l.name, 'lecturer' as role, l.photo as avatar, rn.read_at
+            SELECT l.name, 'lecturer' as role, l.photo as avatar, DATE_FORMAT(rn.read_at, '%d %b, %h:%i %p') as read_at
             FROM read_notices rn
             JOIN lecturers l ON l.id = SUBSTRING(rn.user_id, 2)
             WHERE rn.notice_id = ? AND rn.user_id LIKE 'L%'

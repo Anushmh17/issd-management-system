@@ -19,7 +19,7 @@ if (!isLoggedIn()) {
 }
 
 $user = currentUser();
-$userId = $user['id'];
+$userId = currentUserId();
 
 // Trigger sync if admin (Throttled to run only once every 15 minutes to improve performance)
 if (hasRole(ROLE_ADMIN)) {

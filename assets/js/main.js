@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const noticeModal = document.getElementById('viewNoticeModal');
   if (noticeModal) {
     document.addEventListener('click', function(e) {
-      const card = e.target.closest('.notice-card-clickable, .notice-item-lms');
+      const card = e.target.closest('.notice-card-clickable, .notice-item-lms, .notice-premium-card');
       if (!card) return;
 
       // Store notice data in modal
@@ -276,66 +276,8 @@ document.addEventListener('DOMContentLoaded', function () {
       bsModal.show();
     });
 
-    // Automatically mark as read when modal is closed
-    noticeModal.addEventListener('hidden.bs.modal', function() {
-      const noticeId = this.dataset.noticeId;
-      const isRead = this.dataset.isRead === '1';
-
-      if (!noticeId || isRead) return;
-
-      fetch(BASE_URL + '/backend/notice_read.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          notice_id: noticeId,
-          csrf_token: CSRF_TOKEN
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          // Update Lecturer Dashboard Item (if exists)
-          const lecturerItem = document.querySelector(`.notice-item-lms[data-id="${noticeId}"]`);
-          if (lecturerItem) {
-            lecturerItem.dataset.isRead = '1';
-            lecturerItem.classList.replace('is-unread', 'is-read');
-            lecturerItem.style.transition = 'all 0.5s ease';
-            lecturerItem.style.opacity = '0.7';
-            lecturerItem.style.transform = 'translateX(10px)';
-            const indicator = lecturerItem.querySelector('.unread-indicator');
-            if (indicator) {
-                const readBadge = document.createElement('span');
-                readBadge.className = 'badge-lms success outline';
-                readBadge.style.cssText = 'font-size:8px; padding:1px 6px; border-radius:100px;';
-                readBadge.textContent = 'READ';
-                indicator.parentNode.replaceChild(readBadge, indicator);
-            }
-          }
-
-          // Update Student Notices Card (if exists)
-          const studentCard = document.querySelector(`.notice-card-clickable[data-real-id="${noticeId}"]`);
-          if (studentCard) {
-            studentCard.dataset.isRead = '1';
-            studentCard.classList.add('is-read');
-            studentCard.style.opacity = '0.6';
-            const header = studentCard.querySelector('div:first-child');
-            if (header && !header.querySelector('.db-green')) {
-                const badge = document.createElement('span');
-                badge.className = 'dark-badge db-green';
-                badge.style.background = 'rgba(34,197,94,0.1)';
-                badge.style.color = '#4ade80';
-                badge.innerHTML = '<i class="fas fa-check-circle"></i> READ';
-                const indicator = header.querySelector('.unread-indicator');
-                if (indicator) indicator.remove();
-                const newBadge = header.querySelector('.db-red');
-                if (newBadge) newBadge.remove();
-                header.insertBefore(badge, header.children[1]);
-            }
-          }
-        }
-      })
-      .catch(err => console.error('Error marking notice as read:', err));
-    });
+    // Modal read logic has been migrated exclusively to markNoticeAsReadGlobal() in modals.php 
+    // to prevent session-lock race conditions and double-fetching.
   }
 
 });

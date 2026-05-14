@@ -254,6 +254,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
             <option value="">Source: All</option>
             <option value="Facebook" <?= $source==='Facebook' ? 'selected' : '' ?>>Facebook</option>
             <option value="WhatsApp" <?= $source==='WhatsApp' ? 'selected' : '' ?>>WhatsApp</option>
+            <option value="Website" <?= $source==='Website' ? 'selected' : '' ?>>Website</option>
             <option value="Walk-in" <?= $source==='Walk-in' ? 'selected' : '' ?>>Walk-in</option>
             <option value="Other" <?= $source==='Other' ? 'selected' : '' ?>>Other</option>
           </select>

@@ -11,7 +11,7 @@ $initial = strtoupper(substr($uname, 0, 1));
 // Notifications Initialization
 require_once dirname(__DIR__) . '/backend/notification_controller.php';
 if (!isset($pdo)) require_once dirname(__DIR__) . '/backend/db.php';
-$recentNotifs = getRecentNotifications($pdo, (int)$user['id'], $role);
+$recentNotifs = getRecentNotifications($pdo, currentUserId(), $role);
 $unreadNotifs = array_filter($recentNotifs, function($n) { return !($n['is_read'] ?? false); });
 $notifCount    = count($unreadNotifs);
 
@@ -55,6 +55,9 @@ $navItems = match($role) {
 
 $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Student'];
 ?>
+
+<!-- app-wrapper -->
+<div id="app-wrapper">
 
 <!-- Overlay (mobile) -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -176,7 +179,7 @@ $roleLabels = ['admin'=>'Administrator','lecturer'=>'Lecturer','student'=>'Stude
 
       <!-- Real-time Notifications Script: loaded from footer.php -->
       <!-- Help -->
-      <button class="navbar-icon-btn" title="Help" data-bs-toggle="modal" data-bs-target="#helpGuideModal">
+      <button class="navbar-icon-btn" title="Help Guide" data-bs-toggle="modal" data-bs-target="#helpGuideModal">
         <i class="fas fa-circle-question"></i>
       </button>
       <!-- User dropdown -->

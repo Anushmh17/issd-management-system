@@ -118,7 +118,7 @@ require_once dirname(__DIR__, 3) . '/includes/sidebar.php';
       <?php endif; ?>
     </div>
   </div>
-</div>
+</div><!-- /#page-content -->
 
-<?php require_once dirname(__DIR__, 3) . '/includes/footer.php'; ?>
+1'; ?>
 

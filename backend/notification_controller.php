@@ -8,7 +8,7 @@ require_once __DIR__ . '/db.php';
 /**
  * Add a persistent notification
  */
-function addNotification(PDO $pdo, ?int $userId, string $type, string $title, string $message, ?string $link = null) {
+function addNotification(PDO $pdo, ?string $userId, string $type, string $title, string $message, ?string $link = null) {
     $stmt = $pdo->prepare("
         INSERT INTO notifications (user_id, type, title, message, link)
         VALUES (?, ?, ?, ?, ?)
@@ -27,16 +27,24 @@ function markAsRead(PDO $pdo, int $id) {
 /**
  * Mark all notifications as read for a user
  */
-function markAllAsRead(PDO $pdo, ?int $userId) {
-    $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE (user_id = ? OR user_id IS NULL) AND status = 'unread'");
+function markAllAsRead(PDO $pdo, ?string $userId, string $role = 'student') {
+    if ($role === 'admin') {
+        $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE (user_id = ? OR user_id IS NULL) AND status = 'unread'");
+    } else {
+        $stmt = $pdo->prepare("UPDATE notifications SET status = 'read' WHERE user_id = ? AND status = 'unread'");
+    }
     return $stmt->execute([$userId]);
 }
 
 /**
  * Get notifications for a user with categorization
  */
-function getRecentNotifications(PDO $pdo, ?int $userId, string $role, string $category = 'all', int $limit = 15, bool $onlyUnread = false, bool $includeCleared = false) {
-    $sql = "SELECT * FROM notifications WHERE (user_id = ? OR user_id IS NULL)";
+function getRecentNotifications(PDO $pdo, ?string $userId, string $role, string $category = 'all', int $limit = 15, bool $onlyUnread = false, bool $includeCleared = false) {
+    if ($role === 'admin') {
+        $sql = "SELECT * FROM notifications WHERE (user_id = ? OR user_id IS NULL)";
+    } else {
+        $sql = "SELECT * FROM notifications WHERE user_id = ?";
+    }
     $params = [$userId];
 
     if (!$includeCleared) {
@@ -124,9 +132,12 @@ function getUrgentAlerts(PDO $pdo) {
 /**
  * Mark all read notifications as cleared (hidden from dropdown)
  */
-function clearReadNotifications(PDO $pdo, ?int $userId) {
-    // Clear notifications for this specific user OR global ones (user_id IS NULL) that are marked as read
-    $stmt = $pdo->prepare("UPDATE notifications SET is_cleared = 1 WHERE (user_id = ? OR user_id IS NULL) AND status = 'read'");
+function clearReadNotifications(PDO $pdo, ?string $userId, string $role = 'student') {
+    if ($role === 'admin') {
+        $stmt = $pdo->prepare("UPDATE notifications SET is_cleared = 1 WHERE (user_id = ? OR user_id IS NULL) AND status = 'read'");
+    } else {
+        $stmt = $pdo->prepare("UPDATE notifications SET is_cleared = 1 WHERE user_id = ? AND status = 'read'");
+    }
     return $stmt->execute([$userId]);
 }
 ?>

@@ -181,6 +181,18 @@ function addPayment(PDO $pdo, array $d): array {
         ]);
         $id = $pdo->lastInsertId();
 
+        // --- Notification Sync (Student) ---
+        $stQuery = $pdo->prepare("SELECT user_id, full_name FROM students WHERE id = ?");
+        $stQuery->execute([$studentId]);
+        $st = $stQuery->fetch();
+        if ($st && $st['user_id']) {
+            require_once __DIR__ . '/notification_controller.php';
+            $title = "Payment Received";
+            $msg = "We have received your payment of Rs. " . number_format($amountPaid, 2) . ". Thank you!";
+            $link = BASE_URL . "/frontend/student/payments.php";
+            addNotification($pdo, (string)$st['user_id'], 'payment', $title, $msg, $link);
+        }
+
         // --- Activity Log ---
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'payment_received', "Payment of Rs. " . number_format($amountPaid, 0) . " from Student ID: " . $studentId);
@@ -283,6 +295,13 @@ function addLecturerPayment(PDO $pdo, array $d): array {
             INSERT INTO lecturer_payments (lecturer_id, amount, payment_month, payment_date, status, notes)
             VALUES (?, ?, ?, NOW(), 'paid', ?)
         ")->execute([$lecturerId, $amount, $paymentMonth, $notes]);
+        
+        // --- Notification Sync (Lecturer) ---
+        require_once __DIR__ . '/notification_controller.php';
+        $title = "Payment Received";
+        $msg = "You have received a payout of Rs. " . number_format($amount, 2) . " for " . date('F Y', strtotime($paymentMonth . '-01')) . ".";
+        addNotification($pdo, 'L' . $lecturerId, 'payment', $title, $msg);
+
         // --- Activity Log ---
         require_once dirname(__DIR__) . '/includes/auth.php';
         logActivity($_SESSION['user_id'] ?? null, 'lecturer_payout', "Payout of Rs. " . number_format($amount, 0) . " to Lecturer ID: " . $lecturerId);

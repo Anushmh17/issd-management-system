@@ -82,7 +82,7 @@ while($row = $stmtLeads->fetch()) {
         'color' => '#f43f5e',
         'time'  => date('h:i A', strtotime($row['time'])),
         'title' => "Call " . $row['name'],
-        'desc'  => $row['phone'] . ($row['notes'] ? " • " . $row['notes'] : ""),
+        'desc'  => $row['phone'] . ($row['notes'] ? " â€¢ " . $row['notes'] : ""),
         'link'  => BASE_URL . "/admin/leads/index.php?highlight_id=" . $row['id'],
         'phone' => $row['phone'],
         'category' => 'lead'
@@ -100,7 +100,7 @@ while($row = $stmtStudents->fetch()) {
         'color' => '#6366f1',
         'time'  => 'Today',
         'title' => "Follow up: " . $row['full_name'],
-        'desc'  => $row['phone_number'] . ($row['follow_up_note'] ? " • " . $row['follow_up_note'] : ""),
+        'desc'  => $row['phone_number'] . ($row['follow_up_note'] ? " â€¢ " . $row['follow_up_note'] : ""),
         'link'  => BASE_URL . "/admin/students/index.php?highlight_id=" . $row['id'],
         'phone' => $row['phone_number'],
         'category' => 'student'
@@ -125,7 +125,7 @@ while($row = $stmtPayments->fetch()) {
         'color' => '#10b981',
         'time'  => 'URGENT',
         'title' => "Collection: " . $row['full_name'],
-        'desc'  => $row['course_name'] . " • Rs. " . number_format($row['total_due'], 0),
+        'desc'  => $row['course_name'] . " â€¢ Rs. " . number_format($row['total_due'], 0),
         'link'  => BASE_URL . "/admin/finance/index.php?highlight_id=" . $row['id'],
         'category' => 'payment'
     ];
@@ -191,7 +191,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     overflow: hidden;
   }
   .bento-card:hover {
-    top: -4px;
+    transform: translateY(-5px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     border-color: var(--accent-indigo);
   }
@@ -249,7 +249,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       position: relative !important;
     }
 
-    /* Show illustration but dimmed — overlay via pseudo-element */
+    /* Show illustration but dimmed â€” overlay via pseudo-element */
     .hero-card::after {
       content: '' !important;
       position: absolute !important;
@@ -274,7 +274,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       animation: floatIllustration 6s ease-in-out infinite !important;
     }
 
-    /* Clock: anchor inside card, top-right — above overlay */
+    /* Clock: anchor inside card, top-right â€” above overlay */
     .hero-card .hero-clock {
       position: absolute !important;
       top: 10px !important;
@@ -894,7 +894,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         <span class="action-label">New Course</span>
         <span class="action-sub">Expand Catalog</span>
       </a>
-      <a href="<?= BASE_URL ?>/admin/notices.php" class="action-btn btn-notice">
+      <a href="<?= BASE_URL ?>/frontend/admin/notices.php" class="action-btn btn-notice">
         <i class="fas fa-bullhorn"></i>
         <span class="action-label">Post Notice</span>
         <span class="action-sub">Announcements</span>
@@ -905,38 +905,38 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   <!-- STATS -->
   <div class="bento-card span-3">
     <div class="stat-header">
-      <div class="stat-icon indigo"><i class="fas fa-users"></i></div>
+    <div class="stat-icon indigo"><i class="fas fa-users"></i></div>
       <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 12.5%</div>
     </div>
-    <div class="stat-value"><?= number_format($total_students) ?></div>
-    <div class="stat-label">Total Students</div>
+      <div class="stat-value"><?= number_format($total_students) ?></div>
+      <div class="stat-label">Total Students</div>
   </div>
 
   <div class="bento-card span-3">
     <div class="stat-header">
-      <div class="stat-icon emerald"><i class="fas fa-user-check"></i></div>
+    <div class="stat-icon emerald"><i class="fas fa-user-check"></i></div>
       <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 4.2%</div>
     </div>
-    <div class="stat-value"><?= number_format($active_students) ?></div>
-    <div class="stat-label">Active Learners</div>
+      <div class="stat-value"><?= number_format($active_students) ?></div>
+      <div class="stat-label">Active Learners</div>
   </div>
 
   <a href="<?= BASE_URL ?>/admin/finance/index.php" class="bento-card span-3 text-decoration-none">
     <div class="stat-header">
-      <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+    <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
       <div class="stat-trend trend-neutral"><i class="fas fa-minus"></i> Low</div>
     </div>
-    <div class="stat-value"><?= $pending_payments ?></div>
-    <div class="stat-label">Pending Payments</div>
+      <div class="stat-value"><?= $pending_payments ?></div>
+      <div class="stat-label">Pending Payments</div>
   </a>
 
   <a href="<?= BASE_URL ?>/admin/finance/index.php" class="bento-card span-3 text-decoration-none">
     <div class="stat-header">
-      <div class="stat-icon rose"><i class="fas fa-wallet"></i></div>
+    <div class="stat-icon rose"><i class="fas fa-wallet"></i></div>
       <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 18%</div>
     </div>
-    <div class="stat-value">Rs. <?= number_format($monthly_revenue/1000, 0) ?>k</div>
-    <div class="stat-label">Monthly Revenue</div>
+      <div class="stat-value">Rs. <?= number_format($monthly_revenue/1000, 0) ?>k</div>
+      <div class="stat-label">Monthly Revenue</div>
   </a>
 
 
@@ -1329,8 +1329,8 @@ foreach ($checkStudents as $cs) {
        <?php endif; ?>
     </div>
   </div>
-
 </div>
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+

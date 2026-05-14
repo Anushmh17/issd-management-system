@@ -152,7 +152,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
       </div>
     </div>
   </form>
-</div>
+</div><!-- /#page-content -->
 
-<?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>
+1'; ?>
 

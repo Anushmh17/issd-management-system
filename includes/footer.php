@@ -89,7 +89,7 @@ function showToast(type, message, title = '') {
   const BASE_URL = "<?= BASE_URL ?>";
   const CSRF_TOKEN = "<?= csrfToken() ?>";
 </script>
-<script src="<?= BASE_URL ?>/assets/js/main.js?v=2.1"></script>
+<script src="<?= BASE_URL ?>/assets/js/main.js?v=2.3"></script>
 <script src="<?= BASE_URL ?>/assets/js/notifications.js"></script>
 
 <?php if (isset($extraJS)) echo $extraJS; ?>

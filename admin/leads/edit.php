@@ -122,6 +122,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               <select name="source" class="form-control-lms">
                 <option value="Facebook" <?= $form['source']==='Facebook'?'selected':'' ?>>Facebook</option>
                 <option value="WhatsApp" <?= $form['source']==='WhatsApp'?'selected':'' ?>>WhatsApp</option>
+                <option value="Website" <?= $form['source']==='Website'?'selected':'' ?>>Website</option>
                 <option value="Walk-in" <?= $form['source']==='Walk-in'?'selected':'' ?>>Walk-in</option>
                 <option value="Other" <?= $form['source']==='Other'?'selected':'' ?>>Other</option>
               </select>

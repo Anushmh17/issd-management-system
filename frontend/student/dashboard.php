@@ -204,7 +204,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               ?>
               <li class="dark-list-item" style="padding:12px 16px;">
                 <div style="flex:1;">
-                  <a href="submit.php?id=<?= $a['id'] ?>" style="color:#fff; text-decoration:none; font-weight:600; font-size:14px; display:block; margin-bottom:4px;"><?= htmlspecialchars($a['title']) ?></a>
+                  <a href="assignments/submit.php?id=<?= $a['id'] ?>" style="color:#fff; text-decoration:none; font-weight:600; font-size:14px; display:block; margin-bottom:4px;"><?= htmlspecialchars($a['title']) ?></a>
                   <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div class="item-sub"><?= htmlspecialchars($a['course']) ?></div>
                     <span class="dark-badge <?= $a['is_submitted'] ? 'db-green' : ($isNear ? 'db-red' : 'db-gray') ?>" style="font-size:9px;">

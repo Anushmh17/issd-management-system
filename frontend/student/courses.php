@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // =====================================================
 // ISSD Management - Student: My Courses (Soft UI)
 // =====================================================
@@ -92,6 +92,4 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     </div>
 
   </div>
-</div>
-
 <?php require_once dirname(__DIR__, 2) . '/includes/footer.php'; ?>

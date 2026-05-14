@@ -55,7 +55,7 @@
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10), 0 20px 48px rgba(0, 0, 0, 0.12);
   --shadow-premium: 0 20px 50px rgba(30, 77, 77, 0.1);
 
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   --glass: rgba(255, 255, 255, 0.7);
   --glass-blur: blur(12px);
 
@@ -157,14 +157,6 @@ body::before {
 }
 
 /* --- Container --- */
-0% {
-  background-position: 0% 0%;
-}
-
-100% {
-  background-position: 100% 100%;
-}
-}
 
 a,
 a:hover,
@@ -223,14 +215,20 @@ img {
 }
 
 #page-footer {
-  padding: 24px 32px;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(15px);
-  border-top: 1px solid rgba(13, 58, 67, 0.06);
+  padding: 30px 32px;
+  background: transparent;
   text-align: center;
   color: var(--text-muted);
   font-size: 13px;
   margin-top: auto;
+  border-top: 1px solid rgba(13, 58, 67, 0.05);
+  position: relative;
+  z-index: 5;
+}
+
+#page-footer strong {
+  color: var(--primary);
+  font-weight: 700;
 }
 
 /* =====================================================
@@ -747,11 +745,10 @@ img {
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  top: 0;
 }
 
 .card-lms:hover {
-  top: -5px;
+  transform: translateY(-5px);
   border-color: var(--accent);
   box-shadow: 0 8px 24px rgba(30, 77, 77, 0.12), 0 24px 48px rgba(30, 77, 77, 0.12);
 }
@@ -1018,8 +1015,9 @@ img {
 }
 
 .glass-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  border-color: var(--primary);
 }
 
 .glass-card-title {
@@ -1176,34 +1174,49 @@ img {
 
 .stat-card {
   background: var(--bg-card);
-  border-radius: 16px;
-  padding: 12px 16px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 20px;
+  padding: 18px 24px;
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
   border: 1.5px solid var(--border-color);
   display: flex;
   align-items: center;
-  gap: 12px;
-  transition: var(--transition);
+  gap: 16px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  top: 0;
   overflow: hidden;
+  z-index: 1;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle at 100% 0%, var(--sc-color, var(--primary)), transparent 70%);
+  opacity: 0.12;
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
 .stat-card::after {
   content: '';
   position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 80px;
-  height: 80px;
+  bottom: -20px;
+  left: -20px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: var(--sc-color, var(--primary));
-  opacity: 0.06;
+  opacity: 0.04;
+  z-index: -1;
 }
 
 .stat-card:hover {
-  top: -3px;
-  box-shadow: var(--shadow-md);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   border-color: var(--sc-color, var(--primary));
 }
 
@@ -5118,7 +5131,7 @@ body.lms-dark-mode .stat-card {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-  background: radial-gradient(circle 250px at var(--x, 50%) var(--y, 50%), rgba(30, 77, 77, 0.05), transparent 100%);
+  background: radial-gradient(circle 50px at var(--x, 50%) var(--y, 50%), rgba(30, 77, 77, 0.05), transparent 100%);
   mix-blend-mode: multiply;
   transition: opacity 0.3s;
 }

@@ -195,6 +195,19 @@ function assignLecturer(PDO $pdo, int $courseId, int $lecturerId, ?string $date 
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE lecturer_id = VALUES(lecturer_id), assigned_date = VALUES(assigned_date)
         ")->execute([$courseId, $lecturerId, $date ?: date('Y-m-d')]);
+
+        // --- Notification Sync (Lecturer) ---
+        $info = $pdo->prepare("SELECT course_name FROM courses WHERE id = ?");
+        $info->execute([$courseId]);
+        $cName = $info->fetchColumn();
+        if ($cName) {
+            require_once __DIR__ . '/notification_controller.php';
+            $title = "Course Assignment";
+            $msg = "You have been assigned to teach: " . $cName;
+            $link = BASE_URL . "/frontend/lecturer/courses.php";
+            addNotification($pdo, 'L' . $lecturerId, 'enrollment', $title, $msg, $link);
+        }
+
         return ['success' => true];
     } catch (PDOException $e) {
         error_log('assignLecturer: ' . $e->getMessage());
@@ -244,6 +257,24 @@ function assignStudentToCourse(PDO $pdo, int $studentId, int $courseId, array $d
             !empty($data['start_date']) ? $data['start_date'] : date('Y-m-d'),
             !empty($data['end_date'])   ? $data['end_date']   : null,
         ]);
+
+        // --- Notification Sync (Student) ---
+        $info = $pdo->prepare("
+            SELECT s.user_id, c.course_name 
+            FROM students s 
+            CROSS JOIN courses c 
+            WHERE s.id = ? AND c.id = ?
+        ");
+        $info->execute([$studentId, $courseId]);
+        $enrollInfo = $info->fetch();
+        if ($enrollInfo && $enrollInfo['user_id']) {
+            require_once __DIR__ . '/notification_controller.php';
+            $title = "Course Enrollment";
+            $msg = "You have been successfully enrolled in: " . $enrollInfo['course_name'];
+            $link = BASE_URL . "/frontend/student/courses.php";
+            addNotification($pdo, (string)$enrollInfo['user_id'], 'enrollment', $title, $msg, $link);
+        }
+
         return ['success' => true];
     } catch (PDOException $e) {
         error_log('assignStudentToCourse: ' . $e->getMessage());

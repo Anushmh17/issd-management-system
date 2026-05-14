@@ -162,43 +162,39 @@ $highlightId = (int)($_GET['highlight_id'] ?? 0);
 
     <div class="row g-4 mb-20">
         <div class="col-md-3">
-            <div class="bento-card">
-                <div class="stat-header">
-                    <div class="stat-icon emerald"><i class="fas fa-wallet"></i></div>
-                    <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> Collected</div>
+            <div class="stat-card" style="--sc-color: var(--accent-emerald);">
+                <div class="stat-icon emerald"><i class="fas fa-wallet"></i></div>
+                <div class="stat-body">
+                    <div class="stat-value">Rs. <?= number_format($stats['monthly_income'] / 1000, 1) ?>k</div>
+                    <div class="stat-label">Income (<?= date('M') ?>)</div>
                 </div>
-                <div class="stat-value">Rs. <?= number_format($stats['monthly_income'] / 1000, 1) ?>k</div>
-                <div class="stat-label">Income (<?= date('M') ?>)</div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="bento-card">
-                <div class="stat-header">
-                    <div class="stat-icon rose"><i class="fas fa-hand-holding-dollar"></i></div>
-                    <div class="stat-trend trend-down"><i class="fas fa-clock"></i> Pending</div>
+            <div class="stat-card" style="--sc-color: var(--accent-rose);">
+                <div class="stat-icon rose"><i class="fas fa-hand-holding-dollar"></i></div>
+                <div class="stat-body">
+                    <div class="stat-value">Rs. <?= number_format($stats['total_outstanding'] / 1000, 1) ?>k</div>
+                    <div class="stat-label">Total Receivables</div>
                 </div>
-                <div class="stat-value">Rs. <?= number_format($stats['total_outstanding'] / 1000, 1) ?>k</div>
-                <div class="stat-label">Total Receivables</div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="bento-card">
-                <div class="stat-header">
-                    <div class="stat-icon amber"><i class="fas fa-clock-rotate-left"></i></div>
-                    <div class="stat-trend trend-neutral"><i class="fas fa-exclamation-triangle"></i> 7 Days</div>
+            <div class="stat-card" style="--sc-color: var(--accent-amber);">
+                <div class="stat-icon amber"><i class="fas fa-clock-rotate-left"></i></div>
+                <div class="stat-body">
+                    <div class="stat-value"><?= count($upcomingItems) ?></div>
+                    <div class="stat-label">Upcoming Dues</div>
                 </div>
-                <div class="stat-value"><?= count($upcomingItems) ?></div>
-                <div class="stat-label">Upcoming Dues</div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="bento-card">
-                <div class="stat-header">
-                    <div class="stat-icon indigo"><i class="fas fa-receipt"></i></div>
-                    <div class="stat-trend trend-up"><i class="fas fa-check-circle"></i> Done</div>
+            <div class="stat-card" style="--sc-color: var(--accent-indigo);">
+                <div class="stat-icon indigo"><i class="fas fa-receipt"></i></div>
+                <div class="stat-body">
+                    <div class="stat-value">Rs. <?= number_format($stats['monthly_expense'] / 1000, 1) ?>k</div>
+                    <div class="stat-label">Total Payouts</div>
                 </div>
-                <div class="stat-value">Rs. <?= number_format($stats['monthly_expense'] / 1000, 1) ?>k</div>
-                <div class="stat-label">Total Payouts</div>
             </div>
         </div>
     </div>
