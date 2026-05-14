@@ -42,6 +42,23 @@ $pendingAssignments->execute([$studentId, $studentId]); $pendingAssignments = $p
 $payments = $pdo->prepare("SELECT p.payment_date as paid_date, c.course_name AS course, p.amount_paid as amount, p.method, p.status FROM student_payments p JOIN courses c ON c.id=p.course_id WHERE p.student_id=? ORDER BY p.created_at DESC LIMIT 5");
 $payments->execute([$studentId]); $payments = $payments->fetchAll();
 
+// Activity Graph Data (Last 7 Days)
+$activityData = [];
+$totalActivity = 0;
+for ($i = 6; $i >= 0; $i--) {
+    $dateStr = date('Y-m-d', strtotime("-$i days"));
+    $activityData[$dateStr] = ['count' => 0, 'day' => date('D', strtotime($dateStr))];
+}
+$actStmt = $pdo->prepare("SELECT DATE(created_at) as act_date, COUNT(*) as cnt FROM activity_log WHERE user_id=? AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) GROUP BY DATE(created_at)");
+$actStmt->execute([$userId]);
+foreach ($actStmt->fetchAll() as $row) {
+    if (isset($activityData[$row['act_date']])) {
+        $activityData[$row['act_date']]['count'] = (int)$row['cnt'];
+        $totalActivity += (int)$row['cnt'];
+    }
+}
+$maxAct = max(1, max(array_column($activityData, 'count'))); // avoid division by zero
+
 $notices = $pdo->prepare("
   SELECT n.id, n.title, n.content, n.created_at, u.name as posted_by_name
   FROM notices n 
@@ -70,13 +87,13 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     <div class="dark-grid-4">
       
       <div class="glass-card">
-        <div class="stat-icon" style="background:rgba(59, 130, 246, 0.1); color:#60a5fa;"><i class="fas fa-book-open"></i></div>
+        <div class="stat-icon indigo"><i class="fas fa-book-open"></i></div>
         <div class="stat-val"><?= $myCourses ?></div>
         <div class="stat-lbl">Active Courses</div>
       </div>
       
       <div class="glass-card">
-        <div class="stat-icon" style="background:rgba(34, 197, 94, 0.1); color:#4ade80;"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-icon emerald"><i class="fas fa-check-circle"></i></div>
         <div class="stat-val"><?= $submitted ?></div>
         <div class="stat-lbl">Tasks Completed</div>
       </div>
@@ -87,7 +104,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         
         <div style="display:flex; justify-content:space-between; align-items:center; height:100%;">
           <div>
-            <div class="stat-icon" style="background:rgba(239, 68, 68, 0.1); color:#f87171; margin-bottom:8px;"><i class="fas fa-wallet"></i></div>
+            <div class="stat-icon rose" style="margin-bottom:8px;"><i class="fas fa-wallet"></i></div>
             <div class="stat-lbl" style="margin-bottom:4px;">Outstanding Balance</div>
             <div class="stat-val">Rs. <?= number_format($totalBalance, 0) ?></div>
           </div>
@@ -219,19 +236,33 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
         </div>
 
         <!-- Activity Graph Mock -->
-        <div class="glass-card">
-          <div class="glass-card-title" style="font-size:13px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Activity Graph</div>
-          <div class="chart-mock">
-            <div class="chart-bar" style="height:40%;"></div>
-            <div class="chart-bar" style="height:70%;"></div>
-            <div class="chart-bar" style="height:30%;"></div>
-            <div class="chart-bar active" style="height:90%;"></div>
-            <div class="chart-bar" style="height:50%;"></div>
-            <div class="chart-bar" style="height:60%;"></div>
-            <div class="chart-bar" style="height:20%;"></div>
+        <div class="glass-card" style="position: relative;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+            <div class="glass-card-title" style="font-size:13px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin:0;">Learning Activity</div>
+            <div style="font-size:11px; color:#22d3ee; font-weight:600;">Past 7 Days: <?= $totalActivity ?> Actions</div>
           </div>
-          <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; color:#475569; margin-top:8px; text-transform:uppercase; padding:0 4px;">
-            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          
+          <!-- Gridlines -->
+          <div style="position:absolute; left:20px; right:20px; top:40px; bottom:30px; pointer-events:none; display:flex; flex-direction:column; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="border-top:1px dashed rgba(255,255,255,0.05); width:100%;"></div>
+            <div style="border-top:1px dashed rgba(255,255,255,0.05); width:100%;"></div>
+            <div style="border-top:1px dashed rgba(255,255,255,0.05); width:100%;"></div>
+          </div>
+
+          <div class="chart-mock" style="position:relative; z-index:1; height:120px; margin-top:20px;">
+            <?php foreach($activityData as $date => $data): 
+                $heightPct = ($data['count'] / $maxAct) * 100;
+                // Minimum height of 5% just so the bar is slightly visible
+                $heightPct = max(5, $heightPct);
+                $isToday = ($date === date('Y-m-d'));
+            ?>
+            <div class="chart-bar <?= $isToday ? 'active' : '' ?>" style="height:<?= $heightPct ?>%; cursor:help;" title="<?= $data['count'] ?> actions on <?= date('M d', strtotime($date)) ?>"></div>
+            <?php endforeach; ?>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; color:#475569; margin-top:8px; text-transform:uppercase; padding:0 4px; position:relative; z-index:1;">
+            <?php foreach($activityData as $date => $data): ?>
+            <span><?= $data['day'] ?></span>
+            <?php endforeach; ?>
           </div>
         </div>
 

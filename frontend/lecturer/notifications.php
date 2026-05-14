@@ -119,16 +119,22 @@ function markRead(id) {
 }
 
 function clearRead() {
-    if (!confirm('Are you sure you want to clear all read notifications from history?')) return;
-    const formData = new FormData();
-    formData.append('csrf_token', '<?= csrfToken() ?>');
-    fetch('<?= BASE_URL ?>/api/notifications.php?action=clear', {
-        method: 'POST',
-        body: formData
-    })
-    .then(resp => resp.json())
-    .then(data => {
-        if (data.success) window.location.reload();
+    lmsConfirm('Are you sure you want to clear all read notifications from history?', {
+        title: 'Clear History',
+        type: 'danger',
+        confirmText: 'Yes, Clear',
+        onConfirm: function() {
+            const formData = new FormData();
+            formData.append('csrf_token', '<?= csrfToken() ?>');
+            fetch('<?= BASE_URL ?>/api/notifications.php?action=clear', {
+                method: 'POST',
+                body: formData
+            })
+            .then(resp => resp.json())
+            .then(data => {
+                if (data.success) window.location.reload();
+            });
+        }
     });
 }
 </script>
