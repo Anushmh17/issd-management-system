@@ -188,7 +188,11 @@ function assignLecturer(PDO $pdo, int $courseId, int $lecturerId, ?string $date 
     if (!$courseId || !$lecturerId) {
         return ['success' => false, 'errors' => ['Course and lecturer are required.']];
     }
+    $inTransaction = false;
     try {
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
+
         // Upsert: insert or update the assignment for this course
         $pdo->prepare("
             INSERT INTO course_assignments (course_id, lecturer_id, assigned_date)
@@ -208,8 +212,10 @@ function assignLecturer(PDO $pdo, int $courseId, int $lecturerId, ?string $date 
             addNotification($pdo, 'L' . $lecturerId, 'enrollment', $title, $msg, $link);
         }
 
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('assignLecturer: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to assign lecturer.']];
     }
@@ -246,7 +252,11 @@ function assignStudentToCourse(PDO $pdo, int $studentId, int $courseId, array $d
         return ['success' => false, 'errors' => ['Student is already enrolled in this course.']];
     }
 
+    $inTransaction = false;
     try {
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
+
         $pdo->prepare("
             INSERT INTO student_courses (student_id, course_id, start_date, end_date, status)
             VALUES (?, ?, ?, ?, 'ongoing')
@@ -275,8 +285,10 @@ function assignStudentToCourse(PDO $pdo, int $studentId, int $courseId, array $d
             addNotification($pdo, (string)$enrollInfo['user_id'], 'enrollment', $title, $msg, $link);
         }
 
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('assignStudentToCourse: ' . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to enroll student.']];
     }

@@ -56,8 +56,10 @@ function addCertificate(PDO $pdo, array $d, ?array $file = null): array {
         }
     }
 
+    $inTransaction = false;
     try {
-        $pdo->beginTransaction();
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) $pdo->beginTransaction();
 
         $pdo->prepare("
             INSERT INTO certificates (student_id, certificate_number, issue_date, is_provided, intern_document)
@@ -72,10 +74,10 @@ function addCertificate(PDO $pdo, array $d, ?array $file = null): array {
         // Same for generic enrollments table if exists
         $pdo->prepare("UPDATE enrollments SET status = 'completed' WHERE student_id = ? AND status = 'active'")->execute([$studentId]);
 
-        $pdo->commit();
+        if (!$inTransaction) $pdo->commit();
         return ['success' => true];
     } catch (PDOException $e) {
-        $pdo->rollBack();
+        if (!$inTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log("addCertificate: " . $e->getMessage());
         return ['success' => false, 'errors' => ['Failed to add certificate.']];
     }
