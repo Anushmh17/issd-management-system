@@ -616,13 +616,10 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
   /* Premium Table */
   .premium-table thead th { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; padding: 15px 20px; border: none; }
   .doc-row { transition: background 0.2s; }
-  .doc-row:hover { }
-  .doc-row.completed { }
   .doc-row.missing-req { border-left: 4px solid var(--premium-danger); }
   
   .doc-info { display: flex; align-items: center; gap: 15px; padding: 12px 0; }
   .doc-icon-box { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .doc-row.completed .doc-icon-box { }
   .doc-text { display: flex; flex-direction: column; }
   .doc-label { font-weight: 700; font-size: 14px; }
   .doc-sub { font-size: 11px; font-weight: 500; }
@@ -640,8 +637,6 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
     padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 600; 
     cursor: pointer; transition: all 0.2s; width: fit-content;
   }
-  .upload-btn:hover { }
-  .doc-row.completed .upload-btn { }
   .file-status-text { font-size: 10px; font-weight: 500; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* Pretty Checkbox */

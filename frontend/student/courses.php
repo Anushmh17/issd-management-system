@@ -60,7 +60,7 @@ require_once dirname(__DIR__, 2) . '/includes/sidebar.php';
               </div>
 
               <h3 style="font-size:18px; font-weight:700; margin:0 0 12px 0; line-height:1.4; color:inherit;"><?= htmlspecialchars($c['title']) ?></h3>
-              <div style="font-size:13.5px; line-height:1.6; margin:0 0 24px 0; flex:1; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; opacity:0.8;">
+              <div style="font-size:13.5px; line-height:1.6; margin:0 0 24px 0; flex:1; display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; opacity:0.8;">
                   <?= htmlspecialchars($c['description'] ?? 'Course materials and syllabus details are available in the portal.') ?>
               </div>
               

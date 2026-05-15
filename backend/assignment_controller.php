@@ -35,9 +35,8 @@ function uploadAssignmentFile(array $file, string $prefix = 'ASM'): array {
                      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                      'application/zip','application/x-zip-compressed',
                      'application/x-rar-compressed','application/octet-stream'];
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mime  = finfo_file($finfo, $file['tmp_name']);
-    finfo_close($finfo);
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime  = $finfo->file($file['tmp_name']);
     if (!in_array($mime, $allowedMimes, true)) {
         return ['success' => false, 'error' => 'Invalid MIME type detected. Only PDF, DOCX, ZIP, RAR allowed.'];
     }
@@ -67,6 +66,7 @@ function addAssignment(PDO $pdo, int $lecturerId, array $d, ?array $file = null)
         $filePath = $up['path'];
     }
 
+    $inTransaction = false;
     try {
         $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();
@@ -223,7 +223,9 @@ function getAssignmentForStudent(PDO $pdo, int $assignmentId, int $userId): ?arr
 function submitAssignment(PDO $pdo, int $studentId, int $assignmentId, array $file): array {
     if (empty($file['name'])) return ['success' => false, 'errors' => ['File is required to submit.']];
 
+    $inTransaction = false;
     try {
+        $inTransaction = $pdo->inTransaction();
         // H5: verify that the student is actually enrolled in the course that owns this assignment
         $check = $pdo->prepare("
             SELECT a.id 
@@ -240,7 +242,6 @@ function submitAssignment(PDO $pdo, int $studentId, int $assignmentId, array $fi
         $up = uploadAssignmentFile($file, 'SUB_' . $studentId);
         if (!$up['success']) return ['success' => false, 'errors' => [$up['error']]];
 
-        $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();
 
         // H4: delete old submission file from disk before overwriting the DB record

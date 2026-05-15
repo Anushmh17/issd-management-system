@@ -277,7 +277,6 @@ body.lms-dark-mode .table-lms td {
   .info-item span { font-size: 13px; font-weight: 700; color: var(--dark); }
   .action-menu-item { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); background: #fff; text-decoration: none; color: inherit; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
   .action-menu-item i { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(91,78,250,0.1); color: var(--primary); border-radius: 8px; font-size: 14px; }
-}
 </style>
 
 <div id="page-content">

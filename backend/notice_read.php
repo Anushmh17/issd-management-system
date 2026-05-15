@@ -6,7 +6,7 @@ require_once __DIR__ . '/../includes/auth.php';
 header('Content-Type: application/json');
 
 $logFile = dirname(__DIR__) . '/read_log.txt';
-function debugLog($msg) {
+function debugLog(string $msg) {
     global $logFile;
     file_put_contents($logFile, date('Y-m-d H:i:s') . " - " . $msg . "\n", FILE_APPEND);
 }

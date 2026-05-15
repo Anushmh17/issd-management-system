@@ -19,4 +19,4 @@ $result = file_get_contents($url, false, $context);
 echo "Result:\n";
 var_dump($result);
 echo "\nHeaders:\n";
-var_dump($http_response_header);
+var_dump($http_response_header ?? []);
