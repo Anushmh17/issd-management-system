@@ -101,8 +101,8 @@ function uploadLecturerPhoto(array $file, int $lecturerId): array {
         return ['success' => false, 'path' => null, 'error' => 'Invalid type. Use JPG, PNG, GIF or WebP.'];
     }
 
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mime  = finfo_file($finfo, $file['tmp_name']);
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime  = $finfo->file($file['tmp_name']);
     if (!in_array($mime, LECT_PHOTO_TYPES, true)) {
         return ['success' => false, 'path' => null, 'error' => 'Invalid MIME type.'];
     }
@@ -129,6 +129,7 @@ function addLecturer(PDO $pdo, array $d, ?array $photoFile = null): array {
                       ? round((float)$d['per_student_rate'], 2) : null;
     $courseId       = !empty($d['course_id']) ? (int)$d['course_id'] : null;
 
+    $inTransaction = false;
     try {
         // E3: check inTransaction before calling beginTransaction
         $inTransaction = $pdo->inTransaction();

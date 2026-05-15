@@ -99,8 +99,9 @@ function ensureDocUploadDir(): void {
 // Get or create the document row for a student
 // -------------------------------------------------------
 function getOrCreateDocRecord(PDO $pdo, int $studentId): array {
-    $inTransaction = $pdo->inTransaction();
+    $inTransaction = false;
     try {
+        $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();
         $stmt = $pdo->prepare("SELECT * FROM student_documents WHERE student_id = ?");
         $stmt->execute([$studentId]);
@@ -148,8 +149,8 @@ function uploadDocumentFile(array $file, string $docKey, int $studentId): array 
     }
 
     // MIME check
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mime  = finfo_file($finfo, $file['tmp_name']);
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime  = $finfo->file($file['tmp_name']);
     if (!in_array($mime, DOC_ALLOWED_TYPES, true)) {
         return ['success' => false, 'path' => null, 'error' => 'Invalid MIME type detected.'];
     }
@@ -200,6 +201,7 @@ function saveDocTracking(PDO $pdo, int $studentId, string $docKey, array $data):
 
     $sql = "UPDATE student_documents SET " . implode(', ', $sets) . " WHERE student_id = ?";
 
+    $inTransaction = false;
     try {
         $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();

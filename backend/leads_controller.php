@@ -48,6 +48,7 @@ function addLead(PDO $pdo, array $d): array {
 
     if ($errors) return ['success' => false, 'errors' => $errors];
 
+    $inTransaction = false;
     try {
         $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();
@@ -99,6 +100,7 @@ function updateLead(PDO $pdo, int $id, array $d): array {
 
     if ($errors) return ['success' => false, 'errors' => $errors];
 
+    $inTransaction = false;
     try {
         $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();

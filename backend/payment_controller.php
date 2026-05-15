@@ -158,6 +158,7 @@ function addPayment(PDO $pdo, array $d): array {
     // Next due date logic
     $nextDueDate = !empty($d['next_due_date']) ? $d['next_due_date'] : date('Y-m-d', strtotime('+1 month'));
 
+    $inTransaction = false;
     try {
         $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();
@@ -288,6 +289,7 @@ function addLecturerPayment(PDO $pdo, array $d): array {
         return ['success' => false, 'errors' => ['Lecturer and Amount are required.']];
     }
 
+    $inTransaction = false;
     try {
         $inTransaction = $pdo->inTransaction();
         if (!$inTransaction) $pdo->beginTransaction();
