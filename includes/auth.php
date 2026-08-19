@@ -66,7 +66,6 @@ function requireLogin(): void {
 function requireRole(string ...$roles): void {
     requireLogin();
     if (!in_array(currentRole(), $roles, true)) {
-        http_response_code(403);
         redirect(BASE_URL . '/login.php?forbidden=1');
     }
 }

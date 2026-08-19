@@ -1,0 +1,58 @@
+# =====================================================
+# ISSD Management - Git Ignore Rules
+# =====================================================
+
+# Environment & Sensitive Config Files
+.env
+.env.*
+*.env
+config.local.php
+config.development.php
+config.production.php
+
+# Log Files & Debug Output
+*.log
+logs/
+backend/*.log
+error_log
+
+# User Uploaded Documents, Media & Qualifications
+assets/assignments/*
+!assets/assignments/.gitkeep
+assets/documents/*
+!assets/documents/.gitkeep
+assets/qualifications/*
+!assets/qualifications/.gitkeep
+assets/uploads/*
+!assets/uploads/.gitkeep
+
+# AI Assistant & Local Workspace Tooling
+brain/
+.brain/
+.gemini/
+.antigravity/
+.antigravityignore
+
+# IDE & Code Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# OS System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Database Backups & Export Dumps
+*.bak
+*.sql.gz
+*.dump
+database/dumps/
+
+# Dependency Directories
+vendor/
+node_modules/
